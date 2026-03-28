@@ -1,0 +1,13 @@
+[package]
+name = "claude-code-core"
+version = "0.1.0"
+edition = "2021"
+description = "Claude Code CLI wrapper with stream-json parsing"
+license = "MIT"
+
+[dependencies]
+uni-common = { git = "https://github.com/ts-vit/ai-chat", branch = "dev" }
+uni-process = { git = "https://github.com/ts-vit/ai-chat", branch = "dev" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
