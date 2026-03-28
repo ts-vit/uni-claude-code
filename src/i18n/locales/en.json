@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "UNI Claude Code",
-    "description": "A UNI Framework application"
+    "description": "Two-panel IDE for Claude Code CLI"
   },
   "common": {
     "save": "Save",
@@ -9,5 +9,32 @@
     "delete": "Delete",
     "loading": "Loading...",
     "settings": "Settings"
+  },
+  "settings": {
+    "nav": {
+      "vpn": "VPN",
+      "proxy": "Proxy"
+    },
+    "proxy": {
+      "httpProxy": "HTTP Proxy",
+      "httpProxyDescription": "Proxy server for Claude API requests (used when SSH tunnel is not active)"
+    }
+  },
+  "chat": {
+    "placeholder": "Type a prompt... (Enter to send, Shift+Enter for new line)",
+    "send": "Send",
+    "stop": "Stop",
+    "idle": "Ready",
+    "running": "Running...",
+    "cost": "Cost",
+    "duration": "Duration",
+    "turns": "Turns",
+    "tool": "Tool",
+    "toolResult": "Result",
+    "permissionDenied": "Permission denied",
+    "error": "Error",
+    "processExited": "Process exited with code {{code}}",
+    "selectFolder": "Select project folder",
+    "noFolder": "No folder selected"
   }
 }

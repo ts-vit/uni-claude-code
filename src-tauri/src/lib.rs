@@ -1,9 +1,12 @@
 use std::sync::Arc;
 use tauri::Manager;
 use tauri::Emitter;
+use tokio::sync::Mutex;
 use uni_settings::JsonSettingsStore;
 
 mod commands;
+
+use commands::claude::{ClaudeManager, ClaudeState};
 
 type SettingsState = Arc<JsonSettingsStore>;
 
@@ -20,6 +23,10 @@ pub fn run() {
             let settings_path = app_data_dir.join("settings.json");
             let store = Arc::new(JsonSettingsStore::new(settings_path));
             app.manage(store as SettingsState);
+
+            // Claude Code
+            let claude_manager: ClaudeManager = Arc::new(Mutex::new(ClaudeState::new()));
+            app.manage(claude_manager);
 
             // SSH Tunnel
             let ssh_tunnel_manager = Arc::new(uni_ssh::SshTunnelManager::new());
@@ -73,6 +80,10 @@ pub fn run() {
             commands::ssh_tunnel::ssh_tunnel_disconnect,
             commands::ssh_tunnel::ssh_tunnel_status,
             commands::ssh_tunnel::ssh_remove_known_host,
+            // Claude Code
+            commands::claude::claude_start,
+            commands::claude::claude_stop,
+            commands::claude::claude_status,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

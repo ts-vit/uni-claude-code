@@ -5,7 +5,11 @@
       "Bash(find /c/Users/Huawei/.cargo/git/checkouts/ai-chat-92137fff0773914c/db40113/crates -type f -name *.rs -exec grep -l \"pub struct.*Process\\\\|pub enum.*Event\" {})",
       "Bash(2)",
       "Bash(cargo check:*)",
-      "Bash(cargo test:*)"
+      "Bash(cargo test:*)",
+      "Bash(cargo doc:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm run:*)",
+      "Bash(npx vitest:*)"
     ]
   }
 }

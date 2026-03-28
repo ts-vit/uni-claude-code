@@ -1,7 +1,7 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// Root event from Claude Code CLI (one JSON line per event)
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum ClaudeEvent {
     /// Session initialization
@@ -31,7 +31,7 @@ pub enum ClaudeEvent {
 
 // === System ===
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SystemEvent {
     pub subtype: String,
     pub cwd: Option<String>,
@@ -47,7 +47,7 @@ pub struct SystemEvent {
     pub uuid: Option<String>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct McpServer {
     pub name: String,
     pub status: String,
@@ -55,7 +55,7 @@ pub struct McpServer {
 
 // === StreamEvent ===
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StreamEventWrapper {
     pub event: StreamEvent,
     pub session_id: String,
@@ -63,7 +63,7 @@ pub struct StreamEventWrapper {
     pub uuid: Option<String>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum StreamEvent {
     #[serde(rename = "message_start")]
@@ -91,7 +91,7 @@ pub enum StreamEvent {
     MessageStop,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MessageInfo {
     pub model: Option<String>,
     pub id: Option<String>,
@@ -102,7 +102,7 @@ pub struct MessageInfo {
     pub usage: Option<Usage>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum ContentBlock {
     #[serde(rename = "text")]
@@ -125,7 +125,7 @@ pub enum ContentBlock {
     },
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Delta {
     #[serde(rename = "text_delta")]
@@ -135,7 +135,7 @@ pub enum Delta {
     InputJsonDelta { partial_json: String },
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MessageDeltaInfo {
     pub stop_reason: Option<String>,
     pub stop_sequence: Option<String>,
@@ -143,7 +143,7 @@ pub struct MessageDeltaInfo {
 
 // === Assistant ===
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AssistantEvent {
     pub message: MessageInfo,
     pub session_id: String,
@@ -153,7 +153,7 @@ pub struct AssistantEvent {
 
 // === User ===
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserEvent {
     pub message: Option<UserMessage>,
     pub session_id: String,
@@ -163,7 +163,7 @@ pub struct UserEvent {
     pub timestamp: Option<String>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserMessage {
     pub role: String,
     #[serde(default)]
@@ -172,7 +172,7 @@ pub struct UserMessage {
 
 // === Usage ===
 
-#[derive(Debug, Clone, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Usage {
     #[serde(default)]
     pub input_tokens: u64,
@@ -186,13 +186,13 @@ pub struct Usage {
 
 // === RateLimit ===
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RateLimitEvent {
     pub rate_limit_info: RateLimitInfo,
     pub session_id: Option<String>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RateLimitInfo {
     pub status: String,
     #[serde(rename = "resetsAt")]
@@ -203,7 +203,7 @@ pub struct RateLimitInfo {
 
 // === Result ===
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ResultEvent {
     pub subtype: String,
     pub is_error: bool,
@@ -218,7 +218,7 @@ pub struct ResultEvent {
     pub permission_denials: Vec<PermissionDenial>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PermissionDenial {
     pub tool_name: String,
     pub tool_use_id: Option<String>,

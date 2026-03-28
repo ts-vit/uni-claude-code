@@ -4,6 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { UniProvider, TauriSettingsAdapter } from "@uni-fw/ui";
 import { App } from "./App";
 import "./i18n/i18n";
+import "@uni-fw/ui/src/styles/markdown.css";
 
 const settingsAdapter = new TauriSettingsAdapter(invoke);
 

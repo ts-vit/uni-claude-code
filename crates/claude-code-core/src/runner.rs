@@ -1,11 +1,12 @@
 use crate::parser::parse_event;
 use crate::session::SessionConfig;
 use crate::types::ClaudeEvent;
+use serde::Serialize;
 use uni_common::UniError;
 use uni_process::{ManagedProcess, ProcessConfig, ProcessEvent};
 
 /// High-level event from ClaudeCodeRunner
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub enum RunnerEvent {
     /// Parsed Claude Code event
     Claude(ClaudeEvent),

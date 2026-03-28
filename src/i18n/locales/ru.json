@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "UNI Claude Code",
-    "description": "A UNI Framework application"
+    "description": "Двухпанельная IDE для Claude Code CLI"
   },
   "common": {
     "save": "Сохранить",
@@ -9,5 +9,32 @@
     "delete": "Удалить",
     "loading": "Загрузка...",
     "settings": "Настройки"
+  },
+  "settings": {
+    "nav": {
+      "vpn": "VPN",
+      "proxy": "Прокси"
+    },
+    "proxy": {
+      "httpProxy": "HTTP прокси",
+      "httpProxyDescription": "Прокси-сервер для запросов к Claude API (используется когда SSH туннель не активен)"
+    }
+  },
+  "chat": {
+    "placeholder": "Введите промпт... (Enter — отправить, Shift+Enter — новая строка)",
+    "send": "Отправить",
+    "stop": "Стоп",
+    "idle": "Готов",
+    "running": "Выполняется...",
+    "cost": "Стоимость",
+    "duration": "Длительность",
+    "turns": "Итераций",
+    "tool": "Инструмент",
+    "toolResult": "Результат",
+    "permissionDenied": "Нет разрешения",
+    "error": "Ошибка",
+    "processExited": "Процесс завершился с кодом {{code}}",
+    "selectFolder": "Выберите папку проекта",
+    "noFolder": "Папка не выбрана"
   }
 }
