@@ -1,0 +1,13 @@
+{
+  "app": {
+    "title": "UNI Claude Code",
+    "description": "A UNI Framework application"
+  },
+  "common": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "loading": "Загрузка...",
+    "settings": "Настройки"
+  }
+}
