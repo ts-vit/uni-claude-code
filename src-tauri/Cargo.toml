@@ -24,6 +24,12 @@ uni-settings = { git = "https://github.com/ts-vit/ai-chat", branch = "dev" }
 
 # UNI Framework — modules
 uni-ssh = { git = "https://github.com/ts-vit/ai-chat", branch = "dev" }
+uni-db = { git = "https://github.com/ts-vit/ai-chat", branch = "dev" }
+
+sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite"] }
+
+dirs = "6"
+chrono = "0.4"
 
 # Workspace crates
 claude-code-core = { path = "../crates/claude-code-core" }

@@ -3,11 +3,12 @@ import { initReactI18next } from "react-i18next";
 import en from "./locales/en.json";
 import ru from "./locales/ru.json";
 
+const savedLang = localStorage.getItem("uni-claude-code-language");
 const systemLang = navigator.language.startsWith("ru") ? "ru" : "en";
 
 i18n.use(initReactI18next).init({
   resources: { en: { translation: en }, ru: { translation: ru } },
-  lng: systemLang,
+  lng: savedLang || systemLang,
   fallbackLng: "en",
   interpolation: { escapeValue: false },
 });

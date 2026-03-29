@@ -27,7 +27,7 @@ impl ClaudeCodeRunner {
     /// Start Claude Code CLI with a prompt
     pub async fn start(config: &SessionConfig, prompt: &str) -> Result<Self, UniError> {
         let mut args = config.build_args();
-        args.push("--".to_string());
+        args.push("-p".to_string());
         args.push(prompt.to_string());
 
         let process_config = ProcessConfig::new(&config.claude_path)

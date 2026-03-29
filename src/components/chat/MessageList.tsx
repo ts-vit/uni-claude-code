@@ -5,9 +5,10 @@ import { MessageItem } from "./MessageItem";
 
 interface MessageListProps {
   messages: ChatMessage[];
+  onSaveMessage?: (messageIndex: number) => void;
 }
 
-export function MessageList({ messages }: MessageListProps) {
+export function MessageList({ messages, onSaveMessage }: MessageListProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef(true);
 
@@ -32,7 +33,15 @@ export function MessageList({ messages }: MessageListProps) {
     >
       <Stack gap="sm" p="md">
         {messages.map((msg, i) => (
-          <MessageItem key={i} message={msg} />
+          <MessageItem
+            key={i}
+            message={msg}
+            onSave={
+              msg.kind === "assistant-text" && !msg.streaming && onSaveMessage
+                ? () => onSaveMessage(i)
+                : undefined
+            }
+          />
         ))}
       </Stack>
     </ScrollArea>

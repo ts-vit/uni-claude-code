@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Stack, Group, Text, ActionIcon, Tooltip } from "@mantine/core";
-import { IconFolderOpen } from "@tabler/icons-react";
+import { Stack, Group, Text, Badge } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { IconFolderOpen, IconMessage } from "@tabler/icons-react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
-import { open } from "@tauri-apps/plugin-dialog";
 import { useTranslation } from "react-i18next";
 
 import type {
@@ -11,17 +11,29 @@ import type {
   ClaudeEvent,
   ChatMessage,
   SessionResult,
+  PanelEvent,
 } from "../../types/claude";
 import { MessageList } from "./MessageList";
 import { PromptInput } from "./PromptInput";
 import { StatusBar } from "./StatusBar";
 
-export function ChatPanel() {
+interface ChatPanelProps {
+  panelId?: string;  // default "code"
+  mode?: string;     // "code" | "discuss", default "code"
+  cwd: string;
+  projectId?: string;
+  projectModel?: string | null;
+  projectPermissionMode?: string;
+}
+
+export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, projectModel, projectPermissionMode }: ChatPanelProps) {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
-  const [cwd, setCwd] = useState<string>("");
+
+  // Track whether a session has been established (for --continue)
+  const hasSessionRef = useRef(false);
 
   // Refs for streaming state (avoid stale closures)
   const currentBlockIndexRef = useRef<number>(-1);
@@ -54,13 +66,15 @@ export function ChatPanel() {
     (claudeEvent: ClaudeEvent) => {
       switch (claudeEvent.type) {
         case "system": {
+          const wasExisting = hasSessionRef.current;
+          hasSessionRef.current = true;
           const info = [
             claudeEvent.model && `Model: ${claudeEvent.model}`,
             claudeEvent.session_id && `Session: ${claudeEvent.session_id.slice(0, 8)}...`,
           ]
             .filter(Boolean)
             .join(" | ");
-          if (info) {
+          if (info && !wasExisting) {
             setMessages((prev) => {
               const last = prev[prev.length - 1];
               if (last && last.kind === "system-info" && last.text === info) {
@@ -180,7 +194,7 @@ export function ChatPanel() {
                 updated[updated.length - 1] = { ...last, text: textBlocks, streaming: false };
                 return updated;
               }
-              return prev;
+              return [...prev, { kind: "assistant-text" as const, text: textBlocks, streaming: false }];
             });
           }
           break;
@@ -196,7 +210,7 @@ export function ChatPanel() {
                 updated[updated.length - 1] = { ...last, text: claudeEvent.result!, streaming: false };
                 return updated;
               }
-              return prev;
+              return [...prev, { kind: "assistant-text" as const, text: claudeEvent.result!, streaming: false }];
             });
           }
           setSessionResult({
@@ -212,10 +226,15 @@ export function ChatPanel() {
 
         case "rate_limit_event": {
           const info = claudeEvent.rate_limit_info;
-          setMessages((prev) => [
-            ...prev,
-            { kind: "system-info", text: `Rate limited (${info.status}). Resets at: ${info.resetsAt ?? "unknown"}` },
-          ]);
+          if (info.status !== "allowed") {
+            const resetsAtStr = info.resetsAt
+              ? new Date(info.resetsAt * 1000).toLocaleTimeString()
+              : "unknown";
+            setMessages((prev) => [
+              ...prev,
+              { kind: "error", text: `Rate limited (${info.status}). Resets at: ${resetsAtStr}` },
+            ]);
+          }
           break;
         }
       }
@@ -244,34 +263,88 @@ export function ChatPanel() {
     [handleClaudeEvent, finalizeStreaming, t],
   );
 
-  // Listen to claude-event
+  // Listen to claude-event — filter by panelId
   useEffect(() => {
     let unlisten: UnlistenFn | null = null;
-    listen<RunnerEvent>("claude-event", (event) => {
-      handleRunnerEvent(event.payload);
+    listen<PanelEvent>("claude-event", (event) => {
+      if (event.payload.panel_id !== panelId) return;
+      handleRunnerEvent(event.payload.event);
     }).then((fn) => {
       unlisten = fn;
     });
     return () => {
       unlisten?.();
     };
-  }, [handleRunnerEvent]);
+  }, [handleRunnerEvent, panelId]);
 
   // Check initial status
   useEffect(() => {
-    invoke<string>("claude_status").then((status) => {
+    invoke<string>("claude_status", { panelId }).then((status) => {
       setIsRunning(status === "running");
     });
-  }, []);
+  }, [panelId]);
+
+  const handleSaveMessage = useCallback(async (messageIndex: number) => {
+    const msg = messages[messageIndex];
+    if (msg.kind !== "assistant-text") return;
+
+    // Find previous user message
+    let userPrompt = "";
+    for (let i = messageIndex - 1; i >= 0; i--) {
+      const m = messages[i];
+      if (m.kind === "user") {
+        userPrompt = m.text;
+        break;
+      }
+    }
+
+    if (!userPrompt || !projectId) return;
+
+    try {
+      await invoke("history_save", {
+        projectId,
+        userPrompt,
+        assistantResponse: msg.text,
+        model: null,
+        sessionTabId: panelId,
+      });
+      notifications.show({
+        message: t("history.saved"),
+        color: "green",
+      });
+    } catch (e) {
+      notifications.show({
+        message: `${t("history.saveError")}: ${e}`,
+        color: "red",
+      });
+    }
+  }, [messages, panelId, projectId, t]);
 
   const handleSend = useCallback(
     async (text: string) => {
       if (!cwd) return;
+
+      // Handle /clear command
+      if (text.trim() === "/clear") {
+        setMessages([]);
+        setSessionResult(null);
+        hasSessionRef.current = false;
+        return;
+      }
+
       setMessages((prev) => [...prev, { kind: "user", text }]);
       setSessionResult(null);
       setIsRunning(true);
       try {
-        await invoke("claude_start", { prompt: text, cwd, mode: "code" });
+        await invoke("claude_start", {
+          panelId,
+          prompt: text,
+          cwd,
+          mode,
+          continueSession: hasSessionRef.current,
+          model: projectModel || undefined,
+          permissionMode: projectPermissionMode || undefined,
+        });
       } catch (err) {
         setIsRunning(false);
         setMessages((prev) => [
@@ -280,38 +353,49 @@ export function ChatPanel() {
         ]);
       }
     },
-    [cwd],
+    [cwd, panelId, mode, projectModel, projectPermissionMode],
   );
 
   const handleStop = useCallback(async () => {
     try {
-      await invoke("claude_stop");
+      await invoke("claude_stop", { panelId });
     } catch (err) {
       console.error("Failed to stop:", err);
     }
-  }, []);
-
-  const selectFolder = useCallback(async () => {
-    const selected = await open({ directory: true });
-    if (selected) setCwd(selected as string);
-  }, []);
+  }, [panelId]);
 
   return (
-    <Stack gap={0} style={{ height: "calc(100vh - 50px)" }}>
-      {/* Folder selector */}
-      <Group px="md" py={6} gap="xs" style={{ borderBottom: "1px solid var(--mantine-color-default-border)" }}>
-        <Tooltip label={t("chat.selectFolder")}>
-          <ActionIcon variant="subtle" onClick={selectFolder}>
-            <IconFolderOpen size={18} stroke={1.5} />
-          </ActionIcon>
-        </Tooltip>
-        <Text size="xs" c="dimmed" truncate style={{ flex: 1 }}>
-          {cwd || t("chat.noFolder")}
-        </Text>
+    <Stack gap={0} style={{ height: "100%", overflow: "hidden" }}>
+      {/* Panel toolbar */}
+      <Group px="xs" py={4} gap="xs" style={{ borderBottom: "1px solid var(--mantine-color-default-border)" }}>
+        <Badge
+          size="xs"
+          variant="light"
+          color={mode === "discuss" ? "blue" : "orange"}
+          style={{ textTransform: "uppercase", letterSpacing: 1 }}
+        >
+          {mode === "discuss" ? t("panel.discuss") : t("panel.code")}
+        </Badge>
       </Group>
 
-      {/* Messages */}
-      <MessageList messages={messages} />
+      {/* Empty state or messages */}
+      {messages.length === 0 ? (
+        <Stack align="center" justify="center" style={{ flex: 1 }} gap="md">
+          {!cwd ? (
+            <>
+              <IconFolderOpen size={48} stroke={1} color="var(--mantine-color-dimmed)" />
+              <Text c="dimmed" size="sm">{t("chat.selectFolderHint")}</Text>
+            </>
+          ) : (
+            <>
+              <IconMessage size={48} stroke={1} color="var(--mantine-color-dimmed)" />
+              <Text c="dimmed" size="sm">{t("chat.emptyState")}</Text>
+            </>
+          )}
+        </Stack>
+      ) : (
+        <MessageList messages={messages} onSaveMessage={projectId ? handleSaveMessage : undefined} />
+      )}
 
       {/* Input */}
       <PromptInput

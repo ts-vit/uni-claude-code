@@ -2,7 +2,8 @@ use std::sync::Arc;
 use tauri::Manager;
 use tauri::Emitter;
 use tokio::sync::Mutex;
-use uni_settings::JsonSettingsStore;
+use uni_db::{DbConfig, Migration, create_pool, run_migrations};
+use uni_settings::{JsonSettingsStore, SettingsStore};
 
 mod commands;
 
@@ -23,6 +24,49 @@ pub fn run() {
             let settings_path = app_data_dir.join("settings.json");
             let store = Arc::new(JsonSettingsStore::new(settings_path));
             app.manage(store as SettingsState);
+
+            // Database
+            let db_path = app_data_dir.join("uni-claude-code.db");
+            let db_config = DbConfig::new(db_path.to_str().unwrap());
+            let pool = tauri::async_runtime::block_on(async {
+                let pool = create_pool(&db_config).await.map_err(|e| e.to_string())?;
+                let migrations = vec![
+                    Migration {
+                        version: 1,
+                        description: "create_projects",
+                        sql: "CREATE TABLE IF NOT EXISTS projects (
+                            id TEXT PRIMARY KEY,
+                            name TEXT NOT NULL,
+                            cwd TEXT NOT NULL,
+                            created_at INTEGER NOT NULL,
+                            updated_at INTEGER NOT NULL
+                        )",
+                    },
+                    Migration {
+                        version: 2,
+                        description: "create_saved_messages",
+                        sql: "CREATE TABLE IF NOT EXISTS saved_messages (
+                            id TEXT PRIMARY KEY,
+                            project_id TEXT NOT NULL,
+                            user_prompt TEXT NOT NULL,
+                            assistant_response TEXT NOT NULL,
+                            model TEXT,
+                            session_tab_id TEXT,
+                            created_at INTEGER NOT NULL,
+                            FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+                        )",
+                    },
+                    Migration {
+                        version: 3,
+                        description: "add_project_settings",
+                        sql: "ALTER TABLE projects ADD COLUMN model TEXT;
+                              ALTER TABLE projects ADD COLUMN permission_mode TEXT NOT NULL DEFAULT 'bypass'",
+                    },
+                ];
+                run_migrations(&pool, &migrations).await.map_err(|e| e.to_string())?;
+                Ok::<_, String>(pool)
+            })?;
+            app.manage(pool);
 
             // Claude Code
             let claude_manager: ClaudeManager = Arc::new(Mutex::new(ClaudeState::new()));
@@ -67,6 +111,86 @@ pub fn run() {
                 });
             }
 
+            // SSH auto-connect at startup
+            {
+                let store = app.state::<SettingsState>().inner().clone();
+                let ssh_mgr = ssh_tunnel_manager.clone();
+                let app_data = app_data_dir.clone();
+                tauri::async_runtime::spawn(async move {
+                    let auto_connect = store.get("ssh.auto_connect").await.ok().flatten();
+                    if auto_connect.as_deref() != Some("true") {
+                        return;
+                    }
+                    let host = match store.get("ssh.host").await.ok().flatten() {
+                        Some(h) if !h.is_empty() => h,
+                        _ => return,
+                    };
+                    let port: u16 = store
+                        .get("ssh.port")
+                        .await
+                        .ok()
+                        .flatten()
+                        .and_then(|p| p.parse().ok())
+                        .unwrap_or(22);
+                    let username = store
+                        .get("ssh.username")
+                        .await
+                        .ok()
+                        .flatten()
+                        .unwrap_or_default();
+                    let auth_type = store
+                        .get("ssh.auth_type")
+                        .await
+                        .ok()
+                        .flatten()
+                        .unwrap_or_else(|| "password".to_string());
+                    let password = store.get("ssh.password").await.ok().flatten();
+                    let private_key = store.get("ssh.key_path").await.ok().flatten();
+
+                    let forward_remote_port: u16 = store
+                        .get("ssh.forward_remote_port")
+                        .await
+                        .ok()
+                        .flatten()
+                        .and_then(|p| p.parse().ok())
+                        .unwrap_or(0);
+
+                    let port_forward = if forward_remote_port > 0 {
+                        Some(uni_ssh::PortForwardConfig {
+                            local_port: 0,
+                            remote_host: store
+                                .get("ssh.forward_remote_host")
+                                .await
+                                .ok()
+                                .flatten()
+                                .unwrap_or_else(|| "127.0.0.1".to_string()),
+                            remote_port: forward_remote_port,
+                        })
+                    } else {
+                        None
+                    };
+
+                    let config = uni_ssh::SshConfig {
+                        host: host.clone(),
+                        port,
+                        username,
+                        auth_type,
+                        password,
+                        private_key,
+                        known_hosts_path: app_data.join("ssh_known_hosts"),
+                        port_forward,
+                    };
+                    match ssh_mgr.connect(config).await {
+                        Ok(local_port) => {
+                            eprintln!("SSH auto-connect: connected to {}:{} (local port {})", host, port, local_port);
+                        }
+                        Err(e) => {
+                            eprintln!("SSH auto-connect: failed to connect to {}:{}: {}", host, port, e);
+                        }
+                    }
+                });
+            }
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -84,6 +208,31 @@ pub fn run() {
             commands::claude::claude_start,
             commands::claude::claude_stop,
             commands::claude::claude_status,
+            // MCP Servers
+            commands::mcp::mcp_list,
+            commands::mcp::mcp_add,
+            commands::mcp::mcp_remove,
+            // Projects
+            commands::projects::project_list,
+            commands::projects::project_create,
+            commands::projects::project_update,
+            commands::projects::project_delete,
+            commands::projects::project_touch,
+            // Files
+            commands::files::file_tree,
+            commands::files::file_read,
+            commands::files::file_write,
+            commands::files::git_branch_info,
+            commands::files::claude_md_read,
+            commands::files::claude_md_write,
+            commands::files::file_diff,
+            commands::files::git_changed_files,
+            // History
+            commands::history::history_save,
+            commands::history::history_list,
+            commands::history::history_delete,
+            commands::history::history_export_markdown,
+            commands::history::history_export_to_file,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,13 +1,18 @@
-import { Paper, Text, Code } from "@mantine/core";
+import { ActionIcon, Code, Paper, Text, Tooltip } from "@mantine/core";
+import { IconBookmark } from "@tabler/icons-react";
 import { MarkdownRenderer } from "@uni-fw/ui";
+import { useTranslation } from "react-i18next";
 import type { ChatMessage } from "../../types/claude";
 import { ToolUseBlock } from "./ToolUseBlock";
 
 interface MessageItemProps {
   message: ChatMessage;
+  onSave?: () => void;
 }
 
-export function MessageItem({ message }: MessageItemProps) {
+export function MessageItem({ message, onSave }: MessageItemProps) {
+  const { t } = useTranslation();
+
   switch (message.kind) {
     case "user":
       return (
@@ -25,10 +30,31 @@ export function MessageItem({ message }: MessageItemProps) {
 
     case "assistant-text":
       return (
-        <Paper p="sm" radius="md" bg="var(--mantine-color-default)" style={{ maxWidth: "95%" }}>
+        <Paper p="sm" radius="md" bg="var(--mantine-color-default)" style={{ maxWidth: "95%", position: "relative" }}>
           <MarkdownRenderer content={message.text} />
           {message.streaming && (
             <Text component="span" size="sm" style={{ opacity: 0.5 }}>|</Text>
+          )}
+          {!message.streaming && onSave && (
+            <Tooltip label={t("history.save")} position="left">
+              <ActionIcon
+                variant="subtle"
+                size="xs"
+                onClick={onSave}
+                aria-label={t("history.save")}
+                style={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  opacity: 0.4,
+                  transition: "opacity 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.4"; }}
+              >
+                <IconBookmark size={14} stroke={1.5} />
+              </ActionIcon>
+            </Tooltip>
           )}
         </Paper>
       );

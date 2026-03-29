@@ -12,13 +12,200 @@
   },
   "settings": {
     "nav": {
+      "general": "General",
       "vpn": "VPN",
-      "proxy": "Proxy"
+      "proxy": "Proxy",
+      "claude": "Claude",
+      "mcp": "MCP Servers"
+    },
+    "general": {
+      "title": "General",
+      "language": "Language",
+      "languageDescription": "Interface language. Changes apply immediately."
+    },
+    "ssh": {
+      "title": "SSH Settings"
+    },
+    "vpn": {
+      "title": "VPN Settings",
+      "ssh": {
+        "host": "SSH Host",
+        "hostPlaceholder": "hostname or IP",
+        "port": "Port",
+        "username": "Username",
+        "usernamePlaceholder": "ssh username",
+        "authPassword": "Password",
+        "authKey": "Private Key",
+        "password": "Password",
+        "passwordPlaceholder": "Enter password",
+        "keyPath": "Key File",
+        "keyPathPlaceholder": "Path to private key",
+        "browseKey": "Browse",
+        "autoConnect": "Auto-connect",
+        "autoConnectDescription": "Automatically connect SSH tunnel at startup",
+        "hostKeyChanged": "Host Key Changed",
+        "hostKeyChangedMessage": "The host key for {{host}}:{{port}} has changed. This could indicate a security issue.",
+        "resetHostKey": "Reset Host Key",
+        "reconnecting": "Reconnecting…",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "disconnect": "Disconnect",
+        "connect": "Connect",
+        "saved": "Settings saved",
+        "hostKeyReset": "Host key reset",
+        "reconnected": "Reconnected",
+        "reconnectFailed": "Reconnection failed",
+        "connectSuccess": "Connected via port {{port}}",
+        "connectError": "Connection failed",
+        "disconnectSuccess": "Disconnected",
+        "forwardRemotePort": "Remote Port",
+        "forwardRemoteHost": "Remote Host",
+        "forwardDescription": "Port Forwarding"
+      }
     },
     "proxy": {
       "httpProxy": "HTTP Proxy",
       "httpProxyDescription": "Proxy server for Claude API requests (used when SSH tunnel is not active)"
+    },
+    "claude": {
+      "title": "Claude Settings",
+      "model": "Model",
+      "modelDescription": "Claude model for code sessions. Leave empty for default.",
+      "defaultCwd": "Default Project Folder",
+      "defaultCwdDescription": "Project folder to open at startup"
+    },
+    "mcp": {
+      "title": "MCP Servers",
+      "addServer": "Add Server",
+      "refresh": "Refresh",
+      "noServers": "No MCP servers configured",
+      "addFirst": "Add your first MCP server",
+      "name": "Server Name",
+      "namePlaceholder": "my-server",
+      "scope": "Scope",
+      "transport": "Transport",
+      "command": "Command",
+      "commandPlaceholder": "npx, node, python...",
+      "args": "Arguments",
+      "argsPlaceholder": "-y @some/mcp-server --arg1 value1",
+      "url": "URL",
+      "urlPlaceholder": "https://mcp.example.com/mcp",
+      "envVars": "Environment Variables",
+      "addEnvVar": "Add Variable",
+      "envKey": "Key",
+      "envValue": "Value",
+      "editServer": "Edit Server",
+      "deleteServer": "Delete Server",
+      "deleteConfirm": "Are you sure you want to remove server \"{{name}}\"?",
+      "addSuccess": "Server \"{{name}}\" added",
+      "removeSuccess": "Server \"{{name}}\" removed",
+      "addError": "Failed to add server",
+      "removeError": "Failed to remove server",
+      "loadError": "Failed to load MCP servers",
+      "status": {
+        "connected": "Connected",
+        "failed": "Failed",
+        "auth_required": "Auth Required",
+        "unknown": "Unknown"
+      },
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "scope": "Scope",
+        "commandUrl": "Command / URL",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "scopeLabel": {
+        "user": "User",
+        "project": "Project",
+        "local": "Local",
+        "cloud": "Cloud"
+      }
     }
+  },
+  "ssh": {
+    "connected": "SSH Connected",
+    "disconnected": "SSH Disconnected",
+    "autoConnect": "Auto-connect at startup",
+    "proxyActive": "Proxy active"
+  },
+  "panel": {
+    "discuss": "Discuss",
+    "code": "Code",
+    "singleMode": "Single Panel",
+    "dualMode": "Dual Panel",
+    "newTab": "New session tab",
+    "closeTab": "Close tab"
+  },
+  "project": {
+    "welcome": "Welcome to UNI Claude Code",
+    "welcomeDescription": "Create a project to start working",
+    "create": "Create Project",
+    "name": "Project Name",
+    "namePlaceholder": "My Project",
+    "folder": "Project Folder",
+    "folderPlaceholder": "Select project folder",
+    "selectFolder": "Select folder",
+    "created": "Project created",
+    "deleted": "Project deleted",
+    "deleteConfirm": "Are you sure you want to delete project \"{{name}}\"?",
+    "deleteTitle": "Delete Project",
+    "noProjects": "No projects yet",
+    "createFirst": "Create your first project to get started",
+    "edit": "Edit Project",
+    "updated": "Project updated",
+    "projects": "Projects",
+    "model": "Model",
+    "modelDescription": "Override global model for this project",
+    "permissionMode": "Permission Mode",
+    "permissionBypass": "Full access (no confirmations)",
+    "permissionDefault": "Ask for confirmation"
+  },
+  "history": {
+    "title": "Saved Messages",
+    "save": "Save to history",
+    "saved": "Message saved to history",
+    "saveError": "Failed to save message",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this saved message?",
+    "deleted": "Message deleted",
+    "export": "Export",
+    "exportMarkdown": "Export as Markdown",
+    "exported": "Exported successfully",
+    "exportError": "Export failed",
+    "noMessages": "No saved messages",
+    "noMessagesDescription": "Save important responses using the bookmark icon on messages",
+    "prompt": "Prompt",
+    "response": "Response"
+  },
+  "files": {
+    "title": "Files",
+    "refresh": "Refresh",
+    "noFiles": "No files found",
+    "gitBranch": "Branch"
+  },
+  "claudeMd": {
+    "title": "CLAUDE.md",
+    "edit": "Edit",
+    "preview": "Preview",
+    "save": "Save",
+    "saved": "CLAUDE.md saved",
+    "saveError": "Failed to save CLAUDE.md",
+    "create": "Create CLAUDE.md",
+    "created": "CLAUDE.md created",
+    "createError": "Failed to create CLAUDE.md",
+    "notFound": "No CLAUDE.md found in this project",
+    "unsaved": "Unsaved changes",
+    "tableOfContents": "Contents"
+  },
+  "diff": {
+    "title": "Changes",
+    "filesChanged": "files changed",
+    "noChangedFiles": "No changed files",
+    "noChanges": "No changes in this file",
+    "binaryFile": "Binary file — diff not available",
+    "selectFile": "Select a file to view changes"
   },
   "chat": {
     "placeholder": "Type a prompt... (Enter to send, Shift+Enter for new line)",
@@ -35,6 +222,10 @@
     "error": "Error",
     "processExited": "Process exited with code {{code}}",
     "selectFolder": "Select project folder",
-    "noFolder": "No folder selected"
+    "noFolder": "No folder selected",
+    "newSession": "New Session",
+    "cleared": "Chat cleared",
+    "selectFolderHint": "Select a project folder to start",
+    "emptyState": "Send a prompt to start the conversation"
   }
 }

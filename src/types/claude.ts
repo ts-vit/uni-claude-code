@@ -137,6 +137,95 @@ export interface PermissionDenial {
   tool_input?: unknown;
 }
 
+// === Project types ===
+export interface Project {
+  id: string;
+  name: string;
+  cwd: string;
+  model: string | null;
+  permissionMode: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+// === MCP Server types ===
+export interface McpServerEntry {
+  name: string;
+  scope: string;        // "user" | "project" | "local" | "cloud"
+  transport: string;    // "stdio" | "http" | "sse"
+  command: string | null;
+  args: string[];
+  url: string | null;
+  env_vars: McpEnvVar[];
+  status: string;       // "connected" | "failed" | "auth_required" | "unknown"
+}
+
+export interface McpEnvVar {
+  key: string;
+  value: string;
+}
+
+// === File tree types ===
+export interface FileTreeNode {
+  name: string;
+  path: string;
+  isDir: boolean;
+  status: string | null;
+  children: FileTreeNode[];
+}
+
+export interface GitBranchInfo {
+  name: string | null;
+  headHash: string;
+  isDetached: boolean;
+}
+
+// === CLAUDE.md types ===
+export interface ClaudeMdInfo {
+  exists: boolean;
+  content: string;
+  toc: TocEntry[];
+  path: string;
+}
+
+export interface TocEntry {
+  level: number;
+  text: string;
+  indent: number;
+}
+
+// === Diff types ===
+export interface FileDiff {
+  path: string;
+  hunks: DiffHunk[];
+  isBinary: boolean;
+  additions: number;
+  deletions: number;
+}
+
+export interface DiffHunk {
+  header: string;
+  lines: DiffLine[];
+}
+
+export interface DiffLine {
+  kind: string;
+  content: string;
+  oldLine: number | null;
+  newLine: number | null;
+}
+
+export interface ChangedFile {
+  path: string;
+  status: string;
+}
+
+// === Panel Event wrapper ===
+export interface PanelEvent {
+  panel_id: string;
+  event: RunnerEvent;
+}
+
 // === UI Message types ===
 export type ChatMessage =
   | { kind: "user"; text: string }
@@ -148,6 +237,17 @@ export type ChatMessage =
 export interface ToolResultInfo {
   content?: unknown;
   isError: boolean;
+}
+
+// === Saved message types ===
+export interface SavedMessage {
+  id: string;
+  projectId: string;
+  userPrompt: string;
+  assistantResponse: string;
+  model: string | null;
+  sessionTabId: string | null;
+  createdAt: number;
 }
 
 export interface SessionResult {

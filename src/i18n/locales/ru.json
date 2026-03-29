@@ -12,13 +12,200 @@
   },
   "settings": {
     "nav": {
+      "general": "Общие",
       "vpn": "VPN",
-      "proxy": "Прокси"
+      "proxy": "Прокси",
+      "claude": "Claude",
+      "mcp": "MCP серверы"
+    },
+    "general": {
+      "title": "Общие",
+      "language": "Язык",
+      "languageDescription": "Язык интерфейса. Изменения применяются сразу."
+    },
+    "ssh": {
+      "title": "Настройки SSH"
+    },
+    "vpn": {
+      "title": "Настройки VPN",
+      "ssh": {
+        "host": "SSH хост",
+        "hostPlaceholder": "имя хоста или IP",
+        "port": "Порт",
+        "username": "Имя пользователя",
+        "usernamePlaceholder": "имя пользователя ssh",
+        "authPassword": "Пароль",
+        "authKey": "Приватный ключ",
+        "password": "Пароль",
+        "passwordPlaceholder": "Введите пароль",
+        "keyPath": "Файл ключа",
+        "keyPathPlaceholder": "Путь к приватному ключу",
+        "browseKey": "Обзор",
+        "autoConnect": "Автоподключение",
+        "autoConnectDescription": "Автоматически подключать SSH туннель при запуске",
+        "hostKeyChanged": "Ключ хоста изменён",
+        "hostKeyChangedMessage": "Ключ хоста для {{host}}:{{port}} изменился. Это может указывать на проблему безопасности.",
+        "resetHostKey": "Сбросить ключ хоста",
+        "reconnecting": "Переподключение…",
+        "connected": "Подключён",
+        "disconnected": "Отключён",
+        "disconnect": "Отключить",
+        "connect": "Подключить",
+        "saved": "Настройки сохранены",
+        "hostKeyReset": "Ключ хоста сброшен",
+        "reconnected": "Переподключено",
+        "reconnectFailed": "Ошибка переподключения",
+        "connectSuccess": "Подключено через порт {{port}}",
+        "connectError": "Ошибка подключения",
+        "disconnectSuccess": "Отключено",
+        "forwardRemotePort": "Удалённый порт",
+        "forwardRemoteHost": "Удалённый хост",
+        "forwardDescription": "Проброс портов"
+      }
     },
     "proxy": {
       "httpProxy": "HTTP прокси",
       "httpProxyDescription": "Прокси-сервер для запросов к Claude API (используется когда SSH туннель не активен)"
+    },
+    "claude": {
+      "title": "Настройки Claude",
+      "model": "Модель",
+      "modelDescription": "Модель Claude для сессий. Оставьте пустым для модели по умолчанию.",
+      "defaultCwd": "Папка проекта по умолчанию",
+      "defaultCwdDescription": "Папка проекта, открываемая при запуске"
+    },
+    "mcp": {
+      "title": "MCP серверы",
+      "addServer": "Добавить сервер",
+      "refresh": "Обновить",
+      "noServers": "MCP серверы не настроены",
+      "addFirst": "Добавьте первый MCP сервер",
+      "name": "Имя сервера",
+      "namePlaceholder": "my-server",
+      "scope": "Область",
+      "transport": "Транспорт",
+      "command": "Команда",
+      "commandPlaceholder": "npx, node, python...",
+      "args": "Аргументы",
+      "argsPlaceholder": "-y @some/mcp-server --arg1 value1",
+      "url": "URL",
+      "urlPlaceholder": "https://mcp.example.com/mcp",
+      "envVars": "Переменные окружения",
+      "addEnvVar": "Добавить переменную",
+      "envKey": "Ключ",
+      "envValue": "Значение",
+      "editServer": "Редактировать сервер",
+      "deleteServer": "Удалить сервер",
+      "deleteConfirm": "Вы уверены, что хотите удалить сервер \"{{name}}\"?",
+      "addSuccess": "Сервер \"{{name}}\" добавлен",
+      "removeSuccess": "Сервер \"{{name}}\" удалён",
+      "addError": "Ошибка добавления сервера",
+      "removeError": "Ошибка удаления сервера",
+      "loadError": "Не удалось загрузить MCP серверы",
+      "status": {
+        "connected": "Подключён",
+        "failed": "Ошибка",
+        "auth_required": "Требуется авторизация",
+        "unknown": "Неизвестно"
+      },
+      "columns": {
+        "name": "Имя",
+        "type": "Тип",
+        "scope": "Область",
+        "commandUrl": "Команда / URL",
+        "status": "Статус",
+        "actions": "Действия"
+      },
+      "scopeLabel": {
+        "user": "Глобальный",
+        "project": "Проект",
+        "local": "Локальный",
+        "cloud": "Облачный"
+      }
     }
+  },
+  "ssh": {
+    "connected": "SSH подключён",
+    "disconnected": "SSH отключён",
+    "autoConnect": "Автоподключение при старте",
+    "proxyActive": "Прокси активен"
+  },
+  "panel": {
+    "discuss": "Обсуждение",
+    "code": "Код",
+    "singleMode": "Одна панель",
+    "dualMode": "Две панели",
+    "newTab": "Новая вкладка сессии",
+    "closeTab": "Закрыть вкладку"
+  },
+  "project": {
+    "welcome": "Добро пожаловать в UNI Claude Code",
+    "welcomeDescription": "Создайте проект для начала работы",
+    "create": "Создать проект",
+    "name": "Название проекта",
+    "namePlaceholder": "Мой проект",
+    "folder": "Папка проекта",
+    "folderPlaceholder": "Выберите папку проекта",
+    "selectFolder": "Выбрать папку",
+    "created": "Проект создан",
+    "deleted": "Проект удалён",
+    "deleteConfirm": "Вы уверены, что хотите удалить проект \"{{name}}\"?",
+    "deleteTitle": "Удалить проект",
+    "noProjects": "Проектов пока нет",
+    "createFirst": "Создайте первый проект для начала работы",
+    "edit": "Редактировать проект",
+    "updated": "Проект обновлён",
+    "projects": "Проекты",
+    "model": "Модель",
+    "modelDescription": "Переопределить глобальную модель для проекта",
+    "permissionMode": "Режим прав",
+    "permissionBypass": "Полный доступ (без подтверждений)",
+    "permissionDefault": "Запрашивать подтверждение"
+  },
+  "history": {
+    "title": "Сохранённые сообщения",
+    "save": "Сохранить в историю",
+    "saved": "Сообщение сохранено в историю",
+    "saveError": "Ошибка сохранения сообщения",
+    "delete": "Удалить",
+    "deleteConfirm": "Удалить это сохранённое сообщение?",
+    "deleted": "Сообщение удалено",
+    "export": "Экспорт",
+    "exportMarkdown": "Экспорт в Markdown",
+    "exported": "Экспорт выполнен",
+    "exportError": "Ошибка экспорта",
+    "noMessages": "Нет сохранённых сообщений",
+    "noMessagesDescription": "Сохраняйте важные ответы нажав иконку закладки на сообщении",
+    "prompt": "Промпт",
+    "response": "Ответ"
+  },
+  "files": {
+    "title": "Файлы",
+    "refresh": "Обновить",
+    "noFiles": "Файлы не найдены",
+    "gitBranch": "Ветка"
+  },
+  "claudeMd": {
+    "title": "CLAUDE.md",
+    "edit": "Редактировать",
+    "preview": "Просмотр",
+    "save": "Сохранить",
+    "saved": "CLAUDE.md сохранён",
+    "saveError": "Ошибка сохранения CLAUDE.md",
+    "create": "Создать CLAUDE.md",
+    "created": "CLAUDE.md создан",
+    "createError": "Ошибка создания CLAUDE.md",
+    "notFound": "CLAUDE.md не найден в этом проекте",
+    "unsaved": "Несохранённые изменения",
+    "tableOfContents": "Содержание"
+  },
+  "diff": {
+    "title": "Изменения",
+    "filesChanged": "файлов изменено",
+    "noChangedFiles": "Нет изменённых файлов",
+    "noChanges": "Нет изменений в этом файле",
+    "binaryFile": "Бинарный файл — diff недоступен",
+    "selectFile": "Выберите файл для просмотра изменений"
   },
   "chat": {
     "placeholder": "Введите промпт... (Enter — отправить, Shift+Enter — новая строка)",
@@ -35,6 +222,10 @@
     "error": "Ошибка",
     "processExited": "Процесс завершился с кодом {{code}}",
     "selectFolder": "Выберите папку проекта",
-    "noFolder": "Папка не выбрана"
+    "noFolder": "Папка не выбрана",
+    "newSession": "Новая сессия",
+    "cleared": "Чат очищен",
+    "selectFolderHint": "Выберите папку проекта для начала работы",
+    "emptyState": "Отправьте промпт для начала диалога"
   }
 }
