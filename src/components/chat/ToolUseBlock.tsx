@@ -7,6 +7,9 @@ import {
   IconPencil,
   IconSearch,
   IconFolder,
+  IconWorldSearch,
+  IconDownload,
+  IconListSearch,
   IconTool,
   IconChevronDown,
   IconChevronRight,
@@ -21,6 +24,9 @@ const toolIcons: Record<string, React.ComponentType<{ size?: number; stroke?: nu
   Edit: IconPencil,
   Grep: IconSearch,
   Glob: IconFolder,
+  WebSearch: IconWorldSearch,
+  WebFetch: IconDownload,
+  ToolSearch: IconListSearch,
 };
 
 interface ToolUseBlockProps {
@@ -45,7 +51,7 @@ export function ToolUseBlock({ toolName, inputJson, result }: ToolUseBlockProps)
   const summary = parsedInput ? getToolSummary(toolName, parsedInput) : null;
 
   return (
-    <Paper withBorder p="xs" my={4} radius="sm">
+    <Paper withBorder p="xs" my={4} radius="md" style={{ borderColor: "var(--ucc-border-subtle)" }}>
       <UnstyledButton onClick={() => setExpanded(!expanded)} w="100%">
         <Group gap="xs">
           <ThemeIcon size="sm" variant="light" color="gray">
@@ -105,6 +111,12 @@ function getToolSummary(toolName: string, input: Record<string, unknown>): strin
       return (input.pattern as string) || null;
     case "Glob":
       return (input.pattern as string) || null;
+    case "WebSearch":
+      return (input.query as string) || null;
+    case "WebFetch":
+      return (input.url as string) || null;
+    case "ToolSearch":
+      return (input.query as string) || null;
     default:
       return null;
   }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Group, Text, Tooltip } from "@mantine/core";
+import { Tooltip, Badge } from "@mantine/core";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useSettings } from "@uni-fw/ui";
@@ -35,13 +35,6 @@ export function SshStatusIndicator() {
 
   if (!sshHost) return null;
 
-  const color =
-    status === "connected"
-      ? "var(--mantine-color-green-6)"
-      : status === "reconnecting"
-        ? "var(--mantine-color-yellow-6)"
-        : "var(--mantine-color-gray-5)";
-
   const label =
     status === "connected"
       ? t("ssh.connected")
@@ -51,20 +44,36 @@ export function SshStatusIndicator() {
 
   return (
     <Tooltip label={label}>
-      <Group gap={4} style={{ cursor: "default" }}>
-        <span
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            backgroundColor: color,
-            display: "inline-block",
-          }}
-        />
-        <Text size="sm" c="dimmed">
+      {status === "connected" ? (
+        <Badge
+          size="sm" variant="outline" color="green" radius="xl"
+          leftSection={
+            <span style={{
+              width: 6, height: 6, borderRadius: "50%",
+              backgroundColor: "var(--mantine-color-green-6)",
+              display: "inline-block",
+              boxShadow: "var(--ucc-shadow-glow-green)",
+            }} />
+          }
+          styles={{ root: { borderColor: "rgba(34, 197, 94, 0.3)", backgroundColor: "rgba(34, 197, 94, 0.06)" } }}
+        >
           SSH
-        </Text>
-      </Group>
+        </Badge>
+      ) : (
+        <Badge
+          size="sm" variant="outline" color="gray" radius="xl"
+          leftSection={
+            <span style={{
+              width: 6, height: 6, borderRadius: "50%",
+              backgroundColor: "var(--mantine-color-gray-6)",
+              display: "inline-block",
+            }} />
+          }
+          styles={{ root: { borderColor: "var(--ucc-border-subtle)", backgroundColor: "transparent" } }}
+        >
+          SSH
+        </Badge>
+      )}
     </Tooltip>
   );
 }

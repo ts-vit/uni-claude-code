@@ -161,7 +161,7 @@ export function ClaudeMdEditor({ cwd }: ClaudeMdEditorProps) {
         style={{
           height: 40,
           minHeight: 40,
-          borderBottom: "1px solid var(--mantine-color-default-border)",
+          borderBottom: "1px solid var(--ucc-border-subtle)",
         }}
       >
         <Group gap="xs">
@@ -255,7 +255,7 @@ export function ClaudeMdEditor({ cwd }: ClaudeMdEditorProps) {
               p="xs"
               style={{
                 borderRight:
-                  "1px solid var(--mantine-color-default-border)",
+                  "1px solid var(--ucc-border-subtle)",
               }}
             >
               <Text size="xs" fw={600} mb="xs" c="dimmed">

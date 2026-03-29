@@ -5,6 +5,7 @@ import { UniProvider, TauriSettingsAdapter } from "@uni-fw/ui";
 import { App } from "./App";
 import "./i18n/i18n";
 import "@uni-fw/ui/src/styles/markdown.css";
+import "@xterm/xterm/css/xterm.css";
 
 const settingsAdapter = new TauriSettingsAdapter(invoke);
 

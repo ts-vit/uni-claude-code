@@ -1,10 +1,54 @@
-/* App styles */
-
-/* SegmentedControl dark theme override — applies to all instances including @uni-fw/ssh-ui */
-.mantine-SegmentedControl-root {
-  background-color: var(--mantine-color-dark-5) !important;
+/* Deep Ember palette — layered backgrounds for visual depth */
+:root[data-mantine-color-scheme="dark"] {
+  --ucc-bg-base: #0B0E14;
+  --ucc-bg-sidebar: #0F1218;
+  --ucc-bg-header: #0F1218;
+  --ucc-bg-panel: #131720;
+  --ucc-bg-input: #1A1F2B;
+  --ucc-bg-chat-assistant: #151921;
+  --ucc-bg-chat-user: #1C2333;
+  --ucc-border-subtle: rgba(255, 255, 255, 0.06);
+  --ucc-border-active: rgba(249, 115, 22, 0.15);
+  --ucc-shadow-glow-green: 0 0 8px rgba(34, 197, 94, 0.3);
+  --ucc-shadow-glow-orange: 0 0 6px rgba(249, 115, 22, 0.2);
 }
 
-.mantine-SegmentedControl-indicator {
-  background-color: var(--mantine-color-dark-3) !important;
+/* AppShell layered backgrounds */
+.mantine-AppShell-root {
+  background-color: var(--ucc-bg-base) !important;
+}
+
+.mantine-AppShell-header {
+  background-color: var(--ucc-bg-header) !important;
+  border-bottom-color: var(--ucc-border-subtle) !important;
+}
+
+.mantine-AppShell-navbar {
+  background-color: var(--ucc-bg-sidebar) !important;
+  border-right-color: var(--ucc-border-subtle) !important;
+}
+
+.mantine-AppShell-main {
+  background-color: var(--ucc-bg-base) !important;
+}
+
+/* SegmentedControl dark theme override — applies to all instances including @uni-fw/ssh-ui */
+:root[data-mantine-color-scheme="dark"] .mantine-SegmentedControl-root {
+  background-color: var(--ucc-bg-input) !important;
+  border: 1px solid var(--ucc-border-subtle) !important;
+}
+
+:root[data-mantine-color-scheme="dark"] .mantine-SegmentedControl-indicator {
+  background-color: var(--ucc-bg-panel) !important;
+}
+
+/* ProjectSidebar — active item glow */
+:root[data-mantine-color-scheme="dark"] .mantine-AppShell-navbar .mantine-NavLink-root[data-active] {
+  background-color: rgba(249, 115, 22, 0.08) !important;
+  border-left: 2px solid var(--mantine-color-brand-5);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }

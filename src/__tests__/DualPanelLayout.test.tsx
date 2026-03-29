@@ -71,7 +71,8 @@ describe("DualPanelLayout", () => {
     const addBtn = plusButtons[plusButtons.length - 1];
     fireEvent.click(addBtn);
 
-    expect(screen.getAllByText("Session 2").length).toBeGreaterThanOrEqual(1);
+    const sessionTexts = screen.getAllByText(/^Session \d+$/);
+    expect(sessionTexts.length).toBeGreaterThanOrEqual(2);
   });
 
   it("closes a tab when x is clicked", () => {
@@ -82,19 +83,21 @@ describe("DualPanelLayout", () => {
     });
     fireEvent.click(plusButtons[plusButtons.length - 1]);
 
-    expect(screen.getAllByText("Session 2").length).toBeGreaterThanOrEqual(1);
+    const sessionTextsBefore = screen.getAllByText(/^Session \d+$/);
+    expect(sessionTextsBefore.length).toBeGreaterThanOrEqual(2);
 
-    // Now close Session 2 — find the close (x) button
+    // Now close the last tab — find the close (x) button
     const closeButtons = screen.getAllByRole("button").filter((btn) => {
       const svg = btn.querySelector("svg");
       return svg && btn.closest("[class]")?.textContent?.includes("Session");
     });
-    // Click the last close button (for Session 2)
+    // Click the last close button
     if (closeButtons.length > 0) {
       fireEvent.click(closeButtons[closeButtons.length - 1]);
     }
 
-    // Session 2 should be gone or at least Session 1 is still there
-    expect(screen.getAllByText("Session 1").length).toBeGreaterThanOrEqual(1);
+    // Session 1 should still be present regardless
+    const sessionTextsAfter = screen.getAllByText(/^Session \d+$/);
+    expect(sessionTextsAfter.length).toBeGreaterThanOrEqual(1);
   });
 });

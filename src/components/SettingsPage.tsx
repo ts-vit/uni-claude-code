@@ -192,7 +192,7 @@ export function SettingsPage() {
 
   return (
     <div style={{ display: "flex", height: "100%" }}>
-      <ScrollArea w={220} p="xs" style={{ borderRight: "1px solid var(--mantine-color-default-border)" }}>
+      <ScrollArea w={220} p="xs" style={{ borderRight: "1px solid var(--ucc-border-subtle)" }}>
         <Stack gap={2}>
           <NavLink
             label={t("settings.nav.general")}

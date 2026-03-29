@@ -42,7 +42,7 @@ export function SessionTabs({
       gap={0}
       wrap="nowrap"
       style={{
-        borderBottom: "1px solid var(--mantine-color-default-border)",
+        borderBottom: "1px solid var(--ucc-border-subtle)",
         minHeight: 30,
         overflow: "hidden",
       }}
@@ -57,7 +57,7 @@ export function SessionTabs({
             gap: 6,
             padding: "4px 10px",
             fontSize: 12,
-            borderRight: "1px solid var(--mantine-color-default-border)",
+            borderRight: "1px solid var(--ucc-border-subtle)",
             backgroundColor:
               tab.id === activeId
                 ? "var(--mantine-color-default-hover)"

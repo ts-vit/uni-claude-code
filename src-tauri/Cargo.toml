@@ -24,11 +24,14 @@ uni-settings = { git = "https://github.com/ts-vit/ai-chat", branch = "dev" }
 
 # UNI Framework — modules
 uni-ssh = { git = "https://github.com/ts-vit/ai-chat", branch = "dev" }
+uni-terminal = { git = "https://github.com/ts-vit/ai-chat", branch = "dev" }
 uni-db = { git = "https://github.com/ts-vit/ai-chat", branch = "dev" }
 
 sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite"] }
 
 dirs = "6"
+arboard = "3"
+image = { version = "0.25", default-features = false, features = ["png"] }
 chrono = "0.4"
 
 # Workspace crates

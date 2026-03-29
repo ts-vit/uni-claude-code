@@ -1,7 +1,10 @@
 pub mod claude;
+pub mod clipboard;
 pub mod files;
+pub mod pipeline;
 pub mod history;
 pub mod mcp;
 pub mod projects;
 pub mod ssh_tunnel;
+pub mod terminal;
 pub mod uni_settings;

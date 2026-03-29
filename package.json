@@ -23,6 +23,7 @@
     "@tauri-apps/plugin-dialog": "^2",
     "@tauri-apps/plugin-shell": "^2",
     "@uni-fw/ssh-ui": "^0.1.2",
+    "@uni-fw/terminal-ui": "^0.1.1",
     "@uni-fw/ui": "^0.1.0",
     "i18next": "^25.0.0",
     "react": "^19.1.0",

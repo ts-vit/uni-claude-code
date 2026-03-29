@@ -82,7 +82,7 @@ impl SessionConfig {
             "stream-json".to_string(),
         ];
 
-        if self.skip_permissions {
+        if self.skip_permissions || self.mode == SessionMode::Discuss {
             args.push("--dangerously-skip-permissions".to_string());
         }
 
@@ -116,7 +116,8 @@ mod tests {
         let args = config.build_args();
         assert!(args.contains(&"--disallowed-tools".to_string()));
         assert!(args.contains(&"Write,Edit,Bash,NotebookEdit".to_string()));
-        assert!(!args.contains(&"--dangerously-skip-permissions".to_string()));
+        // Discuss mode always gets --dangerously-skip-permissions for auto-approving allowed tools
+        assert!(args.contains(&"--dangerously-skip-permissions".to_string()));
     }
 
     #[test]

@@ -257,3 +257,20 @@ export interface SessionResult {
   sessionId?: string;
   permissionDenials: PermissionDenial[];
 }
+
+// === Pipeline types ===
+export interface PipelineTask {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string;
+  prompt: string | null;
+  status: "draft" | "queued" | "discussing" | "prompt_ready" | "executing" | "done" | "failed";
+  sortOrder: number;
+  resultSummary: string | null;
+  errorMessage: string | null;
+  startedAt: number | null;
+  completedAt: number | null;
+  createdAt: number;
+  updatedAt: number;
+}

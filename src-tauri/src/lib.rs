@@ -4,6 +4,7 @@ use tauri::Emitter;
 use tokio::sync::Mutex;
 use uni_db::{DbConfig, Migration, create_pool, run_migrations};
 use uni_settings::{JsonSettingsStore, SettingsStore};
+use uni_terminal::TerminalManager;
 
 mod commands;
 
@@ -62,6 +63,26 @@ pub fn run() {
                         sql: "ALTER TABLE projects ADD COLUMN model TEXT;
                               ALTER TABLE projects ADD COLUMN permission_mode TEXT NOT NULL DEFAULT 'bypass'",
                     },
+                    Migration {
+                        version: 4,
+                        description: "create_pipeline_tasks",
+                        sql: "CREATE TABLE IF NOT EXISTS pipeline_tasks (
+                            id TEXT PRIMARY KEY,
+                            project_id TEXT NOT NULL,
+                            title TEXT NOT NULL,
+                            description TEXT NOT NULL DEFAULT '',
+                            prompt TEXT,
+                            status TEXT NOT NULL DEFAULT 'draft',
+                            sort_order INTEGER NOT NULL DEFAULT 0,
+                            result_summary TEXT,
+                            error_message TEXT,
+                            started_at INTEGER,
+                            completed_at INTEGER,
+                            created_at INTEGER NOT NULL,
+                            updated_at INTEGER NOT NULL,
+                            FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+                        )",
+                    },
                 ];
                 run_migrations(&pool, &migrations).await.map_err(|e| e.to_string())?;
                 Ok::<_, String>(pool)
@@ -105,6 +126,37 @@ pub fn run() {
                             }
                             uni_ssh::SshEvent::ProxySettingsChanged => {
                                 let _ = app_handle.emit("proxy-settings-changed", ());
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Terminal PTY
+            let (terminal_manager, terminal_rx) = TerminalManager::new();
+            app.manage(std::sync::Mutex::new(terminal_manager));
+            {
+                let app_handle_term = app.handle().clone();
+                std::thread::spawn(move || {
+                    while let Ok(event) = terminal_rx.recv() {
+                        match event {
+                            uni_terminal::TerminalEvent::Data { session_id, data } => {
+                                let _ = app_handle_term.emit(
+                                    "pty-data",
+                                    serde_json::json!({
+                                        "sessionId": session_id,
+                                        "data": data,
+                                    }),
+                                );
+                            }
+                            uni_terminal::TerminalEvent::Exit { session_id, code } => {
+                                let _ = app_handle_term.emit(
+                                    "pty-exit",
+                                    serde_json::json!({
+                                        "sessionId": session_id,
+                                        "code": code,
+                                    }),
+                                );
                             }
                         }
                     }
@@ -233,6 +285,23 @@ pub fn run() {
             commands::history::history_delete,
             commands::history::history_export_markdown,
             commands::history::history_export_to_file,
+            // Clipboard
+            commands::clipboard::clipboard_save_image,
+            // Terminal
+            commands::terminal::terminal_create,
+            commands::terminal::terminal_write,
+            commands::terminal::terminal_resize,
+            commands::terminal::terminal_kill,
+            // Pipeline
+            commands::pipeline::pipeline_task_list,
+            commands::pipeline::pipeline_task_create,
+            commands::pipeline::pipeline_task_update,
+            commands::pipeline::pipeline_task_delete,
+            commands::pipeline::pipeline_task_reorder,
+            commands::pipeline::pipeline_task_set_status,
+            commands::pipeline::pipeline_task_set_result,
+            commands::pipeline::pipeline_task_set_prompt,
+            commands::pipeline::pipeline_queue_all,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

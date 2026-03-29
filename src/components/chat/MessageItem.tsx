@@ -19,7 +19,7 @@ export function MessageItem({ message, onSave }: MessageItemProps) {
         <Paper
           p="sm"
           radius="md"
-          bg="var(--mantine-color-blue-light)"
+          bg="var(--ucc-bg-chat-user)"
           style={{ alignSelf: "flex-end", maxWidth: "85%" }}
         >
           <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>
@@ -30,7 +30,7 @@ export function MessageItem({ message, onSave }: MessageItemProps) {
 
     case "assistant-text":
       return (
-        <Paper p="sm" radius="md" bg="var(--mantine-color-default)" style={{ maxWidth: "95%", position: "relative" }}>
+        <Paper p="sm" radius="md" bg="var(--ucc-bg-chat-assistant)" style={{ maxWidth: "95%", position: "relative" }}>
           <MarkdownRenderer content={message.text} />
           {message.streaming && (
             <Text component="span" size="sm" style={{ opacity: 0.5 }}>|</Text>

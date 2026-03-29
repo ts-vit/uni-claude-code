@@ -367,7 +367,7 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
   return (
     <Stack gap={0} style={{ height: "100%", overflow: "hidden" }}>
       {/* Panel toolbar */}
-      <Group px="xs" py={4} gap="xs" style={{ borderBottom: "1px solid var(--mantine-color-default-border)" }}>
+      <Group px="xs" py={4} gap="xs" style={{ borderBottom: "1px solid var(--ucc-border-subtle)" }}>
         <Badge
           size="xs"
           variant="light"
@@ -380,18 +380,23 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
 
       {/* Empty state or messages */}
       {messages.length === 0 ? (
-        <Stack align="center" justify="center" style={{ flex: 1 }} gap="md">
-          {!cwd ? (
-            <>
-              <IconFolderOpen size={48} stroke={1} color="var(--mantine-color-dimmed)" />
-              <Text c="dimmed" size="sm">{t("chat.selectFolderHint")}</Text>
-            </>
-          ) : (
-            <>
-              <IconMessage size={48} stroke={1} color="var(--mantine-color-dimmed)" />
-              <Text c="dimmed" size="sm">{t("chat.emptyState")}</Text>
-            </>
-          )}
+        <Stack align="center" justify="center" style={{ flex: 1 }} gap="lg">
+          <div
+            style={{
+              width: 64, height: 64, borderRadius: 16,
+              backgroundColor: "rgba(249, 115, 22, 0.06)",
+              border: "1px solid var(--ucc-border-subtle)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            {!cwd
+              ? <IconFolderOpen size={32} stroke={1.2} color="var(--mantine-color-dimmed)" />
+              : <IconMessage size={32} stroke={1.2} color="var(--mantine-color-dimmed)" />
+            }
+          </div>
+          <Text c="dimmed" size="sm">
+            {!cwd ? t("chat.selectFolderHint") : t("chat.emptyState")}
+          </Text>
         </Stack>
       ) : (
         <MessageList messages={messages} onSaveMessage={projectId ? handleSaveMessage : undefined} />

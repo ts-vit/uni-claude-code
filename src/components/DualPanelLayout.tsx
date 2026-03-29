@@ -204,7 +204,7 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 50px)" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Toolbar */}
       <Group
         px="md"
@@ -213,7 +213,7 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
         style={{
           height: 36,
           minHeight: 36,
-          borderBottom: "1px solid var(--mantine-color-default-border)",
+          borderBottom: "1px solid var(--ucc-border-subtle)",
         }}
       >
         {/* Left: layout mode */}
@@ -281,8 +281,8 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
               backgroundColor: isDragging
                 ? "var(--mantine-color-blue-5)"
                 : dividerHover
-                  ? "var(--mantine-color-dark-3)"
-                  : "var(--mantine-color-default-border)",
+                  ? "rgba(255, 255, 255, 0.1)"
+                  : "var(--ucc-border-subtle)",
               flexShrink: 0,
               transition: isDragging ? "none" : "background-color 0.15s",
             }}
