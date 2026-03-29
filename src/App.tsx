@@ -26,7 +26,7 @@ import { TerminalPanel } from "@uni-fw/terminal-ui";
 import type { Project } from "./types/claude";
 import "./App.css";
 
-type View = "main" | "settings" | "history" | "files" | "claude-md" | "diff" | "pipeline";
+type View = "main" | "settings" | "history" | "files" | "claude-md" | "diff" | "pipeline" | "terminal";
 
 export function App() {
   const { t } = useTranslation();
@@ -34,8 +34,6 @@ export function App() {
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [createModalOpened, setCreateModalOpened] = useState(false);
   const [diffInitialFile, setDiffInitialFile] = useState<string | undefined>();
-  const [terminalOpen, setTerminalOpen] = useState(false);
-  const [terminalPosition, setTerminalPosition] = useState<"bottom" | "right">("bottom");
 
   const handleProjectSelect = (project: Project) => {
     setActiveProject(project);
@@ -50,7 +48,7 @@ export function App() {
   return (
     <AppShell
       header={{ height: 50 }}
-      navbar={{ width: 250, breakpoint: "sm", collapsed: { desktop: view !== "main" && !!activeProject, mobile: view !== "main" && !!activeProject } }}
+      navbar={{ width: 250, breakpoint: "sm", collapsed: { desktop: view === "pipeline" || view === "terminal" || (view !== "main" && !!activeProject), mobile: view === "pipeline" || view === "terminal" || (view !== "main" && !!activeProject) } }}
     >
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
@@ -62,7 +60,6 @@ export function App() {
                 variant={view === "pipeline" ? "filled" : "subtle"}
                 color={view === "pipeline" ? "blue" : undefined}
                 onClick={() => setView((v) => (v === "pipeline" ? "main" : "pipeline"))}
-                disabled={!activeProject}
               >
                 <IconListCheck size={20} stroke={1.5} />
               </ActionIcon>
@@ -118,9 +115,9 @@ export function App() {
             </Tooltip>
             <Tooltip label={t("terminal.title")}>
               <ActionIcon
-                variant={terminalOpen ? "filled" : "subtle"}
-                color={terminalOpen ? "blue" : undefined}
-                onClick={() => setTerminalOpen((v) => !v)}
+                variant={view === "terminal" ? "filled" : "subtle"}
+                color={view === "terminal" ? "blue" : undefined}
+                onClick={() => setView((v) => (v === "terminal" ? "main" : "terminal"))}
                 disabled={!activeProject}
               >
                 <IconTerminal size={20} stroke={1.5} />
@@ -148,45 +145,43 @@ export function App() {
         />
       </AppShell.Navbar>
       <AppShell.Main>
-        <div style={{
-          display: "flex",
-          flexDirection: terminalPosition === "bottom" ? "column" : "row",
-          height: "calc(100vh - 50px)",
-        }}>
-          <div style={{ flex: 1, overflow: "hidden" }}>
-            {view === "settings" ? (
-              <SettingsPage />
-            ) : view === "pipeline" && activeProject ? (
-              <PipelinePage projectId={activeProject.id} cwd={activeProject.cwd} projectModel={activeProject.model} />
-            ) : view === "claude-md" && activeProject ? (
-              <ClaudeMdEditor cwd={activeProject.cwd} />
-            ) : view === "diff" && activeProject ? (
-              <DiffViewer cwd={activeProject.cwd} initialFile={diffInitialFile} />
-            ) : view === "files" && activeProject ? (
-              <FileTreePanel
-                cwd={activeProject.cwd}
-                onFileSelect={(path) => {
-                  setDiffInitialFile(path);
-                  setView("diff");
-                }}
+        <div style={{ height: "calc(100vh - 50px)", overflow: "hidden" }}>
+          {view === "settings" ? (
+            <SettingsPage />
+          ) : view === "pipeline" ? (
+            <PipelinePage
+              initialProjectId={activeProject?.id}
+              onProjectSelect={(project) => setActiveProject(project)}
+            />
+          ) : view === "terminal" && activeProject ? (
+            <div style={{ height: "100%", width: "100%", overflow: "hidden" }} className="terminal-fullscreen">
+              <TerminalPanel
+                height={300}
+                width={400}
+                position="right"
+                onPositionChange={() => {}}
+                onClose={() => setView("main")}
               />
-            ) : view === "history" && activeProject ? (
-              <HistoryPage projectId={activeProject.id} />
-            ) : activeProject ? (
-              <DualPanelLayout cwd={activeProject.cwd} projectId={activeProject.id} projectModel={activeProject.model} projectPermissionMode={activeProject.permissionMode} />
-            ) : (
-              <WelcomeScreen
-                onCreateProject={() => setCreateModalOpened(true)}
-              />
-            )}
-          </div>
-          {terminalOpen && activeProject && (
-            <TerminalPanel
-              height={300}
-              width={400}
-              position={terminalPosition}
-              onPositionChange={setTerminalPosition}
-              onClose={() => setTerminalOpen(false)}
+            </div>
+          ) : view === "claude-md" && activeProject ? (
+            <ClaudeMdEditor cwd={activeProject.cwd} />
+          ) : view === "diff" && activeProject ? (
+            <DiffViewer cwd={activeProject.cwd} initialFile={diffInitialFile} />
+          ) : view === "files" && activeProject ? (
+            <FileTreePanel
+              cwd={activeProject.cwd}
+              onFileSelect={(path) => {
+                setDiffInitialFile(path);
+                setView("diff");
+              }}
+            />
+          ) : view === "history" && activeProject ? (
+            <HistoryPage projectId={activeProject.id} />
+          ) : activeProject ? (
+            <DualPanelLayout cwd={activeProject.cwd} projectId={activeProject.id} projectModel={activeProject.model} projectPermissionMode={activeProject.permissionMode} />
+          ) : (
+            <WelcomeScreen
+              onCreateProject={() => setCreateModalOpened(true)}
             />
           )}
         </div>

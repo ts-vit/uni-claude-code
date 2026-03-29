@@ -259,7 +259,9 @@
     "noResult": "No result yet",
     "started": "Started",
     "finished": "Finished",
-    "toggleLive": "Toggle live view"
+    "toggleLive": "Toggle live view",
+    "selectProject": "Select a project",
+    "selectProjectDescription": "Choose a project from the sidebar to manage its pipeline tasks"
   },
   "chat": {
     "placeholder": "Type a prompt... (Enter to send, Shift+Enter for new line)",

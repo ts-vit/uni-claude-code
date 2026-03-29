@@ -292,7 +292,9 @@ pub fn run() {
             commands::terminal::terminal_write,
             commands::terminal::terminal_resize,
             commands::terminal::terminal_kill,
+            commands::terminal::get_current_proxy_url,
             // Pipeline
+            commands::pipeline::pipeline_task_counts,
             commands::pipeline::pipeline_task_list,
             commands::pipeline::pipeline_task_create,
             commands::pipeline::pipeline_task_update,

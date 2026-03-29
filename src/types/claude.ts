@@ -259,6 +259,12 @@ export interface SessionResult {
 }
 
 // === Pipeline types ===
+export interface PipelineTaskCount {
+  projectId: string;
+  total: number;
+  done: number;
+}
+
 export interface PipelineTask {
   id: string;
   projectId: string;

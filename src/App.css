@@ -52,3 +52,11 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
+
+/* Terminal fullscreen — override TerminalPanel inline styles */
+.terminal-fullscreen > div {
+  height: 100% !important;
+  width: 100% !important;
+  border-top: none !important;
+  border-left: none !important;
+}

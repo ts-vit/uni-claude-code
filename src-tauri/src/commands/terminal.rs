@@ -89,6 +89,15 @@ pub async fn terminal_resize(
 }
 
 #[tauri::command]
+pub async fn get_current_proxy_url(
+    app: AppHandle,
+) -> Result<Option<String>, String> {
+    let ssh_manager = app.state::<Arc<SshTunnelManager>>();
+    let settings = app.state::<SettingsState>();
+    Ok(resolve_proxy(&ssh_manager, &settings).await)
+}
+
+#[tauri::command]
 pub async fn terminal_kill(
     app: AppHandle,
     session_id: String,

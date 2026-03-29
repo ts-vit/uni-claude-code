@@ -6,6 +6,14 @@ type Pool = SqlitePool;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct PipelineTaskCount {
+    pub project_id: String,
+    pub total: i64,
+    pub done: i64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PipelineTask {
     pub id: String,
     pub project_id: String,
@@ -20,6 +28,24 @@ pub struct PipelineTask {
     pub completed_at: Option<i64>,
     pub created_at: i64,
     pub updated_at: i64,
+}
+
+#[tauri::command]
+pub async fn pipeline_task_counts(
+    pool: State<'_, Pool>,
+) -> Result<Vec<PipelineTaskCount>, String> {
+    let rows = sqlx::query(
+        "SELECT project_id, COUNT(*) as total, SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) as done FROM pipeline_tasks GROUP BY project_id"
+    )
+    .fetch_all(pool.inner())
+    .await
+    .map_err(|e| e.to_string())?;
+
+    Ok(rows.iter().map(|row| PipelineTaskCount {
+        project_id: row.get("project_id"),
+        total: row.get("total"),
+        done: row.get("done"),
+    }).collect())
 }
 
 #[tauri::command]
