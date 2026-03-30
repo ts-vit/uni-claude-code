@@ -57,6 +57,16 @@ pub async fn claude_start(
 
     let mut config = SessionConfig::new(session_mode, &cwd);
 
+    // Claude CLI path: settings → default "claude"
+    {
+        let settings = app.state::<Arc<JsonSettingsStore>>();
+        if let Ok(Some(path)) = settings.get("claude.path").await {
+            if !path.is_empty() {
+                config.claude_path = path;
+            }
+        }
+    }
+
     // Check SSH tunnel for proxy first, fall back to httpProxy from settings
     let ssh_manager = app.state::<Arc<uni_ssh::SshTunnelManager>>();
     if let Some(proxy_url) = ssh_manager.get_proxy_url().await {
@@ -161,6 +171,20 @@ pub async fn claude_stop(
     }
     s.runners.remove(&panel_id);
     Ok(())
+}
+
+/// Get configured Claude CLI path
+#[tauri::command]
+pub async fn get_claude_path(
+    app: AppHandle,
+) -> Result<String, String> {
+    let settings = app.state::<Arc<JsonSettingsStore>>();
+    if let Ok(Some(path)) = settings.get("claude.path").await {
+        if !path.is_empty() {
+            return Ok(path);
+        }
+    }
+    Ok("claude".to_string())
 }
 
 /// Get current session status

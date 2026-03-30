@@ -6,10 +6,11 @@ import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 import { ChatPanel } from "./chat/ChatPanel";
 import { SessionTabs, type TabStatus } from "./SessionTabs";
+import { TerminalPanel } from "@uni-fw/terminal-ui";
 import type { PanelEvent } from "../types/claude";
 
 type LayoutMode = "single" | "dual";
-type ActivePanel = "discuss" | "code";
+type ActivePanel = "architect" | "terminal";
 
 interface TabInfo {
   id: string;
@@ -37,56 +38,43 @@ interface DualPanelLayoutProps {
 export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissionMode }: DualPanelLayoutProps) {
   const { t } = useTranslation();
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("single");
-  const [activePanel, setActivePanel] = useState<ActivePanel>("code");
+  const [activePanel, setActivePanel] = useState<ActivePanel>("terminal");
   const [splitPosition, setSplitPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const [dividerHover, setDividerHover] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // === Tab state ===
+  // === Tab state (Architect panel only) ===
   const [discussTabs, setDiscussTabs] = useState<TabInfo[]>(() => {
     const id = nextTabId("discuss");
     return [{ id, label: "Session 1", status: "idle" as TabStatus }];
   });
   const [discussActiveTab, setDiscussActiveTab] = useState(() => discussTabs[0].id);
 
-  const [codeTabs, setCodeTabs] = useState<TabInfo[]>(() => {
-    const id = nextTabId("code");
-    return [{ id, label: "Session 1", status: "idle" as TabStatus }];
-  });
-  const [codeActiveTab, setCodeActiveTab] = useState(() => codeTabs[0].id);
-
   // === Tab handlers ===
-  const handleAddTab = useCallback((side: "discuss" | "code") => {
-    const setter = side === "discuss" ? setDiscussTabs : setCodeTabs;
-    const activeSetter = side === "discuss" ? setDiscussActiveTab : setCodeActiveTab;
-    setter((prev) => {
+  const handleAddTab = useCallback(() => {
+    setDiscussTabs((prev) => {
       if (prev.length >= MAX_TABS_PER_PANEL) return prev;
-      const id = nextTabId(side);
+      const id = nextTabId("discuss");
       const label = nextTabLabel(prev);
       const newTab: TabInfo = { id, label, status: "idle" };
-      activeSetter(id);
+      setDiscussActiveTab(id);
       return [...prev, newTab];
     });
   }, []);
 
-  const handleCloseTab = useCallback((side: "discuss" | "code", tabId: string) => {
-    const tabs = side === "discuss" ? discussTabs : codeTabs;
-    const setter = side === "discuss" ? setDiscussTabs : setCodeTabs;
-    const activeSetter = side === "discuss" ? setDiscussActiveTab : setCodeActiveTab;
-    const activeTab = side === "discuss" ? discussActiveTab : codeActiveTab;
+  const handleCloseTab = useCallback((tabId: string) => {
+    if (discussTabs.length <= 1) return;
 
-    if (tabs.length <= 1) return;
-
-    if (activeTab === tabId) {
-      const idx = tabs.findIndex((t) => t.id === tabId);
-      const newActive = idx > 0 ? tabs[idx - 1].id : tabs[idx + 1]?.id;
-      if (newActive) activeSetter(newActive);
+    if (discussActiveTab === tabId) {
+      const idx = discussTabs.findIndex((t) => t.id === tabId);
+      const newActive = idx > 0 ? discussTabs[idx - 1].id : discussTabs[idx + 1]?.id;
+      if (newActive) setDiscussActiveTab(newActive);
     }
 
-    setter((prev) => prev.filter((t) => t.id !== tabId));
+    setDiscussTabs((prev) => prev.filter((t) => t.id !== tabId));
     invoke("claude_stop", { panelId: tabId }).catch(() => {});
-  }, [discussTabs, codeTabs, discussActiveTab, codeActiveTab]);
+  }, [discussTabs, discussActiveTab]);
 
   // === Listen to claude-event for tab status updates ===
   useEffect(() => {
@@ -96,9 +84,6 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
 
       const updateStatus = (status: TabStatus) => {
         setDiscussTabs((prev) =>
-          prev.map((t) => (t.id === panel_id ? { ...t, status } : t)),
-        );
-        setCodeTabs((prev) =>
           prev.map((t) => (t.id === panel_id ? { ...t, status } : t)),
         );
       };
@@ -160,49 +145,6 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
     }
   }, [isDragging]);
 
-  // === Render a panel side ===
-  function renderPanelSide(
-    side: "discuss" | "code",
-    tabs: TabInfo[],
-    activeTabId: string,
-    onTabChange: (id: string) => void,
-    onTabAdd: () => void,
-    onTabClose: (id: string) => void,
-  ) {
-    return (
-      <>
-        <SessionTabs
-          tabs={tabs.map((tab) => ({
-            id: tab.id,
-            label: tab.label,
-            status: tab.status,
-            closable: tabs.length > 1,
-          }))}
-          activeId={activeTabId}
-          onTabChange={onTabChange}
-          onTabAdd={onTabAdd}
-          onTabClose={onTabClose}
-          maxTabs={MAX_TABS_PER_PANEL}
-          addTooltip={t("panel.newTab")}
-          closeTooltip={t("panel.closeTab")}
-        />
-        {tabs.map((tab) => (
-          <div
-            key={tab.id}
-            style={{
-              display: tab.id === activeTabId ? "flex" : "none",
-              flex: 1,
-              flexDirection: "column",
-              overflow: "hidden",
-            }}
-          >
-            <ChatPanel panelId={tab.id} mode={side} cwd={cwd} projectId={projectId} projectModel={projectModel} projectPermissionMode={projectPermissionMode} />
-          </div>
-        ))}
-      </>
-    );
-  }
-
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Toolbar */}
@@ -234,8 +176,8 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
             value={activePanel}
             onChange={(v) => setActivePanel(v as ActivePanel)}
             data={[
-              { label: t("panel.discuss"), value: "discuss" },
-              { label: t("panel.code"), value: "code" },
+              { label: t("panel.architect"), value: "architect" },
+              { label: t("panel.terminal"), value: "terminal" },
             ]}
           />
         )}
@@ -251,10 +193,10 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
           userSelect: isDragging ? "none" : undefined,
         }}
       >
-        {/* Discuss panel */}
+        {/* Architect panel */}
         <div
           style={{
-            display: layoutMode === "single" && activePanel !== "discuss" ? "none" : "flex",
+            display: layoutMode === "single" && activePanel !== "architect" ? "none" : "flex",
             width: layoutMode === "dual" ? `${splitPosition}%` : undefined,
             flex: layoutMode === "single" ? 1 : undefined,
             minWidth: layoutMode === "dual" ? 300 : undefined,
@@ -262,14 +204,34 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
             flexDirection: "column",
           }}
         >
-          {renderPanelSide(
-            "discuss",
-            discussTabs,
-            discussActiveTab,
-            (id) => setDiscussActiveTab(id),
-            () => handleAddTab("discuss"),
-            (id) => handleCloseTab("discuss", id),
-          )}
+          <SessionTabs
+            tabs={discussTabs.map((tab) => ({
+              id: tab.id,
+              label: tab.label,
+              status: tab.status,
+              closable: discussTabs.length > 1,
+            }))}
+            activeId={discussActiveTab}
+            onTabChange={(id) => setDiscussActiveTab(id)}
+            onTabAdd={handleAddTab}
+            onTabClose={(id) => handleCloseTab(id)}
+            maxTabs={MAX_TABS_PER_PANEL}
+            addTooltip={t("panel.newTab")}
+            closeTooltip={t("panel.closeTab")}
+          />
+          {discussTabs.map((tab) => (
+            <div
+              key={tab.id}
+              style={{
+                display: tab.id === discussActiveTab ? "flex" : "none",
+                flex: 1,
+                flexDirection: "column",
+                overflow: "hidden",
+              }}
+            >
+              <ChatPanel panelId={tab.id} mode="discuss" cwd={cwd} projectId={projectId} projectModel={projectModel} projectPermissionMode={projectPermissionMode} />
+            </div>
+          ))}
         </div>
 
         {/* Divider — only in dual mode */}
@@ -292,24 +254,25 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
           />
         )}
 
-        {/* Code panel */}
+        {/* Terminal panel */}
         <div
           style={{
-            display: layoutMode === "single" && activePanel !== "code" ? "none" : "flex",
+            display: layoutMode === "single" && activePanel !== "terminal" ? "none" : "flex",
             flex: 1,
             minWidth: layoutMode === "dual" ? 300 : undefined,
             overflow: "hidden",
             flexDirection: "column",
           }}
+          className="terminal-embed"
         >
-          {renderPanelSide(
-            "code",
-            codeTabs,
-            codeActiveTab,
-            (id) => setCodeActiveTab(id),
-            () => handleAddTab("code"),
-            (id) => handleCloseTab("code", id),
-          )}
+          <TerminalPanel
+            height={0}
+            width={0}
+            position="right"
+            onPositionChange={() => {}}
+            onClose={() => {}}
+            cwd={cwd}
+          />
         </div>
       </div>
     </div>

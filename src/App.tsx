@@ -7,7 +7,6 @@ import {
   IconFolderCode,
   IconFileDescription,
   IconGitCompare,
-  IconTerminal,
   IconListCheck,
 } from "@tabler/icons-react";
 import { invoke } from "@tauri-apps/api/core";
@@ -22,11 +21,10 @@ import { FileTreePanel } from "./components/FileTreePanel";
 import { ClaudeMdEditor } from "./components/ClaudeMdEditor";
 import { DiffViewer } from "./components/DiffViewer";
 import { PipelinePage } from "./components/PipelinePage";
-import { TerminalPanel } from "@uni-fw/terminal-ui";
 import type { Project } from "./types/claude";
 import "./App.css";
 
-type View = "main" | "settings" | "history" | "files" | "claude-md" | "diff" | "pipeline" | "terminal";
+type View = "main" | "settings" | "history" | "files" | "claude-md" | "diff" | "pipeline";
 
 export function App() {
   const { t } = useTranslation();
@@ -48,7 +46,7 @@ export function App() {
   return (
     <AppShell
       header={{ height: 50 }}
-      navbar={{ width: 250, breakpoint: "sm", collapsed: { desktop: view === "pipeline" || view === "terminal" || (view !== "main" && !!activeProject), mobile: view === "pipeline" || view === "terminal" || (view !== "main" && !!activeProject) } }}
+      navbar={{ width: 250, breakpoint: "sm", collapsed: { desktop: view === "pipeline" || (view !== "main" && !!activeProject), mobile: view === "pipeline" || (view !== "main" && !!activeProject) } }}
     >
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
@@ -113,16 +111,6 @@ export function App() {
                 <IconHistory size={20} stroke={1.5} />
               </ActionIcon>
             </Tooltip>
-            <Tooltip label={t("terminal.title")}>
-              <ActionIcon
-                variant={view === "terminal" ? "filled" : "subtle"}
-                color={view === "terminal" ? "blue" : undefined}
-                onClick={() => setView((v) => (v === "terminal" ? "main" : "terminal"))}
-                disabled={!activeProject}
-              >
-                <IconTerminal size={20} stroke={1.5} />
-              </ActionIcon>
-            </Tooltip>
             <Tooltip label={t("common.settings")}>
               <ActionIcon
                 variant={view === "settings" ? "filled" : "subtle"}
@@ -153,16 +141,6 @@ export function App() {
               initialProjectId={activeProject?.id}
               onProjectSelect={(project) => setActiveProject(project)}
             />
-          ) : view === "terminal" && activeProject ? (
-            <div style={{ height: "100%", width: "100%", overflow: "hidden" }} className="terminal-fullscreen">
-              <TerminalPanel
-                height={300}
-                width={400}
-                position="right"
-                onPositionChange={() => {}}
-                onClose={() => setView("main")}
-              />
-            </div>
           ) : view === "claude-md" && activeProject ? (
             <ClaudeMdEditor cwd={activeProject.cwd} />
           ) : view === "diff" && activeProject ? (

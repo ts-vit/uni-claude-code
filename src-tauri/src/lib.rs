@@ -260,6 +260,7 @@ pub fn run() {
             commands::claude::claude_start,
             commands::claude::claude_stop,
             commands::claude::claude_status,
+            commands::claude::get_claude_path,
             // MCP Servers
             commands::mcp::mcp_list,
             commands::mcp::mcp_add,

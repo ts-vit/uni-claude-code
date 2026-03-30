@@ -23,10 +23,10 @@ describe("DualPanelLayout", () => {
     vi.mocked(invoke).mockResolvedValue("idle");
   });
 
-  it("renders single mode by default with Code panel", () => {
+  it("renders single mode by default with Terminal panel", () => {
     renderWithProviders(<DualPanelLayout cwd="D:\test-project" projectId="proj-1" />);
-    const badges = screen.getAllByText("panel.code");
-    expect(badges.length).toBeGreaterThanOrEqual(1);
+    const labels = screen.getAllByText("panel.terminal");
+    expect(labels.length).toBeGreaterThanOrEqual(1);
   });
 
   it("switches to dual mode showing both panels", () => {
@@ -36,40 +36,41 @@ describe("DualPanelLayout", () => {
     const labels = layoutControl.querySelectorAll("label");
     fireEvent.click(labels[1]);
 
-    expect(screen.getAllByText("panel.discuss").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("panel.code").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("panel.architect").length).toBeGreaterThanOrEqual(1);
   });
 
   it("switches active panel in single mode", () => {
     renderWithProviders(<DualPanelLayout cwd="D:\test-project" projectId="proj-1" />);
-    const allDiscuss = screen.getAllByText("panel.discuss");
-    const segmentLabel = allDiscuss.find((el) =>
+    const allArchitect = screen.getAllByText("panel.architect");
+    const segmentLabel = allArchitect.find((el) =>
       el.closest(".mantine-SegmentedControl-innerLabel"),
     );
     fireEvent.click(segmentLabel!);
 
-    const discussBadge = screen.getAllByText("panel.discuss").find(
+    const architectBadge = screen.getAllByText("panel.architect").find(
       (el) => el.closest(".mantine-Badge-label"),
     );
-    expect(discussBadge).toBeTruthy();
+    expect(architectBadge).toBeTruthy();
   });
 
-  it("renders SessionTabs with Session 1 for code panel", () => {
+  it("renders SessionTabs with Session 1 for architect panel", () => {
     renderWithProviders(<DualPanelLayout cwd="D:\test-project" projectId="proj-1" />);
-    // Both panels have "Session 1" tabs, but code is visible by default
     const sessionLabels = screen.getAllByText("Session 1");
     expect(sessionLabels.length).toBeGreaterThanOrEqual(1);
   });
 
   it("adds a new tab when + is clicked", () => {
     renderWithProviders(<DualPanelLayout cwd="D:\test-project" projectId="proj-1" />);
-    // Find all add-tab buttons (there are 2 — one per panel side)
-    const plusButtons = screen.getAllByRole("button").filter((btn) => {
-      return !btn.hasAttribute("disabled") && btn.querySelector("svg");
-    });
-    // Click the last plus button (code panel is visible in single mode)
-    const addBtn = plusButtons[plusButtons.length - 1];
-    fireEvent.click(addBtn);
+    // Switch to dual mode so architect panel with SessionTabs is visible
+    const segmentedControls = document.querySelectorAll(".mantine-SegmentedControl-root");
+    const layoutControl = segmentedControls[0];
+    fireEvent.click(layoutControl.querySelectorAll("label")[1]);
+
+    // Find add button by the plus icon SVG
+    const plusIcon = document.querySelector(".tabler-icon-plus");
+    const addBtn = plusIcon?.closest("button");
+    expect(addBtn).toBeTruthy();
+    fireEvent.click(addBtn!);
 
     const sessionTexts = screen.getAllByText(/^Session \d+$/);
     expect(sessionTexts.length).toBeGreaterThanOrEqual(2);
@@ -77,26 +78,25 @@ describe("DualPanelLayout", () => {
 
   it("closes a tab when x is clicked", () => {
     renderWithProviders(<DualPanelLayout cwd="D:\test-project" projectId="proj-1" />);
+    // Switch to dual mode
+    const segmentedControls = document.querySelectorAll(".mantine-SegmentedControl-root");
+    const layoutControl = segmentedControls[0];
+    fireEvent.click(layoutControl.querySelectorAll("label")[1]);
+
     // First add a tab
-    const plusButtons = screen.getAllByRole("button").filter((btn) => {
-      return !btn.hasAttribute("disabled") && btn.querySelector("svg");
-    });
-    fireEvent.click(plusButtons[plusButtons.length - 1]);
+    const plusIcon = document.querySelector(".tabler-icon-plus");
+    fireEvent.click(plusIcon?.closest("button")!);
 
     const sessionTextsBefore = screen.getAllByText(/^Session \d+$/);
     expect(sessionTextsBefore.length).toBeGreaterThanOrEqual(2);
 
-    // Now close the last tab — find the close (x) button
-    const closeButtons = screen.getAllByRole("button").filter((btn) => {
-      const svg = btn.querySelector("svg");
-      return svg && btn.closest("[class]")?.textContent?.includes("Session");
-    });
-    // Click the last close button
-    if (closeButtons.length > 0) {
-      fireEvent.click(closeButtons[closeButtons.length - 1]);
+    // Now close the last tab — find x icons
+    const closeIcons = document.querySelectorAll(".tabler-icon-x");
+    if (closeIcons.length > 0) {
+      const closeBtn = closeIcons[closeIcons.length - 1].closest("button");
+      if (closeBtn) fireEvent.click(closeBtn);
     }
 
-    // Session 1 should still be present regardless
     const sessionTextsAfter = screen.getAllByText(/^Session \d+$/);
     expect(sessionTextsAfter.length).toBeGreaterThanOrEqual(1);
   });

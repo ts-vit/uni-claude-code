@@ -69,6 +69,8 @@
     },
     "claude": {
       "title": "Claude Settings",
+      "path": "Claude Code CLI path",
+      "pathDescription": "Full path to claude executable. Leave empty to use system PATH.",
       "model": "Model",
       "modelDescription": "Claude model for code sessions. Leave empty for default.",
       "defaultCwd": "Default Project Folder",
@@ -131,8 +133,8 @@
     "proxyActive": "Proxy active"
   },
   "panel": {
-    "discuss": "Discuss",
-    "code": "Code",
+    "architect": "Architect",
+    "terminal": "Terminal",
     "singleMode": "Single Panel",
     "dualMode": "Dual Panel",
     "newTab": "New session tab",

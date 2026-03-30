@@ -371,10 +371,10 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
         <Badge
           size="xs"
           variant="light"
-          color={mode === "discuss" ? "blue" : "orange"}
+          color="blue"
           style={{ textTransform: "uppercase", letterSpacing: 1 }}
         >
-          {mode === "discuss" ? t("panel.discuss") : t("panel.code")}
+          {t("panel.architect")}
         </Badge>
       </Group>
 

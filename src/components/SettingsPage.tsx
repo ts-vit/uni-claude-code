@@ -123,12 +123,22 @@ function GeneralSettings() {
 
 function ClaudeSettings() {
   const { t } = useTranslation();
+  const claudePath = useSettings("claude.path");
   const model = useSettings("claude.model");
   const savedCwd = useSettings("claude.cwd");
 
   return (
     <Stack gap="lg">
       <Title order={4}>{t("settings.claude.title")}</Title>
+
+      <TextInput
+        label={t("settings.claude.path")}
+        description={t("settings.claude.pathDescription")}
+        placeholder="claude"
+        value={claudePath.value ?? ""}
+        onBlur={(e) => claudePath.set(e.currentTarget.value)}
+        maw={480}
+      />
 
       <Select
         label={t("settings.claude.model")}

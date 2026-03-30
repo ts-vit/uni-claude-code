@@ -61,6 +61,10 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
+vi.mock("@uni-fw/terminal-ui", () => ({
+  TerminalPanel: () => null,
+}));
+
 vi.mock("@uni-fw/ui", () => ({
   MarkdownRenderer: ({ content }: { content: string }) => content,
   useSettings: vi.fn(() => ({ value: "", set: vi.fn() })),

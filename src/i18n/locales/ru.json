@@ -69,6 +69,8 @@
     },
     "claude": {
       "title": "Настройки Claude",
+      "path": "Путь к Claude Code CLI",
+      "pathDescription": "Полный путь к исполняемому файлу claude. Оставьте пустым для использования системного PATH.",
       "model": "Модель",
       "modelDescription": "Модель Claude для сессий. Оставьте пустым для модели по умолчанию.",
       "defaultCwd": "Папка проекта по умолчанию",
@@ -131,8 +133,8 @@
     "proxyActive": "Прокси активен"
   },
   "panel": {
-    "discuss": "Обсуждение",
-    "code": "Код",
+    "architect": "Архитектор",
+    "terminal": "Терминал",
     "singleMode": "Одна панель",
     "dualMode": "Две панели",
     "newTab": "Новая вкладка сессии",
