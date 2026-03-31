@@ -97,6 +97,7 @@ function ProxySettings() {
 
 function GeneralSettings() {
   const { t } = useTranslation();
+  const maxOpenProjects = useSettings("ui.maxOpenProjects");
 
   return (
     <Stack gap="lg">
@@ -115,6 +116,15 @@ function GeneralSettings() {
             localStorage.setItem("uni-claude-code-language", val);
           }
         }}
+        maw={480}
+      />
+      <NumberInput
+        label={t("settings.general.maxOpenProjects")}
+        description={t("settings.general.maxOpenProjectsDescription")}
+        value={parseInt(maxOpenProjects.value ?? "3", 10) || 3}
+        onChange={(val) => maxOpenProjects.set(String(val || 3))}
+        min={1}
+        max={10}
         maw={480}
       />
     </Stack>

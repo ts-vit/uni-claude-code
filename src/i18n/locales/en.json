@@ -21,7 +21,9 @@
     "general": {
       "title": "General",
       "language": "Language",
-      "languageDescription": "Interface language. Changes apply immediately."
+      "languageDescription": "Interface language. Changes apply immediately.",
+      "maxOpenProjects": "Max open projects",
+      "maxOpenProjectsDescription": "Maximum number of projects that can be open simultaneously. Older projects will be closed when limit is reached."
     },
     "ssh": {
       "title": "SSH Settings"
@@ -162,7 +164,8 @@
     "modelDescription": "Override global model for this project",
     "permissionMode": "Permission Mode",
     "permissionBypass": "Full access (no confirmations)",
-    "permissionDefault": "Ask for confirmation"
+    "permissionDefault": "Ask for confirmation",
+    "maxOpenReached": "Project limit reached ({{max}}). Oldest inactive project was closed."
   },
   "history": {
     "title": "Saved Messages",

@@ -23,12 +23,14 @@ interface ProjectSidebarProps {
   activeProjectId: string | null;
   onProjectSelect: (project: Project) => void;
   onCreateClick: () => void;
+  onProjectsChange?: (projects: Project[]) => void;
 }
 
 export function ProjectSidebar({
   activeProjectId,
   onProjectSelect,
   onCreateClick,
+  onProjectsChange,
 }: ProjectSidebarProps) {
   const { t } = useTranslation();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -38,10 +40,11 @@ export function ProjectSidebar({
     try {
       const list = await invoke<Project[]>("project_list");
       setProjects(list);
+      onProjectsChange?.(list);
     } catch {
       // ignore
     }
-  }, []);
+  }, [onProjectsChange]);
 
   useEffect(() => {
     loadProjects();
