@@ -48,11 +48,6 @@ export function ProjectSidebar({
 
   useEffect(() => {
     loadProjects();
-  }, [loadProjects]);
-
-  // Reload when activeProjectId changes (e.g. after create)
-  useEffect(() => {
-    loadProjects();
   }, [activeProjectId, loadProjects]);
 
   const handleDelete = async () => {

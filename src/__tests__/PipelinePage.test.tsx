@@ -5,6 +5,15 @@ import { invoke } from "@tauri-apps/api/core";
 import { PipelinePage } from "../components/PipelinePage";
 
 const mockedInvoke = vi.mocked(invoke);
+const mockPipelineController = vi.fn();
+
+vi.mock("../hooks/usePipelineController", () => ({
+  usePipelineController: (...args: unknown[]) => mockPipelineController(...args),
+}));
+
+vi.mock("../components/chat/ChatPanel", () => ({
+  ChatPanel: ({ panelId }: { panelId: string }) => <div>{panelId}</div>,
+}));
 
 const testProjects = [
   { id: "p1", name: "Project One", cwd: "/project-one", model: null, permissionMode: "bypass", createdAt: 1000, updatedAt: 1000 },
@@ -38,6 +47,19 @@ describe("PipelinePage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockedInvoke.mockImplementation(mockInvokeHandler as typeof invoke);
+    mockPipelineController.mockReturnValue({
+      status: "idle",
+      currentTaskId: null,
+      currentPhase: null,
+      log: [],
+      start: vi.fn(),
+      pause: vi.fn(),
+      stop: vi.fn(),
+      resume: vi.fn(),
+      clearLog: vi.fn(),
+      PIPELINE_DISCUSS_PANEL: "pipeline-discuss",
+      PIPELINE_CODE_PANEL: "pipeline-code",
+    });
   });
 
   it("shows EmptyState when no project selected", async () => {
@@ -91,5 +113,29 @@ describe("PipelinePage", () => {
       expect(mockedInvoke).toHaveBeenCalledWith("project_list");
       expect(mockedInvoke).toHaveBeenCalledWith("pipeline_task_counts");
     });
+  });
+
+  it("does not render inactive pipeline phase", async () => {
+    mockPipelineController.mockReturnValue({
+      status: "running",
+      currentTaskId: "1",
+      currentPhase: "discuss",
+      log: [],
+      start: vi.fn(),
+      pause: vi.fn(),
+      stop: vi.fn(),
+      resume: vi.fn(),
+      clearLog: vi.fn(),
+      PIPELINE_DISCUSS_PANEL: "pipeline-discuss",
+      PIPELINE_CODE_PANEL: "pipeline-code",
+    });
+
+    renderWithMantine(<PipelinePage initialProjectId="p1" onProjectSelect={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("pipeline-discuss")).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText("pipeline-code")).not.toBeInTheDocument();
   });
 });

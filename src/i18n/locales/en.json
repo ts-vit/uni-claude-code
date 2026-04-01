@@ -288,6 +288,7 @@
     "cleared": "Chat cleared",
     "selectFolderHint": "Select a project folder to start",
     "emptyState": "Send a prompt to start the conversation",
-    "attach": "Attach files"
+    "attach": "Attach files",
+    "loadEarlierMessages": "Load earlier messages"
   }
 }

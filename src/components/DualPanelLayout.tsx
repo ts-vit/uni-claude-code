@@ -2,12 +2,12 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Group, SegmentedControl } from "@mantine/core";
 import { IconColumns, IconLayoutList } from "@tabler/icons-react";
-import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 import { ChatPanel } from "./chat/ChatPanel";
 import { SessionTabs, type TabStatus } from "./SessionTabs";
 import { TerminalPanel } from "@uni-fw/terminal-ui";
 import type { PanelEvent } from "../types/claude";
+import { useTauriListener } from "../utils/safeListener";
 
 type LayoutMode = "single" | "dual";
 type ActivePanel = "architect" | "terminal";
@@ -16,6 +16,14 @@ interface TabInfo {
   id: string;
   label: string;
   status: TabStatus;
+}
+
+export interface DualPanelLayoutState {
+  layoutMode: LayoutMode;
+  activePanel: ActivePanel;
+  splitPosition: number;
+  discussTabs: TabInfo[];
+  discussActiveTab: string;
 }
 
 const MAX_TABS_PER_PANEL = 5;
@@ -33,23 +41,40 @@ interface DualPanelLayoutProps {
   projectId: string;
   projectModel?: string | null;
   projectPermissionMode?: string;
+  initialState?: DualPanelLayoutState;
+  onStateChange?: (state: DualPanelLayoutState) => void;
 }
 
-export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissionMode }: DualPanelLayoutProps) {
+export function DualPanelLayout({
+  cwd,
+  projectId,
+  projectModel,
+  projectPermissionMode,
+  initialState,
+  onStateChange,
+}: DualPanelLayoutProps) {
   const { t } = useTranslation();
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>("single");
-  const [activePanel, setActivePanel] = useState<ActivePanel>("terminal");
-  const [splitPosition, setSplitPosition] = useState(50);
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>(initialState?.layoutMode ?? "single");
+  const [activePanel, setActivePanel] = useState<ActivePanel>(initialState?.activePanel ?? "terminal");
+  const [splitPosition, setSplitPosition] = useState(initialState?.splitPosition ?? 50);
   const [isDragging, setIsDragging] = useState(false);
   const [dividerHover, setDividerHover] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const onStateChangeRef = useRef(onStateChange);
+  onStateChangeRef.current = onStateChange;
 
   // === Tab state (Architect panel only) ===
   const [discussTabs, setDiscussTabs] = useState<TabInfo[]>(() => {
+    if (initialState?.discussTabs.length) {
+      return initialState.discussTabs;
+    }
+
     const id = nextTabId("discuss");
     return [{ id, label: "Session 1", status: "idle" as TabStatus }];
   });
-  const [discussActiveTab, setDiscussActiveTab] = useState(() => discussTabs[0].id);
+  const [discussActiveTab, setDiscussActiveTab] = useState(
+    () => initialState?.discussActiveTab ?? discussTabs[0].id,
+  );
 
   // === Tab handlers ===
   const handleAddTab = useCallback(() => {
@@ -76,16 +101,28 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
     invoke("claude_stop", { panelId: tabId }).catch(() => {});
   }, [discussTabs, discussActiveTab]);
 
-  // === Listen to claude-event for tab status updates ===
   useEffect(() => {
-    let unlisten: UnlistenFn | null = null;
-    listen<PanelEvent>("claude-event", (event) => {
+    onStateChangeRef.current?.({
+      layoutMode,
+      activePanel,
+      splitPosition,
+      discussTabs,
+      discussActiveTab,
+    });
+  }, [activePanel, discussActiveTab, discussTabs, layoutMode, splitPosition]);
+
+  // === Listen to claude-event for tab status updates ===
+  useTauriListener<PanelEvent>(
+    "claude-event",
+    (event) => {
       const { panel_id, event: runnerEvent } = event.payload;
 
       const updateStatus = (status: TabStatus) => {
-        setDiscussTabs((prev) =>
-          prev.map((t) => (t.id === panel_id ? { ...t, status } : t)),
-        );
+        setDiscussTabs((prev) => {
+          const idx = prev.findIndex((t) => t.id === panel_id);
+          if (idx === -1 || prev[idx].status === status) return prev;
+          return prev.map((t) => (t.id === panel_id ? { ...t, status } : t));
+        });
       };
 
       if ("ProcessExited" in runnerEvent) {
@@ -100,13 +137,9 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
           updateStatus("running");
         }
       }
-    }).then((fn) => {
-      unlisten = fn;
-    });
-    return () => {
-      unlisten?.();
-    };
-  }, []);
+    },
+    [],
+  );
 
   // === Drag resize ===
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -144,6 +177,8 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
       };
     }
   }, [isDragging]);
+
+  const isArchitectVisible = layoutMode === "dual" || activePanel === "architect";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -229,7 +264,15 @@ export function DualPanelLayout({ cwd, projectId, projectModel, projectPermissio
                 overflow: "hidden",
               }}
             >
-              <ChatPanel panelId={tab.id} mode="discuss" cwd={cwd} projectId={projectId} projectModel={projectModel} projectPermissionMode={projectPermissionMode} />
+              <ChatPanel
+                panelId={tab.id}
+                mode="discuss"
+                cwd={cwd}
+                projectId={projectId}
+                projectModel={projectModel}
+                projectPermissionMode={projectPermissionMode}
+                isActive={isArchitectVisible && tab.id === discussActiveTab}
+              />
             </div>
           ))}
         </div>

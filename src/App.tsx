@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppShell, Text, Group, ActionIcon, Tooltip } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -13,7 +13,7 @@ import {
 } from "@tabler/icons-react";
 import { invoke } from "@tauri-apps/api/core";
 import { SettingsPage } from "./components/SettingsPage";
-import { DualPanelLayout } from "./components/DualPanelLayout";
+import { DualPanelLayout, type DualPanelLayoutState } from "./components/DualPanelLayout";
 import { SshStatusIndicator } from "./components/SshStatusIndicator";
 import { ProjectSidebar } from "./components/ProjectSidebar";
 import { CreateProjectModal } from "./components/CreateProjectModal";
@@ -27,6 +27,8 @@ import type { Project } from "./types/claude";
 import "./App.css";
 
 type View = "main" | "settings" | "history" | "files" | "claude-md" | "diff" | "pipeline";
+
+const projectLayoutState = new Map<string, DualPanelLayoutState>();
 
 export function App() {
   const { t } = useTranslation();
@@ -109,23 +111,46 @@ export function App() {
     });
   }, [activeProject, maxOpenProjects]);
 
-  const handleProjectsChange = (projects: Project[]) => {
+  const handleProjectsChange = useCallback((projects: Project[]) => {
     const projectMap = new Map(projects.map((project) => [project.id, project] as const));
 
-    setOpenedProjects((prev) =>
-      prev
+    setOpenedProjects((prev) => {
+      const next = prev
         .map((project) => projectMap.get(project.id) ?? null)
-        .filter((project): project is Project => project !== null),
-    );
+        .filter((project): project is Project => project !== null);
 
-    setActiveProject((prev) => {
-      if (!prev) {
-        return null;
+      if (
+        next.length === prev.length
+        && next.every((p, i) =>
+          p.id === prev[i].id
+          && p.name === prev[i].name
+          && p.cwd === prev[i].cwd
+          && p.model === prev[i].model
+          && p.permissionMode === prev[i].permissionMode,
+        )
+      ) {
+        return prev;
       }
 
-      return projectMap.get(prev.id) ?? null;
+      return next;
     });
-  };
+
+    setActiveProject((prev) => {
+      if (!prev) return null;
+      const updated = projectMap.get(prev.id);
+      if (!updated) return null;
+      if (
+        prev.id === updated.id
+        && prev.name === updated.name
+        && prev.cwd === updated.cwd
+        && prev.model === updated.model
+        && prev.permissionMode === updated.permissionMode
+      ) {
+        return prev;
+      }
+      return updated;
+    });
+  }, []);
 
   return (
     <AppShell
@@ -242,11 +267,13 @@ export function App() {
             <HistoryPage projectId={activeProject.id} />
           ) : activeProject ? (
             <>
-              {openedProjects.map((project) => (
+              {openedProjects
+                .filter((project) => project.id === activeProject.id && view === "main")
+                .map((project) => (
                 <div
                   key={project.id}
                   style={{
-                    display: project.id === activeProject.id && view === "main" ? "flex" : "none",
+                    display: "flex",
                     flex: 1,
                     flexDirection: "column",
                     height: "100%",
@@ -258,9 +285,13 @@ export function App() {
                     projectId={project.id}
                     projectModel={project.model}
                     projectPermissionMode={project.permissionMode}
+                    initialState={projectLayoutState.get(project.id)}
+                    onStateChange={(state) => {
+                      projectLayoutState.set(project.id, state);
+                    }}
                   />
                 </div>
-              ))}
+                ))}
             </>
           ) : (
             <WelcomeScreen

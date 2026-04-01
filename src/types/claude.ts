@@ -227,12 +227,16 @@ export interface PanelEvent {
 }
 
 // === UI Message types ===
+interface BaseChatMessage {
+  id: string;
+}
+
 export type ChatMessage =
-  | { kind: "user"; text: string }
-  | { kind: "assistant-text"; text: string; streaming: boolean }
-  | { kind: "tool-use"; toolName: string; toolId: string; inputJson: string; result?: ToolResultInfo }
-  | { kind: "error"; text: string }
-  | { kind: "system-info"; text: string };
+  | (BaseChatMessage & { kind: "user"; text: string })
+  | (BaseChatMessage & { kind: "assistant-text"; text: string; streaming: boolean })
+  | (BaseChatMessage & { kind: "tool-use"; toolName: string; toolId: string; inputJson: string; result?: ToolResultInfo })
+  | (BaseChatMessage & { kind: "error"; text: string })
+  | (BaseChatMessage & { kind: "system-info"; text: string });
 
 export interface ToolResultInfo {
   content?: unknown;

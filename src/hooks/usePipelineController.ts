@@ -1,10 +1,10 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import type { PipelineTask, PanelEvent, ClaudeEvent } from "../types/claude";
 import { ARCHITECT_TASK_TEMPLATE, extractPromptFromResponse } from "../constants/pipelinePrompts";
+import { useTauriListener } from "../utils/safeListener";
 
 export type PipelineStatus = "idle" | "running" | "paused" | "error";
 
@@ -27,6 +27,7 @@ export interface PipelineLogEntry {
 // Panel IDs reserved for pipeline
 const PIPELINE_DISCUSS_PANEL = "pipeline-discuss";
 const PIPELINE_CODE_PANEL = "pipeline-code";
+const MAX_PIPELINE_LOG_ENTRIES = 500;
 
 export function usePipelineController(projectId: string, cwd: string, projectModel?: string | null) {
   const { t } = useTranslation();
@@ -47,7 +48,10 @@ export function usePipelineController(projectId: string, cwd: string, projectMod
 
   const addLog = useCallback((entry: Omit<PipelineLogEntry, "timestamp">) => {
     const logEntry = { ...entry, timestamp: Date.now() };
-    setState((prev) => ({ ...prev, log: [...prev.log, logEntry] }));
+    setState((prev) => ({
+      ...prev,
+      log: [...prev.log, logEntry].slice(-MAX_PIPELINE_LOG_ENTRIES),
+    }));
   }, []);
 
   const advanceToNext = useCallback(async () => {
@@ -230,10 +234,9 @@ export function usePipelineController(projectId: string, cwd: string, projectMod
   }, [cwd, projectModel, addLog, advanceToNext]);
 
   // Listen to claude-event for pipeline panels
-  useEffect(() => {
-    let unlisten: UnlistenFn | null = null;
-
-    listen<PanelEvent>("claude-event", (event) => {
+  useTauriListener<PanelEvent>(
+    "claude-event",
+    (event) => {
       const { panel_id, event: runnerEvent } = event.payload;
 
       if (panel_id !== PIPELINE_DISCUSS_PANEL && panel_id !== PIPELINE_CODE_PANEL) return;
@@ -275,10 +278,9 @@ export function usePipelineController(projectId: string, cwd: string, projectMod
           }
         }
       }
-    }).then((fn) => { unlisten = fn; });
-
-    return () => { unlisten?.(); };
-  }, [handleDiscussComplete, handleCodeComplete]);
+    },
+    [handleDiscussComplete, handleCodeComplete],
+  );
 
   const start = useCallback(async () => {
     pauseRequestedRef.current = false;

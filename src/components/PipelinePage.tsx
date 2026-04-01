@@ -520,34 +520,27 @@ export function PipelinePage({ initialProjectId, onProjectSelect }: PipelinePage
                     )}
                   </Group>
 
-                  {/* Chat panels — show both, active one visible */}
-                  <div style={{
-                    display: pipeline.currentPhase === "discuss" ? "flex" : "none",
-                    flex: 1,
-                    flexDirection: "column",
-                    overflow: "hidden",
-                  }}>
-                    <ChatPanel
-                      panelId={pipeline.PIPELINE_DISCUSS_PANEL}
-                      mode="discuss"
-                      cwd={cwd}
-                      projectId={projectId}
-                    />
-                  </div>
-                  <div style={{
-                    display: pipeline.currentPhase === "code" ? "flex" : "none",
-                    flex: 1,
-                    flexDirection: "column",
-                    overflow: "hidden",
-                  }}>
-                    <ChatPanel
-                      panelId={pipeline.PIPELINE_CODE_PANEL}
-                      mode="code"
-                      cwd={cwd}
-                      projectId={projectId}
-                      projectModel={projectModel}
-                    />
-                  </div>
+                  {pipeline.currentPhase === "discuss" && (
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                      <ChatPanel
+                        panelId={pipeline.PIPELINE_DISCUSS_PANEL}
+                        mode="discuss"
+                        cwd={cwd}
+                        projectId={projectId}
+                      />
+                    </div>
+                  )}
+                  {pipeline.currentPhase === "code" && (
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                      <ChatPanel
+                        panelId={pipeline.PIPELINE_CODE_PANEL}
+                        mode="code"
+                        cwd={cwd}
+                        projectId={projectId}
+                        projectModel={projectModel}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </div>

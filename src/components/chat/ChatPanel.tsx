@@ -3,7 +3,6 @@ import { Stack, Group, Text, Badge } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconFolderOpen, IconMessage } from "@tabler/icons-react";
 import { invoke } from "@tauri-apps/api/core";
-import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { useTranslation } from "react-i18next";
 
 import type {
@@ -16,51 +15,121 @@ import type {
 import { MessageList } from "./MessageList";
 import { PromptInput } from "./PromptInput";
 import { StatusBar } from "./StatusBar";
+import { useTauriListener } from "../../utils/safeListener";
 
 interface ChatPanelProps {
-  panelId?: string;  // default "code"
-  mode?: string;     // "code" | "discuss", default "code"
+  panelId?: string;
+  mode?: string;
   cwd: string;
   projectId?: string;
   projectModel?: string | null;
   projectPermissionMode?: string;
+  isActive?: boolean;
 }
 
-export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, projectModel, projectPermissionMode }: ChatPanelProps) {
+const MAX_MESSAGES_IN_MEMORY = 200;
+const LOAD_EARLIER_BATCH_SIZE = 100;
+const INACTIVE_VISIBLE_MESSAGES = 20;
+
+export function ChatPanel({
+  panelId = "code",
+  mode = "code",
+  cwd,
+  projectId,
+  projectModel,
+  projectPermissionMode,
+  isActive = true,
+}: ChatPanelProps) {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
 
-  // Track whether a session has been established (for --continue)
   const hasSessionRef = useRef(false);
-
-  // Refs for streaming state (avoid stale closures)
   const currentBlockIndexRef = useRef<number>(-1);
   const toolJsonBuffersRef = useRef<Map<number, string>>(new Map());
+  const archivedMessagesRef = useRef<ChatMessage[]>([]);
+  const nextMessageIdRef = useRef(0);
+  const streamBufferRef = useRef("");
+  const rafIdRef = useRef<number | null>(null);
 
-  // Helper to update the last message of a given kind or append
-  const appendTextToLast = useCallback((text: string) => {
-    setMessages((prev) => {
+  const createMessageId = useCallback(() => `${panelId}-${nextMessageIdRef.current++}`, [panelId]);
+
+  const applyMemoryLimit = useCallback((nextMessages: ChatMessage[]) => {
+    const last = nextMessages[nextMessages.length - 1];
+    const limit = last?.kind === "assistant-text" && last.streaming
+      ? MAX_MESSAGES_IN_MEMORY + 1
+      : MAX_MESSAGES_IN_MEMORY;
+
+    if (nextMessages.length <= limit) {
+      return nextMessages;
+    }
+
+    const overflowCount = nextMessages.length - limit;
+    archivedMessagesRef.current = [
+      ...archivedMessagesRef.current,
+      ...nextMessages.slice(0, overflowCount),
+    ];
+
+    return nextMessages.slice(overflowCount);
+  }, []);
+
+  const updateMessages = useCallback((updater: (prev: ChatMessage[]) => ChatMessage[]) => {
+    setMessages((prev) => applyMemoryLimit(updater(prev)));
+  }, [applyMemoryLimit]);
+
+  const resetStreamingState = useCallback(() => {
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+    streamBufferRef.current = "";
+    currentBlockIndexRef.current = -1;
+    toolJsonBuffersRef.current.clear();
+  }, []);
+
+  const flushStreamBuffer = useCallback(() => {
+    const chunk = streamBufferRef.current;
+    if (!chunk) {
+      return;
+    }
+
+    streamBufferRef.current = "";
+    updateMessages((prev) => {
       const last = prev[prev.length - 1];
       if (last && last.kind === "assistant-text" && last.streaming) {
         const updated = [...prev];
-        updated[updated.length - 1] = { ...last, text: last.text + text };
+        updated[updated.length - 1] = { ...last, text: last.text + chunk };
         return updated;
       }
-      return [...prev, { kind: "assistant-text", text, streaming: true }];
+
+      return [
+        ...prev,
+        { id: createMessageId(), kind: "assistant-text", text: chunk, streaming: true },
+      ];
     });
-  }, []);
+  }, [createMessageId, updateMessages]);
+
+  const scheduleStreamFlush = useCallback(() => {
+    if (rafIdRef.current !== null) {
+      return;
+    }
+
+    rafIdRef.current = requestAnimationFrame(() => {
+      rafIdRef.current = null;
+      flushStreamBuffer();
+    });
+  }, [flushStreamBuffer]);
 
   const finalizeStreaming = useCallback(() => {
-    setMessages((prev) =>
+    flushStreamBuffer();
+    updateMessages((prev) =>
       prev.map((m) =>
         m.kind === "assistant-text" && m.streaming ? { ...m, streaming: false } : m,
       ),
     );
-    currentBlockIndexRef.current = -1;
-    toolJsonBuffersRef.current.clear();
-  }, []);
+    resetStreamingState();
+  }, [flushStreamBuffer, resetStreamingState, updateMessages]);
 
   const handleClaudeEvent = useCallback(
     (claudeEvent: ClaudeEvent) => {
@@ -74,13 +143,14 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
           ]
             .filter(Boolean)
             .join(" | ");
+
           if (info && !wasExisting) {
-            setMessages((prev) => {
+            updateMessages((prev) => {
               const last = prev[prev.length - 1];
               if (last && last.kind === "system-info" && last.text === info) {
-                return prev; // deduplicate
+                return prev;
               }
-              return [...prev, { kind: "system-info", text: info }];
+              return [...prev, { id: createMessageId(), kind: "system-info", text: info }];
             });
           }
           break;
@@ -95,9 +165,10 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
               const block = event.content_block;
               if (block.type === "tool_use") {
                 toolJsonBuffersRef.current.set(event.index, "");
-                setMessages((prev) => [
+                updateMessages((prev) => [
                   ...prev,
                   {
+                    id: createMessageId(),
                     kind: "tool-use",
                     toolName: block.name,
                     toolId: block.id,
@@ -111,18 +182,17 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
             case "content_block_delta": {
               const delta = event.delta;
               if (delta.type === "text_delta") {
-                appendTextToLast(delta.text);
+                streamBufferRef.current += delta.text;
+                scheduleStreamFlush();
               } else if (delta.type === "input_json_delta") {
-                const buf = toolJsonBuffersRef.current;
-                const current = (buf.get(event.index) || "") + delta.partial_json;
-                buf.set(event.index, current);
-                // Update the last tool-use message's inputJson
-                setMessages((prev) => {
+                const current = (toolJsonBuffersRef.current.get(event.index) || "") + delta.partial_json;
+                toolJsonBuffersRef.current.set(event.index, current);
+                updateMessages((prev) => {
                   const updated = [...prev];
                   for (let i = updated.length - 1; i >= 0; i--) {
-                    const m = updated[i];
-                    if (m.kind === "tool-use" && !m.result) {
-                      updated[i] = { ...m, inputJson: current };
+                    const msg = updated[i];
+                    if (msg.kind === "tool-use" && !msg.result) {
+                      updated[i] = { ...msg, inputJson: current };
                       break;
                     }
                   }
@@ -133,8 +203,8 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
             }
 
             case "content_block_stop": {
-              // Finalize current text block if it was text
-              setMessages((prev) => {
+              flushStreamBuffer();
+              updateMessages((prev) => {
                 const last = prev[prev.length - 1];
                 if (last && last.kind === "assistant-text" && last.streaming) {
                   const updated = [...prev];
@@ -155,17 +225,16 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
         }
 
         case "user": {
-          // Tool result from Claude's tool execution
           if (claudeEvent.message?.content) {
             for (const block of claudeEvent.message.content) {
               if (block.type === "tool_result") {
-                setMessages((prev) => {
+                updateMessages((prev) => {
                   const updated = [...prev];
                   for (let i = updated.length - 1; i >= 0; i--) {
-                    const m = updated[i];
-                    if (m.kind === "tool-use" && m.toolId === block.tool_use_id && !m.result) {
+                    const msg = updated[i];
+                    if (msg.kind === "tool-use" && msg.toolId === block.tool_use_id && !msg.result) {
                       updated[i] = {
-                        ...m,
+                        ...msg,
                         result: { content: block.content, isError: block.is_error },
                       };
                       break;
@@ -180,39 +249,40 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
         }
 
         case "assistant": {
-          // Complete assistant message after streaming — replace current streaming text
-          // with the finalized content to avoid duplication
           const textBlocks = claudeEvent.message.content
             .filter((b): b is { type: "text"; text: string } => b.type === "text")
             .map((b) => b.text)
             .join("");
+
           if (textBlocks) {
-            setMessages((prev) => {
+            updateMessages((prev) => {
               const last = prev[prev.length - 1];
               if (last && last.kind === "assistant-text") {
                 const updated = [...prev];
                 updated[updated.length - 1] = { ...last, text: textBlocks, streaming: false };
                 return updated;
               }
-              return [...prev, { kind: "assistant-text" as const, text: textBlocks, streaming: false }];
+              return [...prev, { id: createMessageId(), kind: "assistant-text", text: textBlocks, streaming: false }];
             });
           }
+
+          resetStreamingState();
           break;
         }
 
         case "result": {
-          // Replace streaming assistant text with final result if available
           if (claudeEvent.result) {
-            setMessages((prev) => {
+            updateMessages((prev) => {
               const last = prev[prev.length - 1];
               if (last && last.kind === "assistant-text") {
                 const updated = [...prev];
                 updated[updated.length - 1] = { ...last, text: claudeEvent.result!, streaming: false };
                 return updated;
               }
-              return [...prev, { kind: "assistant-text" as const, text: claudeEvent.result!, streaming: false }];
+              return [...prev, { id: createMessageId(), kind: "assistant-text", text: claudeEvent.result!, streaming: false }];
             });
           }
+
           setSessionResult({
             cost: claudeEvent.total_cost_usd,
             durationMs: claudeEvent.duration_ms,
@@ -230,16 +300,16 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
             const resetsAtStr = info.resetsAt
               ? new Date(info.resetsAt * 1000).toLocaleTimeString()
               : "unknown";
-            setMessages((prev) => [
+            updateMessages((prev) => [
               ...prev,
-              { kind: "error", text: `Rate limited (${info.status}). Resets at: ${resetsAtStr}` },
+              { id: createMessageId(), kind: "error", text: `Rate limited (${info.status}). Resets at: ${resetsAtStr}` },
             ]);
           }
           break;
         }
       }
     },
-    [appendTextToLast, finalizeStreaming],
+    [createMessageId, finalizeStreaming, flushStreamBuffer, resetStreamingState, scheduleStreamFlush, updateMessages],
   );
 
   const handleRunnerEvent = useCallback(
@@ -253,47 +323,46 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
         finalizeStreaming();
         const code = payload.ProcessExited.code;
         if (code !== null && code !== 0) {
-          setMessages((prev) => [
+          updateMessages((prev) => [
             ...prev,
-            { kind: "system-info", text: t("chat.processExited", { code }) },
+            { id: createMessageId(), kind: "system-info", text: t("chat.processExited", { code }) },
           ]);
         }
       }
     },
-    [handleClaudeEvent, finalizeStreaming, t],
+    [createMessageId, finalizeStreaming, handleClaudeEvent, t, updateMessages],
   );
 
-  // Listen to claude-event — filter by panelId
-  useEffect(() => {
-    let unlisten: UnlistenFn | null = null;
-    listen<PanelEvent>("claude-event", (event) => {
-      if (event.payload.panel_id !== panelId) return;
+  useTauriListener<PanelEvent>(
+    "claude-event",
+    (event) => {
+      if (event.payload.panel_id !== panelId) {
+        return;
+      }
       handleRunnerEvent(event.payload.event);
-    }).then((fn) => {
-      unlisten = fn;
-    });
-    return () => {
-      unlisten?.();
-    };
-  }, [handleRunnerEvent, panelId]);
+    },
+    [handleRunnerEvent, panelId],
+  );
 
-  // Check initial status
   useEffect(() => {
     invoke<string>("claude_status", { panelId }).then((status) => {
       setIsRunning(status === "running");
     });
   }, [panelId]);
 
+  useEffect(() => () => {
+    resetStreamingState();
+  }, [resetStreamingState]);
+
   const handleSaveMessage = useCallback(async (messageIndex: number) => {
     const msg = messages[messageIndex];
-    if (msg.kind !== "assistant-text") return;
+    if (!msg || msg.kind !== "assistant-text") return;
 
-    // Find previous user message
     let userPrompt = "";
     for (let i = messageIndex - 1; i >= 0; i--) {
-      const m = messages[i];
-      if (m.kind === "user") {
-        userPrompt = m.text;
+      const candidate = messages[i];
+      if (candidate.kind === "user") {
+        userPrompt = candidate.text;
         break;
       }
     }
@@ -324,15 +393,16 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
     async (text: string) => {
       if (!cwd) return;
 
-      // Handle /clear command
       if (text.trim() === "/clear") {
         setMessages([]);
         setSessionResult(null);
         hasSessionRef.current = false;
+        archivedMessagesRef.current = [];
+        resetStreamingState();
         return;
       }
 
-      setMessages((prev) => [...prev, { kind: "user", text }]);
+      updateMessages((prev) => [...prev, { id: createMessageId(), kind: "user", text }]);
       setSessionResult(null);
       setIsRunning(true);
       try {
@@ -347,13 +417,13 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
         });
       } catch (err) {
         setIsRunning(false);
-        setMessages((prev) => [
+        updateMessages((prev) => [
           ...prev,
-          { kind: "error", text: String(err) },
+          { id: createMessageId(), kind: "error", text: String(err) },
         ]);
       }
     },
-    [cwd, panelId, mode, projectModel, projectPermissionMode],
+    [createMessageId, cwd, mode, panelId, projectModel, projectPermissionMode, resetStreamingState, updateMessages],
   );
 
   const handleStop = useCallback(async () => {
@@ -364,9 +434,29 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
     }
   }, [panelId]);
 
+  const handleLoadEarlier = useCallback(() => {
+    if (archivedMessagesRef.current.length === 0) {
+      return;
+    }
+
+    const chunkSize = Math.min(LOAD_EARLIER_BATCH_SIZE, archivedMessagesRef.current.length);
+    const restoredMessages = archivedMessagesRef.current.slice(-chunkSize);
+    archivedMessagesRef.current = archivedMessagesRef.current.slice(0, -chunkSize);
+
+    setMessages((prev) => {
+      const last = prev[prev.length - 1];
+      const limit = last?.kind === "assistant-text" && last.streaming
+        ? MAX_MESSAGES_IN_MEMORY + 1
+        : MAX_MESSAGES_IN_MEMORY;
+      const keepCount = Math.max(0, limit - restoredMessages.length);
+      return [...restoredMessages, ...prev.slice(-keepCount)];
+    });
+  }, []);
+
+  const renderedMessages = isActive ? messages : messages.slice(-INACTIVE_VISIBLE_MESSAGES);
+
   return (
     <Stack gap={0} style={{ height: "100%", overflow: "hidden" }}>
-      {/* Panel toolbar */}
       <Group px="xs" py={4} gap="xs" style={{ borderBottom: "1px solid var(--ucc-border-subtle)" }}>
         <Badge
           size="xs"
@@ -378,15 +468,18 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
         </Badge>
       </Group>
 
-      {/* Empty state or messages */}
       {messages.length === 0 ? (
         <Stack align="center" justify="center" style={{ flex: 1 }} gap="lg">
           <div
             style={{
-              width: 64, height: 64, borderRadius: 16,
+              width: 64,
+              height: 64,
+              borderRadius: 16,
               backgroundColor: "rgba(249, 115, 22, 0.06)",
               border: "1px solid var(--ucc-border-subtle)",
-              display: "flex", alignItems: "center", justifyContent: "center",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             {!cwd
@@ -399,17 +492,21 @@ export function ChatPanel({ panelId = "code", mode = "code", cwd, projectId, pro
           </Text>
         </Stack>
       ) : (
-        <MessageList messages={messages} onSaveMessage={projectId ? handleSaveMessage : undefined} />
+        <MessageList
+          messages={renderedMessages}
+          onSaveMessage={projectId ? handleSaveMessage : undefined}
+          hasEarlierMessages={isActive && archivedMessagesRef.current.length > 0}
+          onLoadEarlier={isActive ? handleLoadEarlier : undefined}
+          enabled={isActive}
+        />
       )}
 
-      {/* Input */}
       <PromptInput
         isRunning={isRunning || !cwd}
         onSend={handleSend}
         onStop={handleStop}
       />
 
-      {/* Status */}
       <StatusBar isRunning={isRunning} sessionResult={sessionResult} />
     </Stack>
   );

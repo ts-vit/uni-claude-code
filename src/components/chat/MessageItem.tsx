@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import { ActionIcon, Code, Paper, Text, Tooltip } from "@mantine/core";
 import { IconBookmark } from "@tabler/icons-react";
 import { MarkdownRenderer } from "@uni-fw/ui";
@@ -10,8 +11,14 @@ interface MessageItemProps {
   onSave?: () => void;
 }
 
-export function MessageItem({ message, onSave }: MessageItemProps) {
+function MessageItemInner({ message, onSave }: MessageItemProps) {
   const { t } = useTranslation();
+  const renderedAssistantContent = useMemo(() => {
+    if (message.kind !== "assistant-text") {
+      return null;
+    }
+    return <MarkdownRenderer content={message.text} />;
+  }, [message.kind, message.kind === "assistant-text" ? message.text : ""]);
 
   switch (message.kind) {
     case "user":
@@ -31,7 +38,7 @@ export function MessageItem({ message, onSave }: MessageItemProps) {
     case "assistant-text":
       return (
         <Paper p="sm" radius="md" bg="var(--ucc-bg-chat-assistant)" style={{ maxWidth: "95%", position: "relative" }}>
-          <MarkdownRenderer content={message.text} />
+          {renderedAssistantContent}
           {message.streaming && (
             <Text component="span" size="sm" style={{ opacity: 0.5 }}>|</Text>
           )}
@@ -83,3 +90,40 @@ export function MessageItem({ message, onSave }: MessageItemProps) {
       );
   }
 }
+
+export const MessageItem = React.memo(MessageItemInner, (prev, next) => {
+  if (prev.onSave !== next.onSave) {
+    return false;
+  }
+
+  if (prev.message.kind !== next.message.kind) {
+    return false;
+  }
+
+  if (prev.message.id !== next.message.id) {
+    return false;
+  }
+
+  switch (prev.message.kind) {
+    case "assistant-text":
+      return (
+        next.message.kind === "assistant-text"
+        && prev.message.text === next.message.text
+        && prev.message.streaming === next.message.streaming
+      );
+    case "user":
+      return next.message.kind === "user" && prev.message.text === next.message.text;
+    case "error":
+      return next.message.kind === "error" && prev.message.text === next.message.text;
+    case "system-info":
+      return next.message.kind === "system-info" && prev.message.text === next.message.text;
+    case "tool-use":
+      return (
+        next.message.kind === "tool-use"
+        && prev.message.toolId === next.message.toolId
+        && prev.message.toolName === next.message.toolName
+        && prev.message.inputJson === next.message.inputJson
+        && prev.message.result === next.message.result
+      );
+  }
+});
