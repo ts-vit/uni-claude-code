@@ -12,7 +12,8 @@
       "Bash(npx vitest:*)",
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
-      "Bash(grep -A10 'name = \"\"\"\"uni-ssh\"\"\"\"' Cargo.lock)"
+      "Bash(grep -A10 'name = \"\"\"\"uni-ssh\"\"\"\"' Cargo.lock)",
+      "Bash(xargs wc:*)"
     ]
   }
 }
