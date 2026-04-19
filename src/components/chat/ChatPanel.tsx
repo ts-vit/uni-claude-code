@@ -461,35 +461,44 @@ export function ChatPanel({
         <Badge
           size="xs"
           variant="light"
-          color="blue"
+          color={mode === "code" ? "orange" : "blue"}
           style={{ textTransform: "uppercase", letterSpacing: 1 }}
         >
-          {t("panel.architect")}
+          {t(mode === "code" ? "panel.modeDeveloper" : "panel.modeArchitect")}
         </Badge>
       </Group>
 
       {messages.length === 0 ? (
         <Stack align="center" justify="center" style={{ flex: 1 }} gap="lg">
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: 16,
-              backgroundColor: "rgba(249, 115, 22, 0.06)",
-              border: "1px solid var(--ucc-border-subtle)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {!cwd
-              ? <IconFolderOpen size={32} stroke={1.2} color="var(--mantine-color-dimmed)" />
-              : <IconMessage size={32} stroke={1.2} color="var(--mantine-color-dimmed)" />
-            }
-          </div>
-          <Text c="dimmed" size="sm">
-            {!cwd ? t("chat.selectFolderHint") : t("chat.emptyState")}
-          </Text>
+          {mode !== "discuss" && (
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: 16,
+                backgroundColor: "rgba(249, 115, 22, 0.06)",
+                border: "1px solid var(--ucc-border-subtle)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {!cwd
+                ? <IconFolderOpen size={32} stroke={1.2} color="var(--mantine-color-dimmed)" />
+                : <IconMessage size={32} stroke={1.2} color="var(--mantine-color-dimmed)" />
+              }
+            </div>
+          )}
+          {mode !== "discuss" && (
+            <Text c="dimmed" size="sm">
+              {!cwd ? t("chat.selectFolderHint") : t("chat.emptyState")}
+            </Text>
+          )}
+          {mode === "discuss" && !cwd && (
+            <Text c="dimmed" size="sm">
+              {t("chat.selectFolderHint")}
+            </Text>
+          )}
         </Stack>
       ) : (
         <MessageList
@@ -505,6 +514,7 @@ export function ChatPanel({
         isRunning={isRunning || !cwd}
         onSend={handleSend}
         onStop={handleStop}
+        placeholder={mode === "discuss" ? t("chat.placeholderArchitect") : undefined}
       />
 
       <StatusBar isRunning={isRunning} sessionResult={sessionResult} />

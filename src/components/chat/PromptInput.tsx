@@ -9,6 +9,7 @@ interface PromptInputProps {
   isRunning: boolean;
   onSend: (text: string) => void;
   onStop: () => void;
+  placeholder?: string;
 }
 
 function getFileName(path: string): string {
@@ -21,7 +22,7 @@ function isImageFile(path: string): boolean {
   return ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg"].includes(ext);
 }
 
-export function PromptInput({ isRunning, onSend, onStop }: PromptInputProps) {
+export function PromptInput({ isRunning, onSend, onStop, placeholder }: PromptInputProps) {
   const { t } = useTranslation();
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
@@ -165,7 +166,7 @@ export function PromptInput({ isRunning, onSend, onStop }: PromptInputProps) {
 
         <Textarea
           ref={textareaRef}
-          placeholder={t("chat.placeholder")}
+          placeholder={placeholder ?? t("chat.placeholder")}
           value={value}
           onChange={(e) => setValue(e.currentTarget.value)}
           onKeyDown={handleKeyDown}

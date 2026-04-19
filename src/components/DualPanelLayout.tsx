@@ -12,10 +12,13 @@ import { useTauriListener } from "../utils/safeListener";
 type LayoutMode = "single" | "dual";
 type ActivePanel = "architect" | "terminal";
 
+export type TabMode = "architect" | "developer";
+
 interface TabInfo {
   id: string;
   label: string;
   status: TabStatus;
+  mode: TabMode;
 }
 
 export interface DualPanelLayoutState {
@@ -55,7 +58,7 @@ export function DualPanelLayout({
 }: DualPanelLayoutProps) {
   const { t } = useTranslation();
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(initialState?.layoutMode ?? "single");
-  const [activePanel, setActivePanel] = useState<ActivePanel>(initialState?.activePanel ?? "terminal");
+  const [activePanel, setActivePanel] = useState<ActivePanel>(initialState?.activePanel ?? "architect");
   const [splitPosition, setSplitPosition] = useState(initialState?.splitPosition ?? 50);
   const [isDragging, setIsDragging] = useState(false);
   const [dividerHover, setDividerHover] = useState(false);
@@ -66,11 +69,11 @@ export function DualPanelLayout({
   // === Tab state (Architect panel only) ===
   const [discussTabs, setDiscussTabs] = useState<TabInfo[]>(() => {
     if (initialState?.discussTabs.length) {
-      return initialState.discussTabs;
+      return initialState.discussTabs.map((tab) => ({ ...tab, mode: tab.mode ?? "architect" }));
     }
 
     const id = nextTabId("discuss");
-    return [{ id, label: "Session 1", status: "idle" as TabStatus }];
+    return [{ id, label: "Session 1", status: "idle" as TabStatus, mode: "architect" as TabMode }];
   });
   const [discussActiveTab, setDiscussActiveTab] = useState(
     () => initialState?.discussActiveTab ?? discussTabs[0].id,
@@ -82,10 +85,16 @@ export function DualPanelLayout({
       if (prev.length >= MAX_TABS_PER_PANEL) return prev;
       const id = nextTabId("discuss");
       const label = nextTabLabel(prev);
-      const newTab: TabInfo = { id, label, status: "idle" };
+      const newTab: TabInfo = { id, label, status: "idle", mode: "architect" };
       setDiscussActiveTab(id);
       return [...prev, newTab];
     });
+  }, []);
+
+  const handleTabModeChange = useCallback((tabId: string, mode: TabMode) => {
+    setDiscussTabs((prev) =>
+      prev.map((t) => (t.id === tabId ? { ...t, mode } : t)),
+    );
   }, []);
 
   const handleCloseTab = useCallback((tabId: string) => {
@@ -244,12 +253,14 @@ export function DualPanelLayout({
               id: tab.id,
               label: tab.label,
               status: tab.status,
+              mode: tab.mode,
               closable: discussTabs.length > 1,
             }))}
             activeId={discussActiveTab}
             onTabChange={(id) => setDiscussActiveTab(id)}
             onTabAdd={handleAddTab}
             onTabClose={(id) => handleCloseTab(id)}
+            onTabModeChange={handleTabModeChange}
             maxTabs={MAX_TABS_PER_PANEL}
             addTooltip={t("panel.newTab")}
             closeTooltip={t("panel.closeTab")}
@@ -266,11 +277,11 @@ export function DualPanelLayout({
             >
               <ChatPanel
                 panelId={tab.id}
-                mode="discuss"
+                mode={tab.mode === "developer" ? "code" : "discuss"}
                 cwd={cwd}
                 projectId={projectId}
                 projectModel={projectModel}
-                projectPermissionMode={projectPermissionMode}
+                projectPermissionMode={tab.mode === "developer" ? "bypass" : projectPermissionMode}
                 isActive={isArchitectVisible && tab.id === discussActiveTab}
               />
             </div>

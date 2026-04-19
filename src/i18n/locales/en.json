@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "UNI Claude Code",
+    "title": "Code Architect",
     "description": "Two-panel IDE for Claude Code CLI"
   },
   "common": {
@@ -140,10 +140,15 @@
     "singleMode": "Single Panel",
     "dualMode": "Dual Panel",
     "newTab": "New session tab",
-    "closeTab": "Close tab"
+    "closeTab": "Close tab",
+    "modeLabel": "Mode",
+    "modeArchitect": "Architect",
+    "modeDeveloper": "Developer",
+    "modeArchitectTooltip": "Architect — planning (read-only)",
+    "modeDeveloperTooltip": "Developer — full access (--dangerously-skip-permissions)"
   },
   "project": {
-    "welcome": "Welcome to UNI Claude Code",
+    "welcome": "Welcome to Code Architect",
     "welcomeDescription": "Create a project to start working",
     "create": "Create Project",
     "name": "Project Name",
@@ -270,6 +275,7 @@
   },
   "chat": {
     "placeholder": "Type a prompt... (Enter to send, Shift+Enter for new line)",
+    "placeholderArchitect": "Describe the task... (Enter to send, Shift+Enter for new line)",
     "send": "Send",
     "stop": "Stop",
     "idle": "Ready",

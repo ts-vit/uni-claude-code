@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "UNI Claude Code",
+    "title": "Архитектор кода",
     "description": "Двухпанельная IDE для Claude Code CLI"
   },
   "common": {
@@ -140,10 +140,15 @@
     "singleMode": "Одна панель",
     "dualMode": "Две панели",
     "newTab": "Новая вкладка сессии",
-    "closeTab": "Закрыть вкладку"
+    "closeTab": "Закрыть вкладку",
+    "modeLabel": "Режим",
+    "modeArchitect": "Архитектор",
+    "modeDeveloper": "Разработчик",
+    "modeArchitectTooltip": "Архитектор — режим планирования (только чтение)",
+    "modeDeveloperTooltip": "Разработчик — полный доступ (--dangerously-skip-permissions)"
   },
   "project": {
-    "welcome": "Добро пожаловать в UNI Claude Code",
+    "welcome": "Добро пожаловать в Архитектор кода",
     "welcomeDescription": "Создайте проект для начала работы",
     "create": "Создать проект",
     "name": "Название проекта",
@@ -270,6 +275,7 @@
   },
   "chat": {
     "placeholder": "Введите промпт... (Enter — отправить, Shift+Enter — новая строка)",
+    "placeholderArchitect": "Опишите задачу... (Enter — отправить, Shift+Enter — новая строка)",
     "send": "Отправить",
     "stop": "Стоп",
     "idle": "Готов",

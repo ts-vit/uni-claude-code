@@ -36,7 +36,7 @@ describe("DualPanelLayout", () => {
     const labels = layoutControl.querySelectorAll("label");
     fireEvent.click(labels[1]);
 
-    expect(screen.getAllByText("panel.architect").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("panel.modeArchitect").length).toBeGreaterThanOrEqual(1);
   });
 
   it("switches active panel in single mode", () => {
@@ -47,7 +47,7 @@ describe("DualPanelLayout", () => {
     );
     fireEvent.click(segmentLabel!);
 
-    const architectBadge = screen.getAllByText("panel.architect").find(
+    const architectBadge = screen.getAllByText("panel.modeArchitect").find(
       (el) => el.closest(".mantine-Badge-label"),
     );
     expect(architectBadge).toBeTruthy();
