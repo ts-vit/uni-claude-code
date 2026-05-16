@@ -28,7 +28,7 @@
   5. `cargo test --workspace` зелёный для `src-tauri` и `claude-code-core`; нестабильные тесты внутри вендорированных `uni-*` крейтов помечены `#[ignore]` с TODO-комментарием и не блокируют сборку
 **Plans**: 3 plans
   - [x] 01-01-vendor-uni-crates-PLAN.md — Вкопировать 6 крейтов uni-* в crates/ и зарегистрировать в workspace.members (выполнено 2026-05-16, см. 01-01-SUMMARY.md)
-  - [ ] 01-02-rewrite-cargo-manifests-PLAN.md — Заменить 7 git-зависимостей на path в src-tauri/Cargo.toml и crates/claude-code-core/Cargo.toml
+  - [x] 01-02-rewrite-cargo-manifests-PLAN.md — Заменить 7 git-зависимостей на path в src-tauri/Cargo.toml и crates/claude-code-core/Cargo.toml (выполнено 2026-05-16, см. 01-02-SUMMARY.md)
   - [ ] 01-03-regenerate-lock-and-verify-PLAN.md — Регенерировать Cargo.lock, пройти cargo build/test --workspace, при необходимости #[ignore] нестабильные тесты
 
 ### Phase 2: npm Vendoring
@@ -62,6 +62,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Rust Vendoring | 1/3 | In progress | - |
+| 1. Rust Vendoring | 2/3 | In progress | - |
 | 2. npm Vendoring | 0/TBD | Not started | - |
 | 3. Build & Docs | 0/TBD | Not started | - |

@@ -15,7 +15,7 @@
 - [x] **RUST-04**: Крейт `uni-db` вкопирован в `crates/uni-db/` и добавлен в workspace
 - [x] **RUST-05**: Крейт `uni-ssh` вкопирован в `crates/uni-ssh/` и добавлен в workspace
 - [x] **RUST-06**: Крейт `uni-terminal` вкопирован в `crates/uni-terminal/` и добавлен в workspace
-- [ ] **RUST-07**: Все ссылки `git = "https://github.com/ts-vit/ai-chat", branch = "dev"` в `src-tauri/Cargo.toml` и `crates/claude-code-core/Cargo.toml` заменены на `path = "../<crate>"` / workspace-зависимости
+- [x] **RUST-07**: Все ссылки `git = "https://github.com/ts-vit/ai-chat", branch = "dev"` в `src-tauri/Cargo.toml` и `crates/claude-code-core/Cargo.toml` заменены на `path = "../<crate>"` / workspace-зависимости
 - [ ] **RUST-08**: `Cargo.lock` не содержит ссылок на `github.com/ts-vit/ai-chat`
 - [ ] **RUST-09**: `cargo build --workspace` проходит без сетевого доступа к git-репозиторию ai-chat
 - [ ] **RUST-10**: `cargo test --workspace` либо проходит, либо неудачи внутри `uni-*` крейтов изолированы (`#[ignore]` с TODO-комментарием) — тесты `src-tauri` и `claude-code-core` зелёные
@@ -79,7 +79,7 @@
 | RUST-04 | Phase 1 | Done (Plan 01-01) |
 | RUST-05 | Phase 1 | Done (Plan 01-01) |
 | RUST-06 | Phase 1 | Done (Plan 01-01) |
-| RUST-07 | Phase 1 | Pending |
+| RUST-07 | Phase 1 | Done (Plan 01-02) |
 | RUST-08 | Phase 1 | Pending |
 | RUST-09 | Phase 1 | Pending |
 | RUST-10 | Phase 1 | Pending |
@@ -107,4 +107,4 @@
 
 ---
 *Requirements defined: 2026-05-16*
-*Last updated: 2026-05-16 после генерации ROADMAP.md (Traceability заполнена)*
+*Last updated: 2026-05-16 после Plan 01-02 (RUST-07 закрыт)*
