@@ -26,21 +26,15 @@
 - ✓ **Интернационализация** — EN + RU локали через react-i18next — existing
 - ✓ **Настройки** — JSON-хранилище через `uni-settings::JsonSettingsStore`, dev-AppData разделён от prod через TAURI_CONFIG — existing
 - ✓ **6 крейтов `uni-*` вендорированы в `crates/`** как path-зависимости workspace; git-источник `github.com/ts-vit/ai-chat` удалён из `Cargo.toml`/`Cargo.lock`; `cargo build --workspace` проходит без сети — Validated in Phase 1: Rust Vendoring
+- ✓ **3 npm-пакета `@uni-fw/*` вендорированы в `packages/`** как npm workspaces со ссылкой `workspace:*`; `.npmrc` с приватным реестром `https://npm.ts-vit.com` удалён; `npm ci` проходит без сети — Validated in Phase 2: npm Vendoring
+- ✓ **README.md и CLAUDE.md приведены в соответствие с вендорированной структурой** — top-level README на русском (quickstart-only); `.planning/codebase/*` зачищены от упоминаний приватного реестра и git-источника `ai-chat`; секция «Supply Chain Risk» удалена из `CONCERNS.md` — Validated in Phase 3: Build & Docs
+- ✓ **End-to-end проверка чистого клона** — в свежем temp-каталоге `git clone --no-local` + 5 grep-инвариантов (0 hits) + `npm ci` + `cargo build --workspace` + `npm run test:all` + `npm run build` отрабатывают exit 0 без приватной сети — Validated in Phase 3: Build & Docs
 
 ### Active
 
-<!-- Текущая milestone: убрать внешние приватные зависимости. -->
+<!-- Текущая milestone «убрать приватные зависимости» завершена 2026-05-16. -->
 
-**npm (фаза 2):**
-- [ ] Внести 3 пакета (`@uni-fw/ssh-ui`, `@uni-fw/terminal-ui`, `@uni-fw/ui`) в `packages/uni-fw-*/` как npm workspaces
-- [ ] Убрать `.npmrc` и приватный реестр `https://npm.ts-vit.com`
-- [ ] Импорты `@uni-fw/*` в `src/` продолжают работать без правок
-- [ ] `npm ci` проходит без сети
-
-**CI/документация (фаза 3):**
-- [ ] Обновить `package.json` scripts (workspace-aware команды, если нужно)
-- [ ] Обновить README — инструкции по сборке из чистого клона
-- [ ] Финальная проверка: чистый клон в новом каталоге, без сети — `npm ci` + `cargo build` + `npm run test:all` зелёные
+_Все требования milestone v1.0 валидированы. Новых активных требований нет до старта следующей milestone._
 
 ### Out of Scope
 
@@ -114,4 +108,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-16 after Phase 1 (Rust Vendoring) completion*
+*Last updated: 2026-05-16 after Phase 3 (Build & Docs) completion — milestone v1.0 «убрать приватные зависимости» закрыта.*
