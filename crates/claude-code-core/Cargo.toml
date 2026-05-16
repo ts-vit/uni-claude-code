@@ -6,8 +6,8 @@ description = "Claude Code CLI wrapper with stream-json parsing"
 license = "MIT"
 
 [dependencies]
-uni-common = { git = "https://github.com/ts-vit/ai-chat", branch = "dev" }
-uni-process = { git = "https://github.com/ts-vit/ai-chat", branch = "dev" }
+uni-common = { path = "../uni-common" }
+uni-process = { path = "../uni-process" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tracing = "0.1"
