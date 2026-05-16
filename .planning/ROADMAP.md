@@ -10,7 +10,7 @@
 - Целочисленные фазы (1, 2, 3) — плановая работа milestone
 - Десятичные (2.1, 2.2) зарезервированы под срочные вставки между фазами
 
-- [ ] **Phase 1: Rust Vendoring** — Внести 6 крейтов `uni-*` в `crates/` как path-зависимости workspace, убрать git-источник `ai-chat`
+- [x] **Phase 1: Rust Vendoring** — Внести 6 крейтов `uni-*` в `crates/` как path-зависимости workspace, убрать git-источник `ai-chat` (завершено 2026-05-16)
 - [ ] **Phase 2: npm Vendoring** — Внести 3 пакета `@uni-fw/*` в `packages/uni-fw-*` через npm workspaces, удалить `.npmrc`
 - [ ] **Phase 3: Build & Docs** — Финальные правки скриптов, README и CLAUDE.md плюс end-to-end проверка сборки из чистого клона без сети
 
@@ -29,7 +29,7 @@
 **Plans**: 3 plans
   - [x] 01-01-vendor-uni-crates-PLAN.md — Вкопировать 6 крейтов uni-* в crates/ и зарегистрировать в workspace.members (выполнено 2026-05-16, см. 01-01-SUMMARY.md)
   - [x] 01-02-rewrite-cargo-manifests-PLAN.md — Заменить 7 git-зависимостей на path в src-tauri/Cargo.toml и crates/claude-code-core/Cargo.toml (выполнено 2026-05-16, см. 01-02-SUMMARY.md)
-  - [ ] 01-03-regenerate-lock-and-verify-PLAN.md — Регенерировать Cargo.lock, пройти cargo build/test --workspace, при необходимости #[ignore] нестабильные тесты
+  - [x] 01-03-regenerate-lock-and-verify-PLAN.md — Регенерировать Cargo.lock, пройти cargo build/test --workspace, при необходимости #[ignore] нестабильные тесты (выполнено 2026-05-16, см. 01-03-SUMMARY.md)
 
 ### Phase 2: npm Vendoring
 **Goal**: Все frontend-зависимости от приватного npm-реестра устранены — 3 пакета `@uni-fw/*` живут внутри `packages/uni-fw-*` как npm workspaces, `.npmrc` удалён, импорты в `src/` работают без правок
@@ -62,6 +62,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Rust Vendoring | 2/3 | In progress | - |
+| 1. Rust Vendoring | 3/3 | Complete | 2026-05-16 |
 | 2. npm Vendoring | 0/TBD | Not started | - |
 | 3. Build & Docs | 0/TBD | Not started | - |
