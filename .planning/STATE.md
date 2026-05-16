@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 3 context gathered
-last_updated: "2026-05-16T10:55:16.456Z"
-last_activity: 2026-05-16 -- Phase 03 planning complete
+last_updated: "2026-05-16T11:00:02Z"
+last_activity: 2026-05-16 -- Phase 03 Plan 01 complete (README.md created)
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 9
-  completed_plans: 6
-  percent: 67
+  completed_plans: 7
+  percent: 78
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-16)
 
 **Core value:** Чистый клон репозитория без сети полностью собирается — `npm ci` и `cargo build` проходят, тесты зелёные.
-**Current focus:** Phase 02 verified PASS — следующий шаг Phase 03 (Build & Docs)
+**Current focus:** Phase 03 — build-docs
 
 ## Current Position
 
-Phase: 02 (npm-vendoring) — VERIFIED PASS
-Plan: 3 of 3 (все планы выполнены)
-Status: Ready to execute
-Last activity: 2026-05-16 -- Phase 03 planning complete
+Phase: 03 (build-docs) — EXECUTING
+Plan: 2 of 3
+Status: Executing Phase 03 (Plan 01 complete)
+Last activity: 2026-05-16 -- README.md создан (quickstart-only, 37 строк, на русском)
 
 Progress: [██████████] 100% Phase 02
 
@@ -88,6 +88,7 @@ Progress: [██████████] 100% Phase 02
 - 02-03: Defensive vitest include-фильтр (Rule 1 deviation) — корневой test runner ограничен src/**/*.{test,spec}.{ts,tsx} чтобы тесты packages/uni-fw-*/src/__tests__/ не запускались (D-05/D-06)
 - 02-03: DoD фазы 2 npm Vendoring выполнен — npm ci + npm run typecheck + npm run test зелёные (19 файлов / 106 тестов), никаких it.skip правок не потребовалось, setup.ts не тронут
 - 02-VERIFICATION: Phase 2 verified PASS — 14/14 truths, 10/10 NPM-* requirements satisfied, 6/6 key links wired, 0 antipatterns; live `npm run typecheck` + `npm run test` зелёные на момент верификации; ни один файл в src/src-tauri/crates не тронут за 9 коммитов фазы (compatibility D-12)
+- 03-01: README.md создан (37 строк, quickstart-only, русский язык); D-R1/D-R2/D-R3/D-R4 соблюдены; все 9 acceptance criteria прошли автоматически; BUILD-04 закрыт
 
 ### Pending Todos
 
@@ -105,6 +106,6 @@ Progress: [██████████] 100% Phase 02
 
 ## Session Continuity
 
-Last session: 2026-05-16T10:36:01.848Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-build-docs/03-CONTEXT.md
+Last session: 2026-05-16T11:00:02Z
+Stopped at: Phase 03 Plan 01 complete
+Resume file: .planning/phases/03-build-docs/03-01-SUMMARY.md
