@@ -28,10 +28,10 @@
 - [x] **NPM-04**: В корневой `package.json` добавлено `"workspaces": ["packages/*"]`
 - [x] **NPM-05**: `dependencies` в корневом `package.json` для `@uni-fw/*` либо удалены, либо заменены на `"workspace:*"` (как требует npm workspaces)
 - [x] **NPM-06**: Файл `.npmrc` с приватным реестром `npm.ts-vit.com` удалён
-- [ ] **NPM-07**: Существующие импорты `import { ... } from "@uni-fw/ui"` (и аналогичные) в `src/` продолжают работать без правок
-- [ ] **NPM-08**: `npm ci` проходит без сетевого доступа к `npm.ts-vit.com`
-- [ ] **NPM-09**: `npm run typecheck` проходит — типы из вендорированных пакетов резолвятся корректно
-- [ ] **NPM-10**: `npm run test` зелёный (vitest)
+- [x] **NPM-07**: Существующие импорты `import { ... } from "@uni-fw/ui"` (и аналогичные) в `src/` продолжают работать без правок
+- [x] **NPM-08**: `npm ci` проходит без сетевого доступа к `npm.ts-vit.com`
+- [x] **NPM-09**: `npm run typecheck` проходит — типы из вендорированных пакетов резолвятся корректно
+- [x] **NPM-10**: `npm run test` зелёный (vitest)
 
 ### Build & Documentation
 
@@ -89,10 +89,10 @@
 | NPM-04 | Phase 2 | Complete |
 | NPM-05 | Phase 2 | Complete |
 | NPM-06 | Phase 2 | Complete |
-| NPM-07 | Phase 2 | Pending |
-| NPM-08 | Phase 2 | Pending |
-| NPM-09 | Phase 2 | Pending |
-| NPM-10 | Phase 2 | Pending |
+| NPM-07 | Phase 2 | Complete |
+| NPM-08 | Phase 2 | Complete |
+| NPM-09 | Phase 2 | Complete |
+| NPM-10 | Phase 2 | Complete |
 | BUILD-01 | Phase 3 | Pending |
 | BUILD-02 | Phase 3 | Pending |
 | BUILD-03 | Phase 3 | Pending |

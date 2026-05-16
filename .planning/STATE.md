@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 2 context gathered
-last_updated: "2026-05-16T09:52:51.813Z"
+status: verifying
+stopped_at: Completed 02-03 PLAN — Phase 2 ready for verification
+last_updated: "2026-05-16T10:04:03.572Z"
 last_activity: 2026-05-16
 progress:
   total_phases: 3
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 6
-  completed_plans: 5
-  percent: 33
+  completed_plans: 6
+  percent: 67
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-05-16)
 
 Phase: 02 (npm-vendoring) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-05-16
 
-Progress: [████████░░] 83%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Progress: [████████░░] 83%
 *Updated after each plan completion*
 | Phase 02-npm-vendoring P01 | 1.5min | 1 tasks | 89 files |
 | Phase 02-npm-vendoring P02 | 2min | 3 tasks | 5 files |
+| Phase 02-npm-vendoring P03 | 7min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,9 @@ Progress: [████████░░] 83%
 - [Phase ?]: 02-02: @uni-fw/* в корневом package.json переведены на workspace:* (D-04); @xterm/* peer-deps подняты в root dependencies явно — npm не ставит peerDependencies автоматически
 - [Phase ?]: 02-02: .npmrc удалён полностью (D-11); npm.ts-vit.com нигде в репо не упоминается; T-02-03 mitigated проверкой отсутствия auth-директив перед удалением
 - [Phase ?]: 02-02: Минимум магии — никаких overrides/peerDependenciesMeta/resolutions/nohoist (D-10); package-lock.json НЕ регенерировался, scope Plan 02-03
+- [Phase ?]: 02-03: package-lock.json регенерирован через rm + npm install — 0 ссылок на npm.ts-vit.com, @uni-fw/* как workspace symlinks (link:true), lockfileVersion=3
+- [Phase ?]: 02-03: Defensive vitest include-фильтр (Rule 1 deviation) — корневой test runner ограничен src/**/*.{test,spec}.{ts,tsx} чтобы тесты packages/uni-fw-*/src/__tests__/ не запускались (D-05/D-06)
+- [Phase ?]: 02-03: DoD фазы 2 npm Vendoring выполнен — npm ci + npm run typecheck + npm run test зелёные (19 файлов / 106 тестов), никаких it.skip правок не потребовалось, setup.ts не тронут
 
 ### Pending Todos
 
@@ -100,6 +104,6 @@ Progress: [████████░░] 83%
 
 ## Session Continuity
 
-Last session: 2026-05-16T09:52:43.617Z
-Stopped at: Phase 2 context gathered
+Last session: 2026-05-16T10:04:03.559Z
+Stopped at: Completed 02-03 PLAN — Phase 2 ready for verification
 Resume file: None
