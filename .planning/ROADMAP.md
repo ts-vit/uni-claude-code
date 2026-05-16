@@ -41,7 +41,10 @@
   3. `npm ci` проходит из чистого клона при заблокированном сетевом доступе к `npm.ts-vit.com` и линкует `@uni-fw/*` через workspace-symlink-и
   4. Существующие импорты `@uni-fw/ui`, `@uni-fw/ssh-ui`, `@uni-fw/terminal-ui` в `src/` продолжают работать без правок исходников
   5. `npm run typecheck` и `npm run test` зелёные — типы вендорированных пакетов резолвятся, vitest-набор не сломан
-**Plans**: TBD
+**Plans**: 3 plans
+  - [ ] 02-01-PLAN.md — Snapshot 3 пакетов @uni-fw/* в packages/uni-fw-*/
+  - [ ] 02-02-PLAN.md — Объявить workspaces, переписать @uni-fw/* на workspace:*, перевести пакетные манифесты на source-direct entry, удалить .npmrc
+  - [ ] 02-03-PLAN.md — Регенерировать package-lock.json, npm ci + typecheck + vitest
 **UI hint**: yes
 
 ### Phase 3: Build & Docs
@@ -63,5 +66,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Rust Vendoring | 3/3 | Complete | 2026-05-16 |
-| 2. npm Vendoring | 0/TBD | Not started | - |
+| 2. npm Vendoring | 0/3 | Not started | - |
 | 3. Build & Docs | 0/TBD | Not started | - |
