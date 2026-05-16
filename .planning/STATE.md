@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: ready_to_plan
-stopped_at: Phase 01 complete (3/3) — ready to discuss Phase 2
-last_updated: 2026-05-16T08:49:14.491Z
-last_activity: 2026-05-16 -- Plan 01-03 (regenerate-lock-and-verify) завершён, Phase 1 закрыта
+status: planning
+stopped_at: Phase 2 context gathered
+last_updated: "2026-05-16T09:10:18.068Z"
+last_activity: 2026-05-16
 progress:
   total_phases: 3
   completed_phases: 1
@@ -91,6 +91,6 @@ Progress: [██████████] 100% (Phase 1 / Phase 1)
 
 ## Session Continuity
 
-Last session: 2026-05-16
-Stopped at: Phase 01 завершена. Следующая — Phase 02 (npm-vendoring), планы TBD
-Resume file: .planning/ROADMAP.md (для планирования Phase 02)
+Last session: 2026-05-16T09:10:18.055Z
+Stopped at: Phase 2 context gathered
+Resume file: .planning/phases/02-npm-vendoring/02-CONTEXT.md
