@@ -22,9 +22,9 @@
 
 ### npm Vendoring
 
-- [ ] **NPM-01**: Пакет `@uni-fw/ui` вкопирован в `packages/uni-fw-ui/` (snapshot из `D:\work-ai\ai-chat`) с собственным `package.json`
-- [ ] **NPM-02**: Пакет `@uni-fw/ssh-ui` вкопирован в `packages/uni-fw-ssh-ui/`
-- [ ] **NPM-03**: Пакет `@uni-fw/terminal-ui` вкопирован в `packages/uni-fw-terminal-ui/`
+- [x] **NPM-01**: Пакет `@uni-fw/ui` вкопирован в `packages/uni-fw-ui/` (snapshot из `D:\work-ai\ai-chat`) с собственным `package.json`
+- [x] **NPM-02**: Пакет `@uni-fw/ssh-ui` вкопирован в `packages/uni-fw-ssh-ui/`
+- [x] **NPM-03**: Пакет `@uni-fw/terminal-ui` вкопирован в `packages/uni-fw-terminal-ui/`
 - [ ] **NPM-04**: В корневой `package.json` добавлено `"workspaces": ["packages/*"]`
 - [ ] **NPM-05**: `dependencies` в корневом `package.json` для `@uni-fw/*` либо удалены, либо заменены на `"workspace:*"` (как требует npm workspaces)
 - [ ] **NPM-06**: Файл `.npmrc` с приватным реестром `npm.ts-vit.com` удалён
@@ -83,9 +83,9 @@
 | RUST-08 | Phase 1 | Done (Plan 01-03) |
 | RUST-09 | Phase 1 | Done (Plan 01-03) |
 | RUST-10 | Phase 1 | Done (Plan 01-03) |
-| NPM-01 | Phase 2 | Pending |
-| NPM-02 | Phase 2 | Pending |
-| NPM-03 | Phase 2 | Pending |
+| NPM-01 | Phase 2 | Complete |
+| NPM-02 | Phase 2 | Complete |
+| NPM-03 | Phase 2 | Complete |
 | NPM-04 | Phase 2 | Pending |
 | NPM-05 | Phase 2 | Pending |
 | NPM-06 | Phase 2 | Pending |

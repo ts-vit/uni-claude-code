@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 2 context gathered
-last_updated: "2026-05-16T09:39:19.736Z"
-last_activity: 2026-05-16 -- Phase 02 planning complete
+last_updated: "2026-05-16T09:47:04.468Z"
+last_activity: 2026-05-16
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 6
-  completed_plans: 3
+  completed_plans: 4
   percent: 33
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-16)
 
 **Core value:** Чистый клон репозитория без сети полностью собирается — `npm ci` и `cargo build` проходят, тесты зелёные.
-**Current focus:** Phase 2 — npm vendoring
+**Current focus:** Phase 02 — npm-vendoring
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
+Phase: 02 (npm-vendoring) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-05-16 -- Phase 02 planning complete
+Last activity: 2026-05-16
 
-Progress: [██████████] 100% (Phase 1 / Phase 1)
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [██████████] 100% (Phase 1 / Phase 1)
 - Trend: 01-03 заняло больше времени из-за `cargo build --workspace` (~55s) и full test sweep — ожидаемо для verify-плана
 
 *Updated after each plan completion*
+| Phase 02-npm-vendoring P01 | 1.5min | 1 tasks | 89 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,9 @@ Progress: [██████████] 100% (Phase 1 / Phase 1)
 - 01-03: Регенерация через `rm Cargo.lock && cargo generate-lockfile` — гарантированно убирает stale git-source записи без риска residual cache
 - 01-03: Никаких `#[ignore]` правок в исходниках uni-* крейтов не потребовалось — все тесты прошли с первого запуска; MAINT-02 (v2) остаётся без конкретных кандидатов из этой фазы
 - 01-03: Tauri ACL-схемы (`src-tauri/gen/schemas/*.json`) закоммичены в составе Task 2 как ожидаемый side-effect автоматической перегенерации tauri-build после bump минорной версии Tauri
+- [Phase ?]: 02-01: Snapshot-копия побайтная — repository=/homepage= и peerDependencies @uni-fw/ui сохранены как есть (D-07, D-09)
+- [Phase ?]: 02-01: Корневой package.json, .npmrc, package-lock.json НЕ изменены — scope Plan 02-02 и 02-03
+- [Phase ?]: 02-01: tsup/tsconfig.build/vitest configs и src/__tests__/ скопированы как спящие артефакты (D-02, D-05, D-06)
 
 ### Pending Todos
 
@@ -91,6 +95,6 @@ Progress: [██████████] 100% (Phase 1 / Phase 1)
 
 ## Session Continuity
 
-Last session: 2026-05-16T09:10:18.055Z
+Last session: 2026-05-16T09:46:40.718Z
 Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-npm-vendoring/02-CONTEXT.md
+Resume file: None
