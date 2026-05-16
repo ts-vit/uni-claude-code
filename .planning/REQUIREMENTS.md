@@ -71,42 +71,40 @@
 
 ## Traceability
 
-Будет заполнено `gsd-roadmapper` после создания ROADMAP.md.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RUST-01 | (TBD) | Pending |
-| RUST-02 | (TBD) | Pending |
-| RUST-03 | (TBD) | Pending |
-| RUST-04 | (TBD) | Pending |
-| RUST-05 | (TBD) | Pending |
-| RUST-06 | (TBD) | Pending |
-| RUST-07 | (TBD) | Pending |
-| RUST-08 | (TBD) | Pending |
-| RUST-09 | (TBD) | Pending |
-| RUST-10 | (TBD) | Pending |
-| NPM-01 | (TBD) | Pending |
-| NPM-02 | (TBD) | Pending |
-| NPM-03 | (TBD) | Pending |
-| NPM-04 | (TBD) | Pending |
-| NPM-05 | (TBD) | Pending |
-| NPM-06 | (TBD) | Pending |
-| NPM-07 | (TBD) | Pending |
-| NPM-08 | (TBD) | Pending |
-| NPM-09 | (TBD) | Pending |
-| NPM-10 | (TBD) | Pending |
-| BUILD-01 | (TBD) | Pending |
-| BUILD-02 | (TBD) | Pending |
-| BUILD-03 | (TBD) | Pending |
-| BUILD-04 | (TBD) | Pending |
-| BUILD-05 | (TBD) | Pending |
-| BUILD-06 | (TBD) | Pending |
+| RUST-01 | Phase 1 | Pending |
+| RUST-02 | Phase 1 | Pending |
+| RUST-03 | Phase 1 | Pending |
+| RUST-04 | Phase 1 | Pending |
+| RUST-05 | Phase 1 | Pending |
+| RUST-06 | Phase 1 | Pending |
+| RUST-07 | Phase 1 | Pending |
+| RUST-08 | Phase 1 | Pending |
+| RUST-09 | Phase 1 | Pending |
+| RUST-10 | Phase 1 | Pending |
+| NPM-01 | Phase 2 | Pending |
+| NPM-02 | Phase 2 | Pending |
+| NPM-03 | Phase 2 | Pending |
+| NPM-04 | Phase 2 | Pending |
+| NPM-05 | Phase 2 | Pending |
+| NPM-06 | Phase 2 | Pending |
+| NPM-07 | Phase 2 | Pending |
+| NPM-08 | Phase 2 | Pending |
+| NPM-09 | Phase 2 | Pending |
+| NPM-10 | Phase 2 | Pending |
+| BUILD-01 | Phase 3 | Pending |
+| BUILD-02 | Phase 3 | Pending |
+| BUILD-03 | Phase 3 | Pending |
+| BUILD-04 | Phase 3 | Pending |
+| BUILD-05 | Phase 3 | Pending |
+| BUILD-06 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 26 total
-- Mapped to phases: 0 (заполнит роадмапер)
-- Unmapped: 26 ⚠️ (нормально на этой стадии — карта появится после Step 8)
+- Mapped to phases: 26 (Phase 1: 10 RUST-*, Phase 2: 10 NPM-*, Phase 3: 6 BUILD-*)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-16*
-*Last updated: 2026-05-16 after initial definition*
+*Last updated: 2026-05-16 после генерации ROADMAP.md (Traceability заполнена)*
