@@ -35,11 +35,11 @@
 
 ### Build & Documentation
 
-- [ ] **BUILD-01**: `npm run dev` (Tauri dev) запускается из чистого клона без сетевого доступа к приватным сервисам
-- [ ] **BUILD-02**: `npm run build` (Tauri prod) проходит из чистого клона без сети
-- [ ] **BUILD-03**: `npm run test:all` (typecheck + vitest + cargo test) зелёный
+- [x] **BUILD-01**: `npm run dev` (Tauri dev) запускается из чистого клона без сетевого доступа к приватным сервисам
+- [x] **BUILD-02**: `npm run build` (Tauri prod) проходит из чистого клона без сети
+- [x] **BUILD-03**: `npm run test:all` (typecheck + vitest + cargo test) зелёный
 - [x] **BUILD-04**: README обновлён — инструкция «как собрать из чистого клона», без упоминания приватного реестра или git-источника ai-chat
-- [ ] **BUILD-05**: Финальная end-to-end проверка: новый каталог, `git clone <local-repo>`, отключённая сеть к ai-chat/npm.ts-vit.com, `npm ci && cargo build --workspace && npm run test:all` — всё зелёное
+- [x] **BUILD-05**: Финальная end-to-end проверка: новый каталог, `git clone <local-repo>`, отключённая сеть к ai-chat/npm.ts-vit.com, `npm ci && cargo build --workspace && npm run test:all` — всё зелёное
 - [x] **BUILD-06**: `CLAUDE.md` обновлён — упоминание `@uni-fw/*` и `uni-*` как внешних зависимостей удалено или переписано на «вендорированные внутри репо»
 
 ## v2 Requirements
@@ -93,11 +93,11 @@
 | NPM-08 | Phase 2 | Complete |
 | NPM-09 | Phase 2 | Complete |
 | NPM-10 | Phase 2 | Complete |
-| BUILD-01 | Phase 3 | Pending |
-| BUILD-02 | Phase 3 | Pending |
-| BUILD-03 | Phase 3 | Pending |
+| BUILD-01 | Phase 3 | Complete |
+| BUILD-02 | Phase 3 | Complete |
+| BUILD-03 | Phase 3 | Complete |
 | BUILD-04 | Phase 3 | Complete (03-01) |
-| BUILD-05 | Phase 3 | Pending |
+| BUILD-05 | Phase 3 | Complete |
 | BUILD-06 | Phase 3 | Complete |
 
 **Coverage:**
