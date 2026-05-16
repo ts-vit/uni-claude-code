@@ -48,28 +48,6 @@
 
 ---
 
-## Supply Chain Risk
-
-**Private npm registry (`npm.ts-vit.com`) is a single point of failure:**
-- Risk: Three production dependencies — `@uni-fw/ssh-ui@0.1.2`, `@uni-fw/terminal-ui@0.1.5`, `@uni-fw/ui@0.1.1` — and three transitive deps (`@xterm/xterm`, `@xterm/addon-fit`, `@xterm/addon-web-links`) resolve exclusively from `https://npm.ts-vit.com`. If that registry goes offline, `npm ci` on a fresh machine fails completely. The registry is configured in `.npmrc` with no fallback.
-- Files: `.npmrc`, `package-lock.json:2058,2077,2097`
-- Impact: Breaks CI, new developer onboarding, and production builds. No offline fallback exists.
-- Fix approach: Mirror packages to a secondary registry or commit tarballs to the repo. Add `registry=https://registry.npmjs.org` as a fallback for the `@xterm` scope since those appear to be re-published public packages.
-
-**Private git repo (`github.com/ts-vit/ai-chat` branch `dev`) for five Rust crates:**
-- Risk: Five production Rust crates — `uni-common`, `uni-settings`, `uni-ssh`, `uni-terminal`, `uni-db` — and two more via transitive — `uni-process`, `uni-settings` — come from the mutable `dev` branch of a private GitHub repo. `Cargo.lock` pins them to commit `862d4ad85777f430731530cea761c039bc152119`, but `cargo update` would pull whatever `dev` points to at that moment.
-- Files: `src-tauri/Cargo.toml:22-29`, `crates/claude-code-core/Cargo.toml:9-10`, `Cargo.lock`
-- Impact: Unreviewed upstream changes can silently enter the build after `cargo update`. Source of core SSH, terminal, and settings logic is not locally auditable.
-- Fix approach: Pin to specific git tags or SHA revisions in `Cargo.toml` (not just branch). Consider vendoring with `cargo vendor`.
-
-**No integrity enforcement for private npm packages at build time:**
-- Risk: While `package-lock.json` contains `integrity` (sha512) hashes for `@uni-fw/*` packages (`package-lock.json:2058-2097`), if the private registry serves a different tarball with the same version number the lock hash would catch it — but only if `npm ci` is used (not `npm install`).
-- Files: `package-lock.json`
-- Current mitigation: `package-lock.json` exists and has integrity hashes.
-- Recommendations: Enforce `npm ci` in all build scripts and CI. Document this requirement.
-
----
-
 ## Tech Debt
 
 **Module-level mutable `tabCounter` persists across hot-reloads:**
