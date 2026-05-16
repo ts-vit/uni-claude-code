@@ -1,0 +1,21 @@
+[package]
+name = "uni-settings"
+version = "0.1.0"
+edition = "2021"
+description = "File-based JSON settings store with atomic writes for UNI Framework"
+license = "MIT"
+repository = "https://github.com/ts-vit/ai-chat"
+homepage = "https://github.com/ts-vit/ai-chat"
+keywords = ["settings", "configuration", "json", "atomic-write"]
+categories = ["config"]
+readme = "README.md"
+
+[dependencies]
+uni-common = { path = "../uni-common" }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+async-trait = "0.1"
+
+[dev-dependencies]
+tempfile = "3"
