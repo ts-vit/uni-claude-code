@@ -65,7 +65,7 @@
 
 **Plans**: 3 plans
   - [x] 03-01-PLAN.md — Создать top-level `README.md` на русском, quickstart-only (~40-60 строк), без упоминания приватного реестра/git (BUILD-04)
-  - [ ] 03-02-PLAN.md — Ревизия `CLAUDE.md` (свободная часть, line ~53) + `.planning/codebase/{STACK,INTEGRATIONS,ARCHITECTURE,CONCERNS,CONVENTIONS,TESTING}.md` под вендорированное состояние; удалить «Supply Chain Risk» секцию в CONCERNS.md (BUILD-06 расширенный scope per D-C1/D-C2)
+  - [x] 03-02-PLAN.md — Ревизия `CLAUDE.md` (свободная часть, line ~53) + `.planning/codebase/{STACK,INTEGRATIONS,ARCHITECTURE,CONCERNS,CONVENTIONS,TESTING}.md` под вендорированное состояние; удалить «Supply Chain Risk» секцию в CONCERNS.md (BUILD-06 расширенный scope per D-C1/D-C2)
   - [ ] 03-03-PLAN.md — End-to-end verify в чистом клоне (`git clone --no-local` в temp + 5 grep-инвариантов + `npm ci` / `cargo build --workspace` / `npm run test:all`); финальный `03-VERIFICATION.md` (BUILD-01, BUILD-02, BUILD-03, BUILD-05)
 
 ## Progress
@@ -77,4 +77,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Rust Vendoring | 3/3 | Complete | 2026-05-16 |
 | 2. npm Vendoring | 3/3 | Verified PASS | 2026-05-16 |
-| 3. Build & Docs | 1/3 | Executing | - |
+| 3. Build & Docs | 2/3 | In Progress|  |
