@@ -25,15 +25,11 @@
 - ✓ **Файловые операции** — read/write/diff, git_branch_info, git_changed_files — existing
 - ✓ **Интернационализация** — EN + RU локали через react-i18next — existing
 - ✓ **Настройки** — JSON-хранилище через `uni-settings::JsonSettingsStore`, dev-AppData разделён от prod через TAURI_CONFIG — existing
+- ✓ **6 крейтов `uni-*` вендорированы в `crates/`** как path-зависимости workspace; git-источник `github.com/ts-vit/ai-chat` удалён из `Cargo.toml`/`Cargo.lock`; `cargo build --workspace` проходит без сети — Validated in Phase 1: Rust Vendoring
 
 ### Active
 
 <!-- Текущая milestone: убрать внешние приватные зависимости. -->
-
-**Rust (фаза 1):**
-- [ ] Внести 6 крейтов из `ai-chat/dev` (`uni-common`, `uni-settings`, `uni-ssh`, `uni-terminal`, `uni-db`, `uni-process`) в `crates/` как path-зависимости workspace
-- [ ] Убрать git-источник `https://github.com/ts-vit/ai-chat` из `Cargo.toml` и `Cargo.lock`
-- [ ] `cargo build --workspace` проходит без сети
 
 **npm (фаза 2):**
 - [ ] Внести 3 пакета (`@uni-fw/ssh-ui`, `@uni-fw/terminal-ui`, `@uni-fw/ui`) в `packages/uni-fw-*/` как npm workspaces
@@ -118,4 +114,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-16 after initialization*
+*Last updated: 2026-05-16 after Phase 1 (Rust Vendoring) completion*
