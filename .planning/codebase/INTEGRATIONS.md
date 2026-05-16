@@ -63,7 +63,7 @@ Pipeline task statuses: `draft` → `prompt_ready` → `queued` → `discussing`
 
 ## SSH Tunneling
 
-**Provider:** `uni-ssh` crate (git: `https://github.com/ts-vit/ai-chat`, branch `dev`)
+**Provider:** `uni-ssh` crate (vendored as `crates/uni-ssh` path-dependency)
 - Manager: `uni_ssh::SshTunnelManager` — singleton managed app state
 - Config: `uni_ssh::SshConfig` — host, port, username, `auth_type` (`"password"` or key), `password`, `private_key` (path), `port_forward`
 - Port forwarding: `uni_ssh::PortForwardConfig` — local port 0 (OS-assigned), remote host + port
@@ -130,8 +130,8 @@ All commands registered in `src-tauri/src/lib.rs` via `tauri::generate_handler![
 
 **Required at runtime:**
 - `claude` CLI binary on PATH (or configured via `claude.path` setting)
-- `@uni-fw/*` npm packages from private registry `https://npm.ts-vit.com` (registry configured in `.npmrc`)
-- UNI Framework Rust crates from `https://github.com/ts-vit/ai-chat` (branch `dev`) — requires git access at build time
+- `@uni-fw/*` npm packages vendored as workspace packages in `packages/uni-fw-*` (resolved locally, no external registry)
+- UNI Framework Rust crates vendored as workspace path-dependencies in `crates/uni-*` (no git access required at build time)
 
 **Settings keys (runtime-configurable via UI):**
 - `claude.path` — override path to claude CLI binary

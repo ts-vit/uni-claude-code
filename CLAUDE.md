@@ -48,9 +48,12 @@ Frontend calls Rust backend via `invoke("command_name", params)` (Tauri IPC). Ba
 - `SshTunnelManager` — SSH connections with port forwarding
 - `TerminalManager` — PTY sessions
 
-### External Dependencies
+### Vendored Dependencies
 
-UNI Framework packages (`@uni-fw/*` on frontend, `uni-*` Rust crates) come from a private registry (npm: npm.ts-vit.com, git: github.com/ts-vit/ai-chat branch dev).
+UNI Framework packages live inside this repository as vendored snapshots.
+`uni-*` Rust crates: `crates/uni-{common,process,settings,db,ssh,terminal}/` — workspace path-dependencies declared in `Cargo.toml`.
+`@uni-fw/*` npm packages: `packages/uni-fw-{ui,ssh-ui,terminal-ui}/` — npm workspaces declared in root `package.json` `"workspaces"` field.
+Upstream sync is not maintained — vendored copy is a one-shot snapshot from `D:\work-ai\ai-chat`.
 
 ## Testing
 

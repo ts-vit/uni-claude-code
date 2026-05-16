@@ -55,7 +55,7 @@
 - `@tanstack/react-virtual` 3.13.23 — virtualised list rendering for message history
 - `@tabler/icons-react` 3.31.0 — icon set throughout UI
 
-**UNI Framework (Frontend — private registry `npm.ts-vit.com`):**
+**UNI Framework (Frontend — vendored npm workspaces in `packages/uni-fw-*`):**
 - `@uni-fw/ui` ^0.1.0 — `MarkdownRenderer`, `useSettings`, `UniProvider`, `ConfirmModal`
 - `@uni-fw/terminal-ui` ^0.1.5 — `TerminalPanel` component
 - `@uni-fw/ssh-ui` ^0.1.2 — SSH configuration UI components
@@ -70,7 +70,7 @@
 - `dirs` 6 — platform home dir / app-data paths
 - `tracing` 0.1 — structured logging in `claude-code-core`
 
-**UNI Framework (Rust — git `https://github.com/ts-vit/ai-chat` branch `dev`):**
+**UNI Framework (Rust — vendored workspace path-dependencies in `crates/uni-*`):**
 - `uni-common` — shared utilities: `generate_id()`, `now_unix_secs()`, `UniError`
 - `uni-settings` — `JsonSettingsStore` / `SettingsStore` trait; persists `settings.json`
 - `uni-ssh` — `SshTunnelManager`, `SshConfig`, `SshEvent`, `PortForwardConfig`
@@ -94,7 +94,7 @@
 - TypeScript config: `tsconfig.json` — strict mode, ES2020 target, bundler module resolution, `vitest/globals` types injected
 - Vite config: `vite.config.ts` — port 1420, `**/src-tauri/**` excluded from file watcher
 - Vitest config: `vitest.config.ts` — jsdom environment, globals, setup file `src/__tests__/setup.ts`
-- Private npm registry for `@uni-fw/*`: configured in `.npmrc` as `@uni-fw:registry=https://npm.ts-vit.com`
+- `@uni-fw/*` packages resolved as npm workspaces (no `.npmrc` required — package source is `packages/uni-fw-*` inside repo)
 
 ## Platform Requirements
 

@@ -89,9 +89,9 @@
 - Depends on: `uni-process`, `uni-common`, `serde_json`, `tracing`
 - Used by: `src-tauri/src/commands/claude.rs`
 
-**UNI Framework Layer (external):**
+**UNI Framework Layer (vendored):**
 - Purpose: Shared infrastructure (settings, SSH, terminal, DB, UI primitives)
-- Location: `github.com/ts-vit/ai-chat` branch `dev` (git dependency)
+- Location: `crates/uni-*` (workspace path-dependencies) and `packages/uni-fw-*` (npm workspaces)
 - Contains: `uni-settings`, `uni-ssh`, `uni-terminal`, `uni-db`, `uni-common`, `uni-process`
 - Used by: Both `src-tauri` and `crates/claude-code-core`
 
