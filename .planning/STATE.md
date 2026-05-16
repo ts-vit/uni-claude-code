@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: phase_complete
-stopped_at: Phase 01 (Rust Vendoring) завершена — все 3 плана выполнены, RUST-08/09/10 закрыты
-last_updated: "2026-05-16T08:38:36Z"
+status: ready_to_plan
+stopped_at: Phase 01 complete (3/3) — ready to discuss Phase 2
+last_updated: 2026-05-16T08:49:14.491Z
 last_activity: 2026-05-16 -- Plan 01-03 (regenerate-lock-and-verify) завершён, Phase 1 закрыта
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 3
   completed_plans: 3
-  percent: 100
+  percent: 33
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-16)
 
 **Core value:** Чистый клон репозитория без сети полностью собирается — `npm ci` и `cargo build` проходят, тесты зелёные.
-**Current focus:** Phase 01 — rust-vendoring (ЗАВЕРШЕНА). Следующая — Phase 02 — npm-vendoring.
+**Current focus:** Phase 2 — npm vendoring
 
 ## Current Position
 
-Phase: 01 (rust-vendoring) — COMPLETE
-Plan: 3 of 3 завершён (Phase 1 закрыта целиком)
-Status: Phase 01 завершена. Следующая работа — Phase 02 (npm-vendoring) — TBD plans.
-Last activity: 2026-05-16 -- Plan 01-03 (regenerate-lock-and-verify) завершён
+Phase: 2
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-05-16
 
 Progress: [██████████] 100% (Phase 1 / Phase 1)
 
@@ -36,7 +36,7 @@ Progress: [██████████] 100% (Phase 1 / Phase 1)
 
 **Velocity:**
 
-- Total plans completed: 3
+- Total plans completed: 6
 - Average duration: ~3 min
 - Total execution time: ~8 min
 
@@ -45,6 +45,7 @@ Progress: [██████████] 100% (Phase 1 / Phase 1)
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01 rust-vendoring | 3 | ~8 min | ~2.7 min |
+| 01 | 3 | - | - |
 
 **Recent Trend:**
 
