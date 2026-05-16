@@ -1,3 +1,12 @@
 [workspace]
-members = ["src-tauri", "crates/claude-code-core"]
+members = [
+    "src-tauri",
+    "crates/claude-code-core",
+    "crates/uni-common",
+    "crates/uni-process",
+    "crates/uni-settings",
+    "crates/uni-db",
+    "crates/uni-ssh",
+    "crates/uni-terminal",
+]
 resolver = "2"
