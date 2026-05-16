@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 2 context gathered
-last_updated: "2026-05-16T09:47:04.468Z"
+last_updated: "2026-05-16T09:52:51.813Z"
 last_activity: 2026-05-16
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
   percent: 33
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-16)
 ## Current Position
 
 Phase: 02 (npm-vendoring) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-05-16
 
-Progress: [███████░░░] 67%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [███████░░░] 67%
 
 *Updated after each plan completion*
 | Phase 02-npm-vendoring P01 | 1.5min | 1 tasks | 89 files |
+| Phase 02-npm-vendoring P02 | 2min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,10 @@ Progress: [███████░░░] 67%
 - [Phase ?]: 02-01: Snapshot-копия побайтная — repository=/homepage= и peerDependencies @uni-fw/ui сохранены как есть (D-07, D-09)
 - [Phase ?]: 02-01: Корневой package.json, .npmrc, package-lock.json НЕ изменены — scope Plan 02-02 и 02-03
 - [Phase ?]: 02-01: tsup/tsconfig.build/vitest configs и src/__tests__/ скопированы как спящие артефакты (D-02, D-05, D-06)
+- [Phase ?]: 02-02: Source-direct entry в трёх вендорированных package.json — main/types/exports указывают на ./src/index.ts вместо dist/ (D-01); Vite/tsc резолвят TS через workspace symlink без build step
+- [Phase ?]: 02-02: @uni-fw/* в корневом package.json переведены на workspace:* (D-04); @xterm/* peer-deps подняты в root dependencies явно — npm не ставит peerDependencies автоматически
+- [Phase ?]: 02-02: .npmrc удалён полностью (D-11); npm.ts-vit.com нигде в репо не упоминается; T-02-03 mitigated проверкой отсутствия auth-директив перед удалением
+- [Phase ?]: 02-02: Минимум магии — никаких overrides/peerDependenciesMeta/resolutions/nohoist (D-10); package-lock.json НЕ регенерировался, scope Plan 02-03
 
 ### Pending Todos
 
@@ -95,6 +100,6 @@ Progress: [███████░░░] 67%
 
 ## Session Continuity
 
-Last session: 2026-05-16T09:46:40.718Z
+Last session: 2026-05-16T09:52:43.617Z
 Stopped at: Phase 2 context gathered
 Resume file: None

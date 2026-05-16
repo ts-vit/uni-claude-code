@@ -25,9 +25,9 @@
 - [x] **NPM-01**: Пакет `@uni-fw/ui` вкопирован в `packages/uni-fw-ui/` (snapshot из `D:\work-ai\ai-chat`) с собственным `package.json`
 - [x] **NPM-02**: Пакет `@uni-fw/ssh-ui` вкопирован в `packages/uni-fw-ssh-ui/`
 - [x] **NPM-03**: Пакет `@uni-fw/terminal-ui` вкопирован в `packages/uni-fw-terminal-ui/`
-- [ ] **NPM-04**: В корневой `package.json` добавлено `"workspaces": ["packages/*"]`
-- [ ] **NPM-05**: `dependencies` в корневом `package.json` для `@uni-fw/*` либо удалены, либо заменены на `"workspace:*"` (как требует npm workspaces)
-- [ ] **NPM-06**: Файл `.npmrc` с приватным реестром `npm.ts-vit.com` удалён
+- [x] **NPM-04**: В корневой `package.json` добавлено `"workspaces": ["packages/*"]`
+- [x] **NPM-05**: `dependencies` в корневом `package.json` для `@uni-fw/*` либо удалены, либо заменены на `"workspace:*"` (как требует npm workspaces)
+- [x] **NPM-06**: Файл `.npmrc` с приватным реестром `npm.ts-vit.com` удалён
 - [ ] **NPM-07**: Существующие импорты `import { ... } from "@uni-fw/ui"` (и аналогичные) в `src/` продолжают работать без правок
 - [ ] **NPM-08**: `npm ci` проходит без сетевого доступа к `npm.ts-vit.com`
 - [ ] **NPM-09**: `npm run typecheck` проходит — типы из вендорированных пакетов резолвятся корректно
@@ -86,9 +86,9 @@
 | NPM-01 | Phase 2 | Complete |
 | NPM-02 | Phase 2 | Complete |
 | NPM-03 | Phase 2 | Complete |
-| NPM-04 | Phase 2 | Pending |
-| NPM-05 | Phase 2 | Pending |
-| NPM-06 | Phase 2 | Pending |
+| NPM-04 | Phase 2 | Complete |
+| NPM-05 | Phase 2 | Complete |
+| NPM-06 | Phase 2 | Complete |
 | NPM-07 | Phase 2 | Pending |
 | NPM-08 | Phase 2 | Pending |
 | NPM-09 | Phase 2 | Pending |
