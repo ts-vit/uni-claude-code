@@ -9,12 +9,12 @@
 
 ### Rust Vendoring
 
-- [ ] **RUST-01**: Крейт `uni-common` вкопирован в `crates/uni-common/` (snapshot из `D:\work-ai\ai-chat`) и добавлен в `[workspace] members` корневого `Cargo.toml`
-- [ ] **RUST-02**: Крейт `uni-process` вкопирован в `crates/uni-process/` и добавлен в workspace
-- [ ] **RUST-03**: Крейт `uni-settings` вкопирован в `crates/uni-settings/` и добавлен в workspace
-- [ ] **RUST-04**: Крейт `uni-db` вкопирован в `crates/uni-db/` и добавлен в workspace
-- [ ] **RUST-05**: Крейт `uni-ssh` вкопирован в `crates/uni-ssh/` и добавлен в workspace
-- [ ] **RUST-06**: Крейт `uni-terminal` вкопирован в `crates/uni-terminal/` и добавлен в workspace
+- [x] **RUST-01**: Крейт `uni-common` вкопирован в `crates/uni-common/` (snapshot из `D:\work-ai\ai-chat`) и добавлен в `[workspace] members` корневого `Cargo.toml`
+- [x] **RUST-02**: Крейт `uni-process` вкопирован в `crates/uni-process/` и добавлен в workspace
+- [x] **RUST-03**: Крейт `uni-settings` вкопирован в `crates/uni-settings/` и добавлен в workspace
+- [x] **RUST-04**: Крейт `uni-db` вкопирован в `crates/uni-db/` и добавлен в workspace
+- [x] **RUST-05**: Крейт `uni-ssh` вкопирован в `crates/uni-ssh/` и добавлен в workspace
+- [x] **RUST-06**: Крейт `uni-terminal` вкопирован в `crates/uni-terminal/` и добавлен в workspace
 - [ ] **RUST-07**: Все ссылки `git = "https://github.com/ts-vit/ai-chat", branch = "dev"` в `src-tauri/Cargo.toml` и `crates/claude-code-core/Cargo.toml` заменены на `path = "../<crate>"` / workspace-зависимости
 - [ ] **RUST-08**: `Cargo.lock` не содержит ссылок на `github.com/ts-vit/ai-chat`
 - [ ] **RUST-09**: `cargo build --workspace` проходит без сетевого доступа к git-репозиторию ai-chat
@@ -73,12 +73,12 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RUST-01 | Phase 1 | Pending |
-| RUST-02 | Phase 1 | Pending |
-| RUST-03 | Phase 1 | Pending |
-| RUST-04 | Phase 1 | Pending |
-| RUST-05 | Phase 1 | Pending |
-| RUST-06 | Phase 1 | Pending |
+| RUST-01 | Phase 1 | Done (Plan 01-01) |
+| RUST-02 | Phase 1 | Done (Plan 01-01) |
+| RUST-03 | Phase 1 | Done (Plan 01-01) |
+| RUST-04 | Phase 1 | Done (Plan 01-01) |
+| RUST-05 | Phase 1 | Done (Plan 01-01) |
+| RUST-06 | Phase 1 | Done (Plan 01-01) |
 | RUST-07 | Phase 1 | Pending |
 | RUST-08 | Phase 1 | Pending |
 | RUST-09 | Phase 1 | Pending |
