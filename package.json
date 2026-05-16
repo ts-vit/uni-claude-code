@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tauri dev",
+    "dev": "set TAURI_CONFIG={\"identifier\":\"com.uni.uni-claude-code-dev\"} && tauri dev",
     "build": "tauri build",
     "vite:dev": "vite",
     "vite:build": "vite build",
