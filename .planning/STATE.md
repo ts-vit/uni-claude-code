@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 02-03 PLAN — Phase 2 ready for verification
-last_updated: "2026-05-16T10:04:03.572Z"
+status: phase_verified
+stopped_at: Phase 2 verified (PASS) — ready to start Phase 3 (Build & Docs)
+last_updated: "2026-05-16T15:10:00.000Z"
 last_activity: 2026-05-16
 progress:
   total_phases: 3
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-16)
 
 **Core value:** Чистый клон репозитория без сети полностью собирается — `npm ci` и `cargo build` проходят, тесты зелёные.
-**Current focus:** Phase 02 — npm-vendoring
+**Current focus:** Phase 02 verified PASS — следующий шаг Phase 03 (Build & Docs)
 
 ## Current Position
 
-Phase: 02 (npm-vendoring) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
+Phase: 02 (npm-vendoring) — VERIFIED PASS
+Plan: 3 of 3 (все планы выполнены)
+Status: Phase complete & verified — ready for Phase 03
 Last activity: 2026-05-16
 
-Progress: [██████████] 100%
+Progress: [██████████] 100% Phase 02
 
 ## Performance Metrics
 
@@ -77,16 +77,17 @@ Progress: [██████████] 100%
 - 01-03: Регенерация через `rm Cargo.lock && cargo generate-lockfile` — гарантированно убирает stale git-source записи без риска residual cache
 - 01-03: Никаких `#[ignore]` правок в исходниках uni-* крейтов не потребовалось — все тесты прошли с первого запуска; MAINT-02 (v2) остаётся без конкретных кандидатов из этой фазы
 - 01-03: Tauri ACL-схемы (`src-tauri/gen/schemas/*.json`) закоммичены в составе Task 2 как ожидаемый side-effect автоматической перегенерации tauri-build после bump минорной версии Tauri
-- [Phase ?]: 02-01: Snapshot-копия побайтная — repository=/homepage= и peerDependencies @uni-fw/ui сохранены как есть (D-07, D-09)
-- [Phase ?]: 02-01: Корневой package.json, .npmrc, package-lock.json НЕ изменены — scope Plan 02-02 и 02-03
-- [Phase ?]: 02-01: tsup/tsconfig.build/vitest configs и src/__tests__/ скопированы как спящие артефакты (D-02, D-05, D-06)
-- [Phase ?]: 02-02: Source-direct entry в трёх вендорированных package.json — main/types/exports указывают на ./src/index.ts вместо dist/ (D-01); Vite/tsc резолвят TS через workspace symlink без build step
-- [Phase ?]: 02-02: @uni-fw/* в корневом package.json переведены на workspace:* (D-04); @xterm/* peer-deps подняты в root dependencies явно — npm не ставит peerDependencies автоматически
-- [Phase ?]: 02-02: .npmrc удалён полностью (D-11); npm.ts-vit.com нигде в репо не упоминается; T-02-03 mitigated проверкой отсутствия auth-директив перед удалением
-- [Phase ?]: 02-02: Минимум магии — никаких overrides/peerDependenciesMeta/resolutions/nohoist (D-10); package-lock.json НЕ регенерировался, scope Plan 02-03
-- [Phase ?]: 02-03: package-lock.json регенерирован через rm + npm install — 0 ссылок на npm.ts-vit.com, @uni-fw/* как workspace symlinks (link:true), lockfileVersion=3
-- [Phase ?]: 02-03: Defensive vitest include-фильтр (Rule 1 deviation) — корневой test runner ограничен src/**/*.{test,spec}.{ts,tsx} чтобы тесты packages/uni-fw-*/src/__tests__/ не запускались (D-05/D-06)
-- [Phase ?]: 02-03: DoD фазы 2 npm Vendoring выполнен — npm ci + npm run typecheck + npm run test зелёные (19 файлов / 106 тестов), никаких it.skip правок не потребовалось, setup.ts не тронут
+- 02-01: Snapshot-копия побайтная — repository=/homepage= и peerDependencies @uni-fw/ui сохранены как есть (D-07, D-09)
+- 02-01: Корневой package.json, .npmrc, package-lock.json НЕ изменены — scope Plan 02-02 и 02-03
+- 02-01: tsup/tsconfig.build/vitest configs и src/__tests__/ скопированы как спящие артефакты (D-02, D-05, D-06)
+- 02-02: Source-direct entry в трёх вендорированных package.json — main/types/exports указывают на ./src/index.ts вместо dist/ (D-01); Vite/tsc резолвят TS через workspace symlink без build step
+- 02-02: @uni-fw/* в корневом package.json переведены на workspace:* (D-04); @xterm/* peer-deps подняты в root dependencies явно — npm не ставит peerDependencies автоматически
+- 02-02: .npmrc удалён полностью (D-11); npm.ts-vit.com нигде в репо не упоминается; T-02-03 mitigated проверкой отсутствия auth-директив перед удалением
+- 02-02: Минимум магии — никаких overrides/peerDependenciesMeta/resolutions/nohoist (D-10); package-lock.json НЕ регенерировался, scope Plan 02-03
+- 02-03: package-lock.json регенерирован через rm + npm install — 0 ссылок на npm.ts-vit.com, @uni-fw/* как workspace symlinks (link:true), lockfileVersion=3
+- 02-03: Defensive vitest include-фильтр (Rule 1 deviation) — корневой test runner ограничен src/**/*.{test,spec}.{ts,tsx} чтобы тесты packages/uni-fw-*/src/__tests__/ не запускались (D-05/D-06)
+- 02-03: DoD фазы 2 npm Vendoring выполнен — npm ci + npm run typecheck + npm run test зелёные (19 файлов / 106 тестов), никаких it.skip правок не потребовалось, setup.ts не тронут
+- 02-VERIFICATION: Phase 2 verified PASS — 14/14 truths, 10/10 NPM-* requirements satisfied, 6/6 key links wired, 0 antipatterns; live `npm run typecheck` + `npm run test` зелёные на момент верификации; ни один файл в src/src-tauri/crates не тронут за 9 коммитов фазы (compatibility D-12)
 
 ### Pending Todos
 
@@ -104,6 +105,6 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-05-16T10:04:03.559Z
-Stopped at: Completed 02-03 PLAN — Phase 2 ready for verification
+Last session: 2026-05-16T15:10:00.000Z
+Stopped at: Phase 2 verified (PASS) — ready to start Phase 3 (Build & Docs)
 Resume file: None

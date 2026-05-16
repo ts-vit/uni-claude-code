@@ -1,4 +1,4 @@
-# Roadmap: UNI Claude Code — Вендоринг приватных зависимостей
+﻿# Roadmap: UNI Claude Code — Вендоринг приватных зависимостей
 
 ## Overview
 
@@ -45,6 +45,7 @@
   - [x] 02-01-PLAN.md — Snapshot 3 пакетов @uni-fw/* в packages/uni-fw-*/
   - [x] 02-02-PLAN.md — Объявить workspaces, переписать @uni-fw/* на workspace:*, перевести пакетные манифесты на source-direct entry, удалить .npmrc
   - [x] 02-03-PLAN.md — Регенерировать package-lock.json, npm ci + typecheck + vitest
+  - [x] 02-VERIFICATION.md — Phase 2 verified PASS (2026-05-16, 14/14 truths, 10/10 NPM-* satisfied)
 **UI hint**: yes
 
 ### Phase 3: Build & Docs
@@ -66,5 +67,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Rust Vendoring | 3/3 | Complete | 2026-05-16 |
-| 2. npm Vendoring | 3/3 | Complete   | 2026-05-16 |
+| 2. npm Vendoring | 3/3 | Verified PASS | 2026-05-16 |
 | 3. Build & Docs | 0/TBD | Not started | - |
