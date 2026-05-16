@@ -1,4 +1,4 @@
-﻿# Roadmap: UNI Claude Code — Вендоринг приватных зависимостей
+# Roadmap: UNI Claude Code — Вендоринг приватных зависимостей
 
 ## Overview
 
@@ -56,8 +56,17 @@
   1. `npm run dev` (Tauri dev) и `npm run build` (Tauri prod) запускаются из чистого клона без сетевого доступа к `npm.ts-vit.com` и `github.com/ts-vit/ai-chat`
   2. `npm run test:all` (typecheck + vitest + cargo test) зелёный из чистого клона без приватной сети
   3. README репозитория содержит инструкцию по сборке из чистого клона и не упоминает приватный реестр или git-источник `ai-chat`; `CLAUDE.md` обновлён — `@uni-fw/*` и `uni-*` описаны как вендорированные внутри репо, а не внешние
-  4. End-to-end проверка пройдена: в новом каталоге выполнено `git clone <local-repo>`, сеть к `npm.ts-vit.com` и `github.com/ts-vit/ai-chat` заблокирована, и последовательность `npm ci && cargo build --workspace && npm run test:all` отрабатывает без ошибок
-**Plans**: TBD
+  4. End-to-end проверка пройдена: в новом каталоге выполнено `git clone <local-repo>`, сеть к `npm.ts-vit.com` и `github.com/ts-vit/ai-chat` заблокирована, и последовательность `npm ci && cargo build --workspace && npm run test:all` отрабатывает без ошибок (см. deviation D-V2 в `03-CONTEXT.md` — физическая блокировка заменена на grep-инварианты + полный прогон)
+
+**Cross-cutting constraints (применяются ко всем планам фазы 3):**
+- Никаких новых devDependencies, никаких новых скриптов в `package.json` (D-S1, D-S2)
+- Никаких изменений между GSD-маркерами в `CLAUDE.md` (D-C4) — правки только в свободных частях файла
+- Сеть физически не блокируется (D-V1, D-V2) — независимость доказывается через grep-инварианты + полный прогон
+
+**Plans**: 3 plans
+  - [ ] 03-01-PLAN.md — Создать top-level `README.md` на русском, quickstart-only (~40-60 строк), без упоминания приватного реестра/git (BUILD-04)
+  - [ ] 03-02-PLAN.md — Ревизия `CLAUDE.md` (свободная часть, line ~53) + `.planning/codebase/{STACK,INTEGRATIONS,ARCHITECTURE,CONCERNS,CONVENTIONS,TESTING}.md` под вендорированное состояние; удалить «Supply Chain Risk» секцию в CONCERNS.md (BUILD-06 расширенный scope per D-C1/D-C2)
+  - [ ] 03-03-PLAN.md — End-to-end verify в чистом клоне (`git clone --no-local` в temp + 5 grep-инвариантов + `npm ci` / `cargo build --workspace` / `npm run test:all`); финальный `03-VERIFICATION.md` (BUILD-01, BUILD-02, BUILD-03, BUILD-05)
 
 ## Progress
 
@@ -68,4 +77,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Rust Vendoring | 3/3 | Complete | 2026-05-16 |
 | 2. npm Vendoring | 3/3 | Verified PASS | 2026-05-16 |
-| 3. Build & Docs | 0/TBD | Not started | - |
+| 3. Build & Docs | 0/3 | Planned | - |
