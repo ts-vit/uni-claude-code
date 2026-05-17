@@ -22,18 +22,9 @@ vi.mock("../components/ProjectSidebar", () => ({
 }));
 
 vi.mock("../components/DualPanelLayout", () => ({
-  DualPanelLayout: ({
-    projectId,
-    onStateChange,
-    initialState,
-  }: {
-    projectId: string;
-    onStateChange?: (state: { projectId: string }) => void;
-    initialState?: { projectId: string };
-  }) => {
-    onStateChange?.(initialState ?? { projectId });
-    return <div>{`dual-panel-${projectId}`}</div>;
-  },
+  DualPanelLayout: ({ projectId }: { projectId: string }) => (
+    <div>{`dual-panel-${projectId}`}</div>
+  ),
 }));
 
 vi.mock("../components/SettingsPage", () => ({ SettingsPage: () => <div>settings</div> }));
@@ -69,7 +60,7 @@ describe("App", () => {
     mockedInvoke.mockResolvedValue(null);
   });
 
-  it("does not render inactive project layout", async () => {
+  it("keeps previously active project layout mounted when switching projects", async () => {
     renderWithMantine(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "open-project-1" }));
@@ -84,6 +75,50 @@ describe("App", () => {
       expect(screen.getByText("dual-panel-p2")).toBeInTheDocument();
     });
 
-    expect(screen.queryByText("dual-panel-p1")).not.toBeInTheDocument();
+    // PERSIST-02: both DualPanelLayouts must remain mounted in DOM after project switch.
+    // The previously-active project's layout is hidden via display:none (not unmounted),
+    // so its React state (ChatPanel messages, sessionResult, refs) survives the switch.
+    expect(screen.getByText("dual-panel-p1")).toBeInTheDocument();
+    expect(screen.getByText("dual-panel-p2")).toBeInTheDocument();
+  });
+
+  it("keeps active project layout mounted when switching views", async () => {
+    renderWithMantine(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "open-project-1" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("dual-panel-p1")).toBeInTheDocument();
+    });
+
+    // Selector fallback: Mantine ActionIcon inside <Tooltip label={t("common.settings")}>
+    // does not propagate the tooltip label as an aria-label, so getByRole("button",
+    // { name: "common.settings" }) does not match. Use the IconSettings class selector
+    // (pattern already used in DualPanelLayout.test.tsx for icon-only buttons).
+    const settingsBtn = document
+      .querySelector(".tabler-icon-settings")
+      ?.closest("button");
+    expect(settingsBtn).not.toBeNull();
+    fireEvent.click(settingsBtn!);
+
+    // After view switches to "settings", the SettingsPage mock renders "settings".
+    await waitFor(() => {
+      expect(screen.getByText("settings")).toBeInTheDocument();
+    });
+
+    // PERSIST-01: DualPanelLayout of the active project must remain mounted in DOM
+    // when view !== "main" (hidden via display:none on the parent wrapper).
+    expect(screen.getByText("dual-panel-p1")).toBeInTheDocument();
+
+    // Switch view back to "main" by clicking the same settings ActionIcon (it toggles).
+    fireEvent.click(settingsBtn!);
+
+    // After return to main, dual-panel-p1 is still mounted.
+    // SettingsPage mock may also still be in DOM (sibling overlay block uses display:none
+    // for view !== "main", but our mock is conditionally rendered inside that overlay via
+    // a view === "settings" ternary, so it unmounts). We only assert on dual-panel-p1.
+    await waitFor(() => {
+      expect(screen.getByText("dual-panel-p1")).toBeInTheDocument();
+    });
   });
 });
