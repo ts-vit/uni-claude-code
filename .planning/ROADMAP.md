@@ -36,7 +36,7 @@
   4. Идентификаторы вкладок (`panelId`) и привязанные к ним runner'ы на бэкенде остаются неизменными при навигации — никаких «Session already running»-ошибок при возврате на ранее активную вкладку.
 **Plans**: 3 plans
   - [x] 04-01-PLAN.md — Always-mounted рендер DualPanelLayout в src/App.tsx + удаление projectLayoutState Map
-  - [ ] 04-02-PLAN.md — Cleanup DualPanelLayout.tsx — удаление устаревшего state-lifting API
+  - [x] 04-02-PLAN.md — Cleanup DualPanelLayout.tsx — удаление устаревшего state-lifting API
   - [ ] 04-03-PLAN.md — Обновление App.test.tsx + полная test-pass + ручная UAT-верификация
 
 ### Phase 5: Chat Visibility & Controls
@@ -59,5 +59,5 @@
 | 1. Rust Vendoring | v1.0 | 3/3 | Complete | 2026-05-16 |
 | 2. npm Vendoring | v1.0 | 3/3 | Complete | 2026-05-16 |
 | 3. Build & Docs | v1.0 | 3/3 | Complete | 2026-05-16 |
-| 4. Chat Persistence | v1.1 | 1/3 | In Progress|  |
+| 4. Chat Persistence | v1.1 | 2/3 | In Progress|  |
 | 5. Chat Visibility & Controls | v1.1 | 0/0 | Not started | — |
