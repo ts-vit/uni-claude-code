@@ -13,7 +13,7 @@ import {
 } from "@tabler/icons-react";
 import { invoke } from "@tauri-apps/api/core";
 import { SettingsPage } from "./components/SettingsPage";
-import { DualPanelLayout, type DualPanelLayoutState } from "./components/DualPanelLayout";
+import { DualPanelLayout } from "./components/DualPanelLayout";
 import { SshStatusIndicator } from "./components/SshStatusIndicator";
 import { ProjectSidebar } from "./components/ProjectSidebar";
 import { CreateProjectModal } from "./components/CreateProjectModal";
@@ -27,8 +27,6 @@ import type { Project } from "./types/claude";
 import "./App.css";
 
 type View = "main" | "settings" | "history" | "files" | "claude-md" | "diff" | "pipeline";
-
-const projectLayoutState = new Map<string, DualPanelLayoutState>();
 
 export function App() {
   const { t } = useTranslation();
@@ -244,36 +242,23 @@ export function App() {
       </AppShell.Navbar>
       <AppShell.Main>
         <div style={{ height: "calc(100vh - 50px)", overflow: "hidden" }}>
-          {view === "settings" ? (
-            <SettingsPage />
-          ) : view === "pipeline" ? (
-            <PipelinePage
-              initialProjectId={activeProject?.id}
-              onProjectSelect={handleProjectSelect}
-            />
-          ) : view === "claude-md" && activeProject ? (
-            <ClaudeMdEditor cwd={activeProject.cwd} />
-          ) : view === "diff" && activeProject ? (
-            <DiffViewer cwd={activeProject.cwd} initialFile={diffInitialFile} />
-          ) : view === "files" && activeProject ? (
-            <FileTreePanel
-              cwd={activeProject.cwd}
-              onFileSelect={(path) => {
-                setDiffInitialFile(path);
-                setView("diff");
+          {/* (a) Main block: always-mounted DualPanelLayout per opened project.
+                 Visibility controlled by CSS display — never unmounted on view/project switch. */}
+          {activeProject ? (
+            <div
+              style={{
+                display: view === "main" ? "flex" : "none",
+                flexDirection: "column",
+                flex: 1,
+                height: "100%",
+                overflow: "hidden",
               }}
-            />
-          ) : view === "history" && activeProject ? (
-            <HistoryPage projectId={activeProject.id} />
-          ) : activeProject ? (
-            <>
-              {openedProjects
-                .filter((project) => project.id === activeProject.id && view === "main")
-                .map((project) => (
+            >
+              {openedProjects.map((project) => (
                 <div
                   key={project.id}
                   style={{
-                    display: "flex",
+                    display: project.id === activeProject.id && view === "main" ? "flex" : "none",
                     flex: 1,
                     flexDirection: "column",
                     height: "100%",
@@ -285,19 +270,52 @@ export function App() {
                     projectId={project.id}
                     projectModel={project.model}
                     projectPermissionMode={project.permissionMode}
-                    initialState={projectLayoutState.get(project.id)}
-                    onStateChange={(state) => {
-                      projectLayoutState.set(project.id, state);
-                    }}
                   />
                 </div>
-                ))}
-            </>
-          ) : (
+              ))}
+            </div>
+          ) : null}
+
+          {/* (b) View-overlay block: sibling of (a), visible when view !== "main". */}
+          <div
+            style={{
+              display: view !== "main" ? "flex" : "none",
+              flexDirection: "column",
+              flex: 1,
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
+            {view === "settings" ? (
+              <SettingsPage />
+            ) : view === "pipeline" ? (
+              <PipelinePage
+                initialProjectId={activeProject?.id}
+                onProjectSelect={handleProjectSelect}
+              />
+            ) : view === "claude-md" && activeProject ? (
+              <ClaudeMdEditor cwd={activeProject.cwd} />
+            ) : view === "diff" && activeProject ? (
+              <DiffViewer cwd={activeProject.cwd} initialFile={diffInitialFile} />
+            ) : view === "files" && activeProject ? (
+              <FileTreePanel
+                cwd={activeProject.cwd}
+                onFileSelect={(path) => {
+                  setDiffInitialFile(path);
+                  setView("diff");
+                }}
+              />
+            ) : view === "history" && activeProject ? (
+              <HistoryPage projectId={activeProject.id} />
+            ) : null}
+          </div>
+
+          {/* (c) Welcome block: shown only when no active project AND view === "main". */}
+          {!activeProject && view === "main" ? (
             <WelcomeScreen
               onCreateProject={() => setCreateModalOpened(true)}
             />
-          )}
+          ) : null}
         </div>
       </AppShell.Main>
       <CreateProjectModal
