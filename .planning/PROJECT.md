@@ -45,6 +45,8 @@
 - ✓ **3 npm-пакета `@uni-fw/*` вендорированы в `packages/`** как npm workspaces со ссылкой `workspace:*`; `.npmrc` с приватным реестром `https://npm.ts-vit.com` удалён; `npm ci` проходит без сети — Validated in Phase 2: npm Vendoring
 - ✓ **README.md и CLAUDE.md приведены в соответствие с вендорированной структурой** — top-level README на русском (quickstart-only); `.planning/codebase/*` зачищены от упоминаний приватного реестра и git-источника `ai-chat`; секция «Supply Chain Risk» удалена из `CONCERNS.md` — Validated in Phase 3: Build & Docs
 - ✓ **End-to-end проверка чистого клона** — в свежем temp-каталоге `git clone --no-local` + 5 grep-инвариантов (0 hits) + `npm ci` + `cargo build --workspace` + `npm run test:all` + `npm run build` отрабатывают exit 0 без приватной сети — Validated in Phase 3: Build & Docs
+- ✓ **PERSIST-01: view-switch не теряет переписку** — `DualPanelLayout` для каждого `openedProject` всегда смонтирован; видимость через CSS `display: flex/none`; `ChatPanel.messages`/refs/стриминг-буферы физически переживают переключение main ↔ settings/files/diff/history/claude-md/pipeline — Validated in Phase 4: Chat Persistence
+- ✓ **PERSIST-02: project-switch не теряет переписку** — `openedProjects.map` без фильтра в `App.tsx`; до 3 параллельных `DualPanelLayout` одновременно в DOM; переписка каждого проекта сохраняется при переключении A → B → C → A в пределах `ui.maxOpenProjects` — Validated in Phase 4: Chat Persistence
 
 ### Active
 
@@ -130,4 +132,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-18 — milestone v1.1 «Chat UX» открыта (фикс потери чата при навигации, метаданные сессии в StatusBar, UI-кнопка Clear).*
+*Last updated: 2026-05-18 — Phase 4 «Chat Persistence» завершена: PERSIST-01 + PERSIST-02 валидированы; deferred-todo WR-02 (terminal refit на view-switch) трекается в `.planning/todos/pending/`.*
