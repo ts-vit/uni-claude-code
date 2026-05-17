@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Chat UX
-status: ready_to_plan
-stopped_at: Phase 04 complete (3/3) — ready to discuss Phase 5
-last_updated: 2026-05-17T20:26:13.812Z
-last_activity: 2026-05-17 -- Phase 04 execution started
+status: planning
+stopped_at: Phase 5 context gathered
+last_updated: "2026-05-17T20:47:33.299Z"
+last_activity: 2026-05-17
 progress:
   total_phases: 2
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
   completed_plans: 3
-  percent: 0
+  percent: 50
 ---
 
 # Project State
@@ -85,9 +85,9 @@ Last activity: 2026-05-17
 
 ## Session Continuity
 
-Last session: 2026-05-18T00:00:00.000Z
-Stopped at: ROADMAP.md v1.1 создан, Phases 4-5 готовы к planning
-Resume file: .planning/ROADMAP.md (Phase 4: Chat Persistence — first up)
+Last session: 2026-05-17T20:47:33.289Z
+Stopped at: Phase 5 context gathered
+Resume file: .planning/phases/05-chat-visibility-controls/05-CONTEXT.md
 
 ## Operator Next Steps
 
