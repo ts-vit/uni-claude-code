@@ -1,110 +1,82 @@
-# Requirements: UNI Claude Code — Inline Private Dependencies
+# Requirements: UNI Claude Code — Chat UX (v1.1)
 
-**Defined:** 2026-05-16
+**Defined:** 2026-05-18
 **Core Value:** Чистый клон без сети полностью собирается — `npm ci` и `cargo build` проходят, тесты `uni-claude-code` зелёные.
+**Milestone Goal (v1.1):** Чат не теряется при навигации; в каждом моменте видно, с какой моделью идёт диалог и сколько токенов потрачено; базовые операции доступны через UI, а не только через текстовые команды.
 
-## v1 Requirements
+> Архив требований предыдущей milestone: [`.planning/milestones/v1.0-REQUIREMENTS.md`](milestones/v1.0-REQUIREMENTS.md) — 26 требований (RUST-01..10, NPM-01..10, BUILD-01..06), все Complete.
 
-Требования текущей milestone «убрать внешние приватные зависимости». Каждое требование маппится ровно на одну фазу роадмапа.
+## v1.1 Requirements
 
-### Rust Vendoring
+Требования текущей milestone. Каждое маппится ровно на одну фазу в `ROADMAP.md`.
 
-- [x] **RUST-01**: Крейт `uni-common` вкопирован в `crates/uni-common/` (snapshot из `D:\work-ai\ai-chat`) и добавлен в `[workspace] members` корневого `Cargo.toml`
-- [x] **RUST-02**: Крейт `uni-process` вкопирован в `crates/uni-process/` и добавлен в workspace
-- [x] **RUST-03**: Крейт `uni-settings` вкопирован в `crates/uni-settings/` и добавлен в workspace
-- [x] **RUST-04**: Крейт `uni-db` вкопирован в `crates/uni-db/` и добавлен в workspace
-- [x] **RUST-05**: Крейт `uni-ssh` вкопирован в `crates/uni-ssh/` и добавлен в workspace
-- [x] **RUST-06**: Крейт `uni-terminal` вкопирован в `crates/uni-terminal/` и добавлен в workspace
-- [x] **RUST-07**: Все ссылки `git = "https://github.com/ts-vit/ai-chat", branch = "dev"` в `src-tauri/Cargo.toml` и `crates/claude-code-core/Cargo.toml` заменены на `path = "../<crate>"` / workspace-зависимости
-- [x] **RUST-08**: `Cargo.lock` не содержит ссылок на `github.com/ts-vit/ai-chat`
-- [x] **RUST-09**: `cargo build --workspace` проходит без сетевого доступа к git-репозиторию ai-chat
-- [x] **RUST-10**: `cargo test --workspace` либо проходит, либо неудачи внутри `uni-*` крейтов изолированы (`#[ignore]` с TODO-комментарием) — тесты `src-tauri` и `claude-code-core` зелёные
+### Persistence — переписка сохраняется при навигации
 
-### npm Vendoring
+- [ ] **PERSIST-01**: Пользователь переключается из view «main» в любой другой view (`settings`, `files`, `diff`, `history`, `claude-md`, `pipeline`) и обратно — переписка во всех вкладках чата (массив `ChatMessage[]`, состояние стриминга, session_id) сохраняется без потерь, как будто переключения не было.
+- [ ] **PERSIST-02**: Пользователь переключается между активными проектами (в пределах `maxOpenProjects`, по умолчанию 3) — переписка во всех вкладках каждого из открытых проектов сохраняется при возврате к этому проекту.
 
-- [x] **NPM-01**: Пакет `@uni-fw/ui` вкопирован в `packages/uni-fw-ui/` (snapshot из `D:\work-ai\ai-chat`) с собственным `package.json`
-- [x] **NPM-02**: Пакет `@uni-fw/ssh-ui` вкопирован в `packages/uni-fw-ssh-ui/`
-- [x] **NPM-03**: Пакет `@uni-fw/terminal-ui` вкопирован в `packages/uni-fw-terminal-ui/`
-- [x] **NPM-04**: В корневой `package.json` добавлено `"workspaces": ["packages/*"]`
-- [x] **NPM-05**: `dependencies` в корневом `package.json` для `@uni-fw/*` либо удалены, либо заменены на `"workspace:*"` (как требует npm workspaces)
-- [x] **NPM-06**: Файл `.npmrc` с приватным реестром `npm.ts-vit.com` удалён
-- [x] **NPM-07**: Существующие импорты `import { ... } from "@uni-fw/ui"` (и аналогичные) в `src/` продолжают работать без правок
-- [x] **NPM-08**: `npm ci` проходит без сетевого доступа к `npm.ts-vit.com`
-- [x] **NPM-09**: `npm run typecheck` проходит — типы из вендорированных пакетов резолвятся корректно
-- [x] **NPM-10**: `npm run test` зелёный (vitest)
+### Visibility — метаданные сессии видны постоянно
 
-### Build & Documentation
+- [ ] **VIS-01**: Пользователь видит имя активной модели Claude (например `claude-sonnet-4-6`) постоянно в StatusBar для каждой запущенной сессии чата, а не только в одноразовом системном сообщении внутри переписки.
+- [ ] **VIS-02**: Пользователь видит `session_id` активной Claude-сессии постоянно в StatusBar (полный или префикс достаточной длины для корреляции с логами `~/.claude/projects/`).
+- [ ] **VIS-03**: Пользователь видит накопленное использование токенов текущей сессии Claude в StatusBar — отдельно input / output / cache (cache_creation + cache_read). Значение обновляется по мере получения `assistant`-событий с полем `usage`.
 
-- [x] **BUILD-01**: `npm run dev` (Tauri dev) запускается из чистого клона без сетевого доступа к приватным сервисам
-- [x] **BUILD-02**: `npm run build` (Tauri prod) проходит из чистого клона без сети
-- [x] **BUILD-03**: `npm run test:all` (typecheck + vitest + cargo test) зелёный
-- [x] **BUILD-04**: README обновлён — инструкция «как собрать из чистого клона», без упоминания приватного реестра или git-источника ai-chat
-- [x] **BUILD-05**: Финальная end-to-end проверка: новый каталог, `git clone <local-repo>`, отключённая сеть к ai-chat/npm.ts-vit.com, `npm ci && cargo build --workspace && npm run test:all` — всё зелёное
-- [x] **BUILD-06**: `CLAUDE.md` обновлён — упоминание `@uni-fw/*` и `uni-*` как внешних зависимостей удалено или переписано на «вендорированные внутри репо»
+### UI — кнопки для базовых операций
 
-## v2 Requirements
+- [ ] **UI-01**: Пользователь может полностью очистить переписку текущей вкладки чата нажатием кнопки в шапке `ChatPanel` (или соседнем читаемом месте) — без необходимости вводить текстовую команду `/clear` в поле ввода. Поведение кнопки эквивалентно `/clear` (сброс `messages`, `sessionResult`, `hasSessionRef`, `archivedMessagesRef`, стриминг-состояния).
 
-Не планируется в этой milestone, но возможные направления после неё.
+## Future Requirements
 
-### Maintenance
+Признаны полезными, но отложены за рамки v1.1. Не в текущем roadmap.
 
-- **MAINT-01**: Автоматический скрипт ресинхронизации с внешним ai-chat (если когда-то понадобится вытаскивать апдейты)
-- **MAINT-02**: Юнит-тесты внутри вендорированных пакетов причёсаны и стабильно зелёные
+### Persistence (расширенная)
 
-### Cleanup
+- **PERSIST-DB-01**: Сообщения чата сохраняются в SQLite и восстанавливаются при перезапуске приложения (миграция схемы, sync с панелями, ограничения по объёму).
+- **PERSIST-CONTINUE-01**: Подгрузка ранее завершённой Claude-сессии при открытии проекта через `--continue` Claude CLI вместо локальной восстановки.
 
-- **CLEAN-01**: Удалить устаревшие фичи из вендорированных пакетов, которые `uni-claude-code` не использует (уменьшение размера)
-- **CLEAN-02**: Перенести вендорированные пакеты в общий `src/` слой, если решено окончательно отказаться от концепции «пакет»
+### Visibility (расширенная)
+
+- **VIS-CTX-01**: Расчёт «% от контекста» с учётом per-model лимитов Claude (200k / 1M) и визуальный индикатор приближения к пределу. Требует справочника лимитов моделей.
+
+### UI / UX полировка
+
+- **UI-TAB-01**: Осмысленные лейблы табов вместо «Session 1/2/3» — по первому промпту, модели или режиму.
+- **UI-CLOSE-01**: Подтверждение (ConfirmModal) при попытке закрыть таб, у которого `status === "running"`, чтобы не потерять идущую задачу.
+- **UI-MODE-01**: Кликабельный mode-badge в шапке `ChatPanel` для переключения architect/developer без открытия выпадающего меню таба.
 
 ## Out of Scope
 
+Явно исключено из v1.1 — границы текущей milestone.
+
 | Feature | Reason |
 |---------|--------|
-| GitHub Actions / любой внешний CI | Текущий проект не имеет CI. Добавление CI — отдельная milestone, не связана с устранением приватных зависимостей. |
-| Сохранение `@uni-fw/*` / `uni-*` как публикуемых пакетов | После вендоринга это снапшоты внутри monorepo, не отдельные публикуемые артефакты. |
-| git subtree / submodule | Решено snapshot (см. PROJECT.md → Key Decisions). |
-| Обратная синхронизация с ai-chat (push изменений из uni-claude-code) | `uni-claude-code` — единственный потребитель; общая разработка фреймворка прекращается. |
-| Замена `uni-*` крейтов на open-source аналоги | Не цель milestone — берём существующий код «как есть». |
-| Переписывание тестов вендорированных пакетов | См. PROJECT.md → Constraints: тесты копируются «как есть», падающие из-за внешней инфраструктуры помечаются `#[ignore]`. |
-| Изменение публичных API `uni-*` или `@uni-fw/*` | Compatibility-constraint: импорты в `src/` и `src-tauri/src/` не должны меняться. |
-| Миграция на другой framework, runtime или язык | Tech-stack constraint: Tauri 2 + React 19 + Rust 2021 фиксированы. |
+| DB-персистентность переписки между запусками приложения | Достаточно in-memory сохранения при навигации — это покрывает заявленный баг. DB-схема, миграция, синхронизация с панелями = отдельная milestone (v1.2 кандидат). |
+| Интеграция с `--continue` Claude CLI | Текущий `continueSession`-флаг работает через `hasSessionRef` и пока этого достаточно. Подгрузка прошлых сессий из CLI-кэша — отдельная фича. |
+| Осмысленные лейблы табов | Обсуждали — пользователь выбрал отложить. См. `UI-TAB-01` в Future. |
+| Подтверждение при закрытии running-таба | См. `UI-CLOSE-01` в Future. |
+| Кликабельный mode-badge | См. `UI-MODE-01` в Future. |
+| Context-window % с per-model лимитами | Token usage показываем абсолютным числом; расчёт % от лимита требует справочника моделей. См. `VIS-CTX-01` в Future. |
+| Изменение поведения Claude CLI / `claude-code-core` | Все изменения во frontend. Backend Tauri-команды трогаем минимально — только если нужно докинуть поля в существующие типы IPC. |
+| Изменение публичных API `@uni-fw/*` и `uni-*` крейтов | Compatibility-инвариант с milestone v1.0 — вендорированные пакеты не модифицируются. |
 
 ## Traceability
 
+Заполняется во время создания ROADMAP.md.
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RUST-01 | Phase 1 | Done (Plan 01-01) |
-| RUST-02 | Phase 1 | Done (Plan 01-01) |
-| RUST-03 | Phase 1 | Done (Plan 01-01) |
-| RUST-04 | Phase 1 | Done (Plan 01-01) |
-| RUST-05 | Phase 1 | Done (Plan 01-01) |
-| RUST-06 | Phase 1 | Done (Plan 01-01) |
-| RUST-07 | Phase 1 | Done (Plan 01-02) |
-| RUST-08 | Phase 1 | Done (Plan 01-03) |
-| RUST-09 | Phase 1 | Done (Plan 01-03) |
-| RUST-10 | Phase 1 | Done (Plan 01-03) |
-| NPM-01 | Phase 2 | Complete |
-| NPM-02 | Phase 2 | Complete |
-| NPM-03 | Phase 2 | Complete |
-| NPM-04 | Phase 2 | Complete |
-| NPM-05 | Phase 2 | Complete |
-| NPM-06 | Phase 2 | Complete |
-| NPM-07 | Phase 2 | Complete |
-| NPM-08 | Phase 2 | Complete |
-| NPM-09 | Phase 2 | Complete |
-| NPM-10 | Phase 2 | Complete |
-| BUILD-01 | Phase 3 | Complete |
-| BUILD-02 | Phase 3 | Complete |
-| BUILD-03 | Phase 3 | Complete |
-| BUILD-04 | Phase 3 | Complete (03-01) |
-| BUILD-05 | Phase 3 | Complete |
-| BUILD-06 | Phase 3 | Complete |
+| PERSIST-01 | TBD | Pending |
+| PERSIST-02 | TBD | Pending |
+| VIS-01 | TBD | Pending |
+| VIS-02 | TBD | Pending |
+| VIS-03 | TBD | Pending |
+| UI-01 | TBD | Pending |
 
 **Coverage:**
-- v1 requirements: 26 total
-- Mapped to phases: 26 (Phase 1: 10 RUST-*, Phase 2: 10 NPM-*, Phase 3: 6 BUILD-*)
-- Unmapped: 0
+- v1.1 requirements: 6 total
+- Mapped to phases: 0 (roadmap pending)
+- Unmapped: 6 ⚠️
 
 ---
-*Requirements defined: 2026-05-16*
-*Last updated: 2026-05-16 после Plan 01-03 (RUST-08/09/10 закрыты — Phase 1 завершена)*
+*Requirements defined: 2026-05-18*
+*Last updated: 2026-05-18 after initial definition for milestone v1.1 Chat UX*
