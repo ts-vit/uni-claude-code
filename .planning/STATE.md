@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: Vendoring
-status: Awaiting next milestone
-stopped_at: Completed 03-03-PLAN.md — milestone verified
-last_updated: "2026-05-16T13:23:19.227Z"
-last_activity: 2026-05-16 — Milestone v1.0 completed and archived
+milestone: v1.1
+milestone_name: Chat UX
+status: planning
+last_updated: "2026-05-17T19:08:14.916Z"
+last_activity: 2026-05-17
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-16)
 
 ## Current Position
 
-Phase: Milestone v1.0 complete
+Phase: Not started (defining requirements)
 Plan: —
-Status: Awaiting next milestone
-Last activity: 2026-05-16 — Milestone v1.0 completed and archived
+Status: Defining requirements
+Last activity: 2026-05-17 — Milestone v1.1 started
 
 ## Performance Metrics
 
