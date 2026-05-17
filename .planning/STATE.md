@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Chat UX
-status: executing
-stopped_at: ROADMAP.md v1.1 создан, Phases 4-5 готовы к planning
-last_updated: "2026-05-17T19:42:45.660Z"
+status: ready_to_plan
+stopped_at: Phase 04 complete (3/3) — ready to discuss Phase 5
+last_updated: 2026-05-17T20:26:13.812Z
 last_activity: 2026-05-17 -- Phase 04 execution started
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 3
-  completed_plans: 0
+  completed_plans: 3
   percent: 0
 ---
 
@@ -21,20 +21,20 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-18)
 
 **Core value:** Чистый клон репозитория без сети полностью собирается — `npm ci` и `cargo build` проходят, тесты зелёные.
-**Current focus:** Phase 04 — chat-persistence
+**Current focus:** Phase 5 — chat visibility & controls
 
 ## Current Position
 
-Phase: 04 (chat-persistence) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 04
-Last activity: 2026-05-17 -- Phase 04 execution started
+Phase: 5
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-05-17
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 9 (v1.0 milestone)
+- Total plans completed: 12 (v1.0 milestone)
 - Average duration: ~3 min
 - Total execution time: ~8 min
 
@@ -45,6 +45,7 @@ Last activity: 2026-05-17 -- Phase 04 execution started
 | 01 rust-vendoring | 3 | ~8 min | ~2.7 min |
 | 02 npm-vendoring | 3 | ~10 min | ~3.5 min |
 | 03 build-docs | 3 | ~24 min | ~8 min |
+| 04 | 3 | - | - |
 
 **Recent Trend:**
 
