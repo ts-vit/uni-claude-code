@@ -21,14 +21,6 @@ interface TabInfo {
   mode: TabMode;
 }
 
-export interface DualPanelLayoutState {
-  layoutMode: LayoutMode;
-  activePanel: ActivePanel;
-  splitPosition: number;
-  discussTabs: TabInfo[];
-  discussActiveTab: string;
-}
-
 const MAX_TABS_PER_PANEL = 5;
 let tabCounter = 0;
 function nextTabId(prefix: string): string {
@@ -44,8 +36,6 @@ interface DualPanelLayoutProps {
   projectId: string;
   projectModel?: string | null;
   projectPermissionMode?: string;
-  initialState?: DualPanelLayoutState;
-  onStateChange?: (state: DualPanelLayoutState) => void;
 }
 
 export function DualPanelLayout({
@@ -53,31 +43,21 @@ export function DualPanelLayout({
   projectId,
   projectModel,
   projectPermissionMode,
-  initialState,
-  onStateChange,
 }: DualPanelLayoutProps) {
   const { t } = useTranslation();
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>(initialState?.layoutMode ?? "single");
-  const [activePanel, setActivePanel] = useState<ActivePanel>(initialState?.activePanel ?? "architect");
-  const [splitPosition, setSplitPosition] = useState(initialState?.splitPosition ?? 50);
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("single");
+  const [activePanel, setActivePanel] = useState<ActivePanel>("architect");
+  const [splitPosition, setSplitPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const [dividerHover, setDividerHover] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const onStateChangeRef = useRef(onStateChange);
-  onStateChangeRef.current = onStateChange;
 
   // === Tab state (Architect panel only) ===
   const [discussTabs, setDiscussTabs] = useState<TabInfo[]>(() => {
-    if (initialState?.discussTabs.length) {
-      return initialState.discussTabs.map((tab) => ({ ...tab, mode: tab.mode ?? "architect" }));
-    }
-
     const id = nextTabId("discuss");
     return [{ id, label: "Session 1", status: "idle" as TabStatus, mode: "architect" as TabMode }];
   });
-  const [discussActiveTab, setDiscussActiveTab] = useState(
-    () => initialState?.discussActiveTab ?? discussTabs[0].id,
-  );
+  const [discussActiveTab, setDiscussActiveTab] = useState(() => discussTabs[0].id);
 
   // === Tab handlers ===
   const handleAddTab = useCallback(() => {
@@ -109,16 +89,6 @@ export function DualPanelLayout({
     setDiscussTabs((prev) => prev.filter((t) => t.id !== tabId));
     invoke("claude_stop", { panelId: tabId }).catch(() => {});
   }, [discussTabs, discussActiveTab]);
-
-  useEffect(() => {
-    onStateChangeRef.current?.({
-      layoutMode,
-      activePanel,
-      splitPosition,
-      discussTabs,
-      discussActiveTab,
-    });
-  }, [activePanel, discussActiveTab, discussTabs, layoutMode, splitPosition]);
 
   // === Listen to claude-event for tab status updates ===
   useTauriListener<PanelEvent>(
