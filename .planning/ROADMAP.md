@@ -20,7 +20,7 @@
 
 ### 🚧 v1.1 Chat UX (Phases 4-5) — IN PROGRESS
 
-- [ ] **Phase 4: Chat Persistence** — Чат не размонтируется при переключении view и активного проекта
+- [x] **Phase 4: Chat Persistence** — Чат не размонтируется при переключении view и активного проекта (completed 2026-05-17)
 - [ ] **Phase 5: Chat Visibility & Controls** — StatusBar показывает модель/session/usage; кнопка Clear в шапке ChatPanel
 
 ## Phase Details
@@ -37,7 +37,7 @@
 **Plans**: 3 plans
   - [x] 04-01-PLAN.md — Always-mounted рендер DualPanelLayout в src/App.tsx + удаление projectLayoutState Map
   - [x] 04-02-PLAN.md — Cleanup DualPanelLayout.tsx — удаление устаревшего state-lifting API
-  - [ ] 04-03-PLAN.md — Обновление App.test.tsx + полная test-pass + ручная UAT-верификация
+  - [x] 04-03-PLAN.md — Обновление App.test.tsx + полная test-pass + ручная UAT-верификация
 
 ### Phase 5: Chat Visibility & Controls
 **Goal**: В каждом моменте чата видно, с какой моделью идёт диалог, какой `session_id` корреспондирует с логами Claude и сколько токенов потрачено; базовая операция `/clear` доступна через явную кнопку в UI, а не только через текстовую команду.
@@ -59,5 +59,5 @@
 | 1. Rust Vendoring | v1.0 | 3/3 | Complete | 2026-05-16 |
 | 2. npm Vendoring | v1.0 | 3/3 | Complete | 2026-05-16 |
 | 3. Build & Docs | v1.0 | 3/3 | Complete | 2026-05-16 |
-| 4. Chat Persistence | v1.1 | 2/3 | In Progress|  |
+| 4. Chat Persistence | v1.1 | 3/3 | Complete   | 2026-05-17 |
 | 5. Chat Visibility & Controls | v1.1 | 0/0 | Not started | — |
