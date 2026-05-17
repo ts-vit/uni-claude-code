@@ -61,22 +61,20 @@
 
 ## Traceability
 
-Заполняется во время создания ROADMAP.md.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PERSIST-01 | TBD | Pending |
-| PERSIST-02 | TBD | Pending |
-| VIS-01 | TBD | Pending |
-| VIS-02 | TBD | Pending |
-| VIS-03 | TBD | Pending |
-| UI-01 | TBD | Pending |
+| PERSIST-01 | Phase 4 — Chat Persistence | Pending |
+| PERSIST-02 | Phase 4 — Chat Persistence | Pending |
+| VIS-01 | Phase 5 — Chat Visibility & Controls | Pending |
+| VIS-02 | Phase 5 — Chat Visibility & Controls | Pending |
+| VIS-03 | Phase 5 — Chat Visibility & Controls | Pending |
+| UI-01 | Phase 5 — Chat Visibility & Controls | Pending |
 
 **Coverage:**
 - v1.1 requirements: 6 total
-- Mapped to phases: 0 (roadmap pending)
-- Unmapped: 6 ⚠️
+- Mapped to phases: 6 ✓
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-05-18*
-*Last updated: 2026-05-18 after initial definition for milestone v1.1 Chat UX*
+*Last updated: 2026-05-18 — Traceability заполнена при создании ROADMAP.md (Phases 4-5)*

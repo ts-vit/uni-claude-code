@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Chat UX
 status: planning
-last_updated: "2026-05-17T19:08:14.916Z"
-last_activity: 2026-05-17
+last_updated: "2026-05-18T00:00:00.000Z"
+last_activity: 2026-05-18
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,23 +17,23 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-16)
+See: .planning/PROJECT.md (updated 2026-05-18)
 
 **Core value:** Чистый клон репозитория без сети полностью собирается — `npm ci` и `cargo build` проходят, тесты зелёные.
-**Current focus:** Milestone complete
+**Current focus:** v1.1 Chat UX — Phase 4 (Chat Persistence) ready for planning.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Phase 4 — Chat Persistence (not started)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-17 — Milestone v1.1 started
+Status: Roadmap утверждён, ожидание `/gsd:plan-phase 4`
+Last activity: 2026-05-18 — Roadmap v1.1 создан (Phases 4-5), все 6 требований замаплены
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 9
+- Total plans completed: 9 (v1.0 milestone)
 - Average duration: ~3 min
 - Total execution time: ~8 min
 
@@ -42,59 +42,29 @@ Last activity: 2026-05-17 — Milestone v1.1 started
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01 rust-vendoring | 3 | ~8 min | ~2.7 min |
-| 01 | 3 | - | - |
-| 03 | 3 | - | - |
+| 02 npm-vendoring | 3 | ~10 min | ~3.5 min |
+| 03 build-docs | 3 | ~24 min | ~8 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (~3 min), 01-02 (~1 min), 01-03 (~4 min)
-- Trend: 01-03 заняло больше времени из-за `cargo build --workspace` (~55s) и full test sweep — ожидаемо для verify-плана
+- Last 5 plans: всё закрыто в milestone v1.0 (Phases 1-3)
+- Trend: для v1.1 ожидаем меньше длительности — все изменения frontend-only, без вендоринг-боли и без full cargo rebuild
 
 *Updated after each plan completion*
-| Phase 02-npm-vendoring P01 | 1.5min | 1 tasks | 89 files |
-| Phase 02-npm-vendoring P02 | 2min | 3 tasks | 5 files |
-| Phase 02-npm-vendoring P03 | 7min | 2 tasks | 3 files |
-| Phase 03-build-docs P02 | 15min | 2 tasks | 5 files |
-| Phase 03-build-docs P03-03 | 8min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
 ### Decisions
 
-Полный лог решений в PROJECT.md → Key Decisions. Недавние решения, влияющие на текущую работу:
+Полный лог решений в PROJECT.md → Key Decisions. Архив решений v1.0 milestone — в `.planning/milestones/v1.0-phases/*/SUMMARY.md`. Текущие решения v1.1 (заполняется по мере исполнения фаз):
 
-- Init: Snapshot, не git subtree — общая история `ai-chat` не нужна
-- Init: Источник для вендоринга — локальный клон `D:\work-ai\ai-chat`
-- Init: Rust — path-зависимости в существующем workspace (как `crates/claude-code-core`)
-- Init: npm — workspaces в `packages/uni-fw-*`, чтобы импорты `@uni-fw/*` не менялись
-- Init: `.npmrc` удалить полностью — оставлять приватный реестр = оставлять SPOF
-- Init: CI как сервис не добавляется — фаза 3 ограничена `package.json` scripts + README
-- 01-01: Snapshot-копия побайтная — метаданные `repository=`/`homepage=` в манифестах не правим
-- 01-01: Внутренние `path = "../uni-common"` в uni-process/uni-settings/uni-db оставлены без правок
-- 01-01: `cargo build` в этом плане не запускался — валидация ограничена `cargo metadata --no-deps`
-- 01-02: Плоский path-стиль сохранён — НЕ переходим на `[workspace.dependencies]` + `.workspace = true`
-- 01-02: `Cargo.lock` НЕ регенерировался — это явный scope Plan 01-03
-- 01-03: Регенерация через `rm Cargo.lock && cargo generate-lockfile` — гарантированно убирает stale git-source записи без риска residual cache
-- 01-03: Никаких `#[ignore]` правок в исходниках uni-* крейтов не потребовалось — все тесты прошли с первого запуска; MAINT-02 (v2) остаётся без конкретных кандидатов из этой фазы
-- 01-03: Tauri ACL-схемы (`src-tauri/gen/schemas/*.json`) закоммичены в составе Task 2 как ожидаемый side-effect автоматической перегенерации tauri-build после bump минорной версии Tauri
-- 02-01: Snapshot-копия побайтная — repository=/homepage= и peerDependencies @uni-fw/ui сохранены как есть (D-07, D-09)
-- 02-01: Корневой package.json, .npmrc, package-lock.json НЕ изменены — scope Plan 02-02 и 02-03
-- 02-01: tsup/tsconfig.build/vitest configs и src/__tests__/ скопированы как спящие артефакты (D-02, D-05, D-06)
-- 02-02: Source-direct entry в трёх вендорированных package.json — main/types/exports указывают на ./src/index.ts вместо dist/ (D-01); Vite/tsc резолвят TS через workspace symlink без build step
-- 02-02: @uni-fw/* в корневом package.json переведены на workspace:* (D-04); @xterm/* peer-deps подняты в root dependencies явно — npm не ставит peerDependencies автоматически
-- 02-02: .npmrc удалён полностью (D-11); npm.ts-vit.com нигде в репо не упоминается; T-02-03 mitigated проверкой отсутствия auth-директив перед удалением
-- 02-02: Минимум магии — никаких overrides/peerDependenciesMeta/resolutions/nohoist (D-10); package-lock.json НЕ регенерировался, scope Plan 02-03
-- 02-03: package-lock.json регенерирован через rm + npm install — 0 ссылок на npm.ts-vit.com, @uni-fw/* как workspace symlinks (link:true), lockfileVersion=3
-- 02-03: Defensive vitest include-фильтр (Rule 1 deviation) — корневой test runner ограничен src/**/*.{test,spec}.{ts,tsx} чтобы тесты packages/uni-fw-*/src/__tests__/ не запускались (D-05/D-06)
-- 02-03: DoD фазы 2 npm Vendoring выполнен — npm ci + npm run typecheck + npm run test зелёные (19 файлов / 106 тестов), никаких it.skip правок не потребовалось, setup.ts не тронут
-- 02-VERIFICATION: Phase 2 verified PASS — 14/14 truths, 10/10 NPM-* requirements satisfied, 6/6 key links wired, 0 antipatterns; live `npm run typecheck` + `npm run test` зелёные на момент верификации; ни один файл в src/src-tauri/crates не тронут за 9 коммитов фазы (compatibility D-12)
-- 03-01: README.md создан (37 строк, quickstart-only, русский язык); D-R1/D-R2/D-R3/D-R4 соблюдены; все 9 acceptance criteria прошли автоматически; BUILD-04 закрыт
-- [Phase ?]: D-C4 override: GSD-блоки в CLAUDE.md содержат устаревшие упоминания — не трогаем, generate-claude-profile обновит при следующем прогоне
-- [Phase ?]: D-V2: grep-инварианты + прогон команд вместо физической блокировки firewall
+- Roadmap-init (v1.1): Phase numbering продолжен с 4 (v1.0 закончилась на Phase 3), не сброс.
+- Roadmap-init (v1.1): 6 требований разбиты на 2 phase — PERSIST-* в Phase 4 (общий root cause `App.tsx:271` unmount), VIS-* + UI-01 в Phase 5 (общие файлы `StatusBar.tsx` + `ChatPanel.tsx`). Granularity `coarse` поддерживает консолидацию.
+- Roadmap-init (v1.1): Phase 5 зависит от Phase 4 — показывать постоянные метаданные в StatusBar бессмысленно, если он размонтируется при навигации.
 
 ### Pending Todos
 
-Нет.
+- `/gsd:plan-phase 4` — декомпозировать Phase 4 (Chat Persistence) в исполняемые планы.
 
 ### Blockers/Concerns
 
@@ -104,14 +74,19 @@ Last activity: 2026-05-17 — Milestone v1.1 started
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| Persistence | DB-персистентность переписки между запусками (PERSIST-DB-01) | Deferred to future milestone | v1.1 planning (2026-05-18) |
+| Persistence | Интеграция с `--continue` Claude CLI (PERSIST-CONTINUE-01) | Deferred to future milestone | v1.1 planning (2026-05-18) |
+| Visibility | Context-window % с per-model лимитами (VIS-CTX-01) | Deferred — требует справочника лимитов моделей | v1.1 planning (2026-05-18) |
+| UI/UX | Осмысленные лейблы табов (UI-TAB-01) | Deferred to future milestone | v1.1 planning (2026-05-18) |
+| UI/UX | Подтверждение при закрытии running-таба (UI-CLOSE-01) | Deferred to future milestone | v1.1 planning (2026-05-18) |
+| UI/UX | Кликабельный mode-badge в шапке ChatPanel (UI-MODE-01) | Deferred to future milestone | v1.1 planning (2026-05-18) |
 
 ## Session Continuity
 
-Last session: 2026-05-16T11:25:44.795Z
-Stopped at: Completed 03-03-PLAN.md — milestone verified
-Resume file: None
+Last session: 2026-05-18T00:00:00.000Z
+Stopped at: ROADMAP.md v1.1 создан, Phases 4-5 готовы к planning
+Resume file: .planning/ROADMAP.md (Phase 4: Chat Persistence — first up)
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Начать исполнение milestone v1.1: `/gsd:plan-phase 4`
