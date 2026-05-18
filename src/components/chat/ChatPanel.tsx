@@ -50,6 +50,7 @@ export function ChatPanel({
   const [accumulatedUsage, setAccumulatedUsage] = useState<Usage | null>(null);
 
   const hasSessionRef = useRef(false);
+  const sessionIdRef = useRef<string | null>(null);
   const currentBlockIndexRef = useRef<number>(-1);
   const toolJsonBuffersRef = useRef<Map<number, string>>(new Map());
   const archivedMessagesRef = useRef<ChatMessage[]>([]);
@@ -139,12 +140,12 @@ export function ChatPanel({
     (claudeEvent: ClaudeEvent) => {
       switch (claudeEvent.type) {
         case "system": {
-          setSessionId((prevId) => {
-            if (claudeEvent.session_id && claudeEvent.session_id !== prevId) {
-              setAccumulatedUsage(null); // D-05-06 reset при смене session_id
-            }
-            return claudeEvent.session_id ?? prevId;
-          });
+          if (claudeEvent.session_id && claudeEvent.session_id !== sessionIdRef.current) {
+            // D-05-06 reset при смене session_id (ref-based, чтобы оба setState остались pure)
+            setAccumulatedUsage(null);
+            sessionIdRef.current = claudeEvent.session_id;
+            setSessionId(claudeEvent.session_id);
+          }
           if (claudeEvent.model) {
             setSessionModel(claudeEvent.model);
           }
@@ -423,6 +424,7 @@ export function ChatPanel({
     setSessionId(null);
     setAccumulatedUsage(null);
     hasSessionRef.current = false;
+    sessionIdRef.current = null;
     archivedMessagesRef.current = [];
     resetStreamingState();
   }, [resetStreamingState]);
