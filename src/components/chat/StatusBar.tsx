@@ -1,14 +1,23 @@
-import { Group, Text, Badge } from "@mantine/core";
+import { Group, Text, Badge, ActionIcon, Tooltip, CopyButton, Stack } from "@mantine/core";
+import { IconCopy, IconCheck } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
-import type { SessionResult } from "../../types/claude";
+import type { SessionResult, Usage } from "../../types/claude";
 
 interface StatusBarProps {
   isRunning: boolean;
   sessionResult: SessionResult | null;
+  model: string | null;
+  sessionId: string | null;
+  usage: Usage | null;
 }
 
-export function StatusBar({ isRunning, sessionResult }: StatusBarProps) {
+export function StatusBar({ isRunning, sessionResult, model, sessionId, usage }: StatusBarProps) {
   const { t } = useTranslation();
+
+  const tokenSum =
+    usage !== null
+      ? usage.input_tokens + usage.output_tokens + usage.cache_creation_input_tokens + usage.cache_read_input_tokens
+      : null;
 
   return (
     <Group
@@ -39,6 +48,45 @@ export function StatusBar({ isRunning, sessionResult }: StatusBarProps) {
       >
         {isRunning ? t("chat.running") : t("chat.idle")}
       </Badge>
+      <Text size="xs" c="dimmed">{t("chat.model")}: {model ?? "—"}</Text>
+      <>
+        <Text size="xs" c="dimmed">{t("chat.session")}: {sessionId ? `${sessionId.slice(0, 8)}...` : "—"}</Text>
+        {sessionId !== null && (
+          <CopyButton value={sessionId} timeout={1500}>
+            {({ copied, copy }) => (
+              <Tooltip label={copied ? t("chat.copied") : t("chat.copySessionId")} withArrow position="top">
+                <ActionIcon
+                  variant="subtle"
+                  size="xs"
+                  color={copied ? "teal" : "gray"}
+                  onClick={copy}
+                  aria-label={t("chat.copySessionId")}
+                >
+                  {copied ? <IconCheck size={12} stroke={1.5} /> : <IconCopy size={12} stroke={1.5} />}
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </CopyButton>
+        )}
+      </>
+      {usage !== null ? (
+        <Tooltip
+          withArrow
+          position="top"
+          label={
+            <Stack gap={2}>
+              <Text size="xs">{t("chat.tokensTooltip.input")}: {usage.input_tokens.toLocaleString()}</Text>
+              <Text size="xs">{t("chat.tokensTooltip.output")}: {usage.output_tokens.toLocaleString()}</Text>
+              <Text size="xs">{t("chat.tokensTooltip.cacheCreation")}: {usage.cache_creation_input_tokens.toLocaleString()}</Text>
+              <Text size="xs">{t("chat.tokensTooltip.cacheRead")}: {usage.cache_read_input_tokens.toLocaleString()}</Text>
+            </Stack>
+          }
+        >
+          <Text size="xs" c="dimmed" style={{ cursor: "default" }}>{t("chat.tokens")}: {tokenSum!.toLocaleString()}</Text>
+        </Tooltip>
+      ) : (
+        <Text size="xs" c="dimmed">{t("chat.tokens")}: {"—"}</Text>
+      )}
       {sessionResult && (
         <>
           {sessionResult.cost != null && sessionResult.cost > 0 && (

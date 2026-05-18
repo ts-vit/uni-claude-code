@@ -517,7 +517,7 @@ export function ChatPanel({
         placeholder={mode === "discuss" ? t("chat.placeholderArchitect") : undefined}
       />
 
-      <StatusBar isRunning={isRunning} sessionResult={sessionResult} />
+      <StatusBar isRunning={isRunning} sessionResult={sessionResult} model={null} sessionId={null} usage={null} />
     </Stack>
   );
 }
