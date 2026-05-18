@@ -1,5 +1,37 @@
 # Milestones
 
+## v1.1 Chat UX (Shipped: 2026-05-18)
+
+**Goal:** Чат не теряется при навигации между view и проектами; в каждом моменте видно, с какой моделью идёт диалог и сколько токенов потрачено; базовые операции доступны через UI-кнопку, а не только через текстовые команды.
+
+**Scope:** 2 phases, 6 plans, 9 tasks. Frontend-only — 10 файлов изменено (+497/−110), 40 commits за ~12 часов 2026-05-18, vitest 119/119 passing.
+
+**Key accomplishments:**
+
+1. **PERSIST-01/02 — keep-mounted рендер.** `src/App.tsx` переписан в три sibling-блока (`main` / view-overlay / welcome) с переключением видимости через `display: flex/none` вместо conditional unmount; каждый opened project держит `DualPanelLayout` смонтированным всегда. Удалён мёртвый `projectLayoutState Map` и публичный API `DualPanelLayoutState` (`initialState`/`onStateChange`); `App.test.tsx` инвертирован под keep-mounted семантику.
+2. **VIS-01/02/03 — постоянные индикаторы сессии в StatusBar.** Добавлены три новых поля: Model (имя активной модели), Session (8-символьный prefix + Mantine `CopyButton` через render-prop для копирования полного UUID), Σ Tokens (накопленная сумма с `Tooltip`-breakdown по input / output / cache_creation / cache_read). 15 unit-тестов StatusBar (7 новых).
+3. **UI-01 — кнопка Clear в шапке ChatPanel.** `ActionIcon` с `IconEraser` (`ml="auto"`, `disabled={isRunning}`); единый `handleClear` атомарно сбрасывает 8 полей состояния (`messages`, `sessionResult`, `hasSessionRef`, `archivedMessagesRef`, стриминг-буферы + `sessionModel`, `sessionId`, `accumulatedUsage`); эквивалент текстовой команды `/clear`.
+4. **Accumulator с ref-based reset.** В `ChatPanel` добавлены три `useState`: `sessionModel`, `sessionId`, `accumulatedUsage`. Накопление usage из `assistant.message.usage` через functional updater; reset accumulator при смене `session_id` реализован через ref-сравнение (CR-01 fix в коммите `ce93e73` — заменил impure `setState` в `case "system"` на чистый ref-based switch).
+5. **TypeScript + i18n фундамент.** Тип `SessionMetadata { model, sessionId, usage }` в `src/types/claude.ts`; новые i18n-keys `chat.{model,session,tokens,copySessionId,copied,clearChat}` + nested `chat.tokensTooltip.{input,output,cacheCreation,cacheRead}` в EN+RU локалях.
+6. **UAT closure.** Phase 5 HUMAN-UAT: 5/5 live-сценариев passed пользователем (CopyButton + Clipboard API, Tooltip hover, Clear-кнопка, refresh сессии после Clear). Phase 4 HUMAN-UAT: 26-пунктовый чек-лист подтверждён; единственный сценарий (WR-02 — ресайз окна при невидимой панели) отложен как known warning.
+
+**Known deferred items at close: 4** (см. STATE.md → Deferred Items → «Acknowledged at v1.1 close»):
+
+- **WR-02** — `triggerTerminalRefit()` не вызывается на view-switch после keep-mounted рендера; xterm/FitAddon может показывать обрезанные строки после resize окна при невидимой панели. Решение: «старый баг, пока править не будем» (трекается в `.planning/todos/pending/wr-02-terminal-refit-view-switch.md`).
+- Phase 04 HUMAN-UAT (`status: deferred`) — единственный сценарий WR-02 отложен.
+- Phase 04 VERIFICATION (`status: human_needed`) — соответствует deferred WR-02; статус намеренно не повышен до `verified`.
+- Phase 05 HUMAN-UAT (`status: resolved`) — flagged audit-логикой как формальный gap, но фактически все сценарии closed.
+
+**Archives:**
+
+- `.planning/milestones/v1.1-ROADMAP.md` — полные детали Phase 4 (Chat Persistence) и Phase 5 (Chat Visibility & Controls)
+- `.planning/milestones/v1.1-REQUIREMENTS.md` — 6 требований (PERSIST-01/02, VIS-01/02/03, UI-01) со статусами Complete
+- `.planning/milestones/v1.1-phases/` — артефакты обеих фаз (CONTEXT, PLAN, SUMMARY, VERIFICATION, HUMAN-UAT, REVIEW, DISCUSSION-LOG, PATTERNS)
+
+**Git tag:** `v1.1` (local-only)
+
+---
+
 ## v1.0 Vendoring (Shipped: 2026-05-16)
 
 **Goal:** Убрать зависимость репозитория от приватного npm-реестра `npm.ts-vit.com` и приватной git-ветки `github.com/ts-vit/ai-chat#dev`. Чистый клон без приватной сети полностью собирается и проходит все тесты.

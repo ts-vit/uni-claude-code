@@ -1,9 +1,10 @@
 ---
 phase: 05-chat-visibility-controls
 verified: 2026-05-18T10:45:00Z
-status: human_needed
-score: 5/5 must-haves verified
+status: verified
+score: 5/5 must-haves verified + 5/5 human-UAT scenarios passed (см. 05-HUMAN-UAT.md, resolved 2026-05-18T06:57:42Z)
 overrides_applied: 0
+human_verification_resolved: 2026-05-18T06:57:42Z
 human_verification:
   - test: "Запустить приложение, открыть чат, начать сессию Claude и убедиться что имя модели появляется в StatusBar сразу после первого system-события"
     expected: "В нижней строке ChatPanel появляется текст «Model: claude-sonnet-4-6» (или другая активная модель)"
@@ -27,7 +28,7 @@ human_verification:
 **Цель фазы:** В каждом моменте чата видно, с какой моделью идёт диалог, какой session_id корреспондирует с логами Claude и сколько токенов потрачено; базовая операция /clear доступна через явную кнопку в UI, а не только через текстовую команду.
 
 **Верифицировано:** 2026-05-18T10:45:00Z
-**Статус:** human_needed
+**Статус:** verified (5/5 SC + 5/5 human-UAT сценариев подтверждены пользователем 2026-05-18T06:57:42Z)
 **Повторная верификация:** Нет — начальная верификация
 
 ---
@@ -174,7 +175,7 @@ human_verification:
 - Все D-05-04..14 LOCKED-решения соблюдены
 - Phase 4 invariant (`useTauriListener`, keep-mounted рендер) сохранён
 
-**Статус `human_needed`** — по признаку наличия live-UI тестов, которые не могут быть автоматизированы в jsdom (CopyButton clipboard, Tooltip hover, визуальная проверка layout). Автоматическая часть верификации полностью пройдена.
+**Статус `verified`** — изначально установлен `human_needed` из-за live-UI тестов, которые не могут быть автоматизированы в jsdom (CopyButton clipboard, Tooltip hover, визуальная проверка layout). 5/5 human-UAT сценариев подтверждены пользователем (см. `05-HUMAN-UAT.md`, resolved 2026-05-18T06:57:42Z) — статус повышен до `verified` при закрытии milestone v1.1.
 
 ---
 

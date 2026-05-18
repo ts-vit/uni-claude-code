@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Chat UX
-status: milestone_complete
-stopped_at: Milestone complete (Phase 05 was final phase)
-last_updated: 2026-05-18T06:58:08.910Z
-last_activity: 2026-05-18
+status: Awaiting next milestone
+stopped_at: Phase 5 context gathered
+last_updated: "2026-05-18T07:13:42.841Z"
+last_activity: 2026-05-18 — Milestone v1.1 completed and archived
 progress:
   total_phases: 2
   completed_phases: 2
@@ -25,59 +25,43 @@ See: .planning/PROJECT.md (updated 2026-05-18)
 
 ## Current Position
 
-Phase: 05
-Plan: Not started
-Status: Milestone complete
-Last activity: 2026-05-18
+Phase: Milestone v1.1 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-05-18 — Milestone v1.1 completed and archived
 
 ## Performance Metrics
 
-**Velocity:**
+**Velocity (cumulative across all milestones):**
 
-- Total plans completed: 15 (v1.0 milestone)
-- Average duration: ~3 min
-- Total execution time: ~8 min
+- Total plans completed: 15 (v1.0: 9 + v1.1: 6)
+- v1.0 timeline: 2026-05-16 (multi-day vendoring)
+- v1.1 timeline: 2026-05-18 (single-day UX milestone, ~12 hours)
 
-**By Phase:**
+**By milestone:**
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 01 rust-vendoring | 3 | ~8 min | ~2.7 min |
-| 02 npm-vendoring | 3 | ~10 min | ~3.5 min |
-| 03 build-docs | 3 | ~24 min | ~8 min |
-| 04 | 3 | - | - |
-| 05 | 3 | - | - |
-
-**Recent Trend:**
-
-- Last 5 plans: всё закрыто в milestone v1.0 (Phases 1-3)
-- Trend: для v1.1 ожидаем меньше длительности — все изменения frontend-only, без вендоринг-боли и без full cargo rebuild
-
-*Updated after each plan completion*
-| Phase 05-chat-visibility-controls P01 | 5 | 2 tasks | 3 files |
-| Phase 05-chat-visibility-controls P02 | 4min | 2 tasks | 3 files |
-| Phase 05-chat-visibility-controls P03 | 15min | 2 tasks | 2 files |
+| Milestone | Phases | Plans | Code diff | Tests delta |
+|-----------|--------|-------|-----------|-------------|
+| v1.0 Vendoring | 3 | 9 | full vendoring (uni-* crates + @uni-fw/* packages) | vitest 106 / cargo 97 |
+| v1.1 Chat UX | 2 | 6 | 10 files, +497 / −110 (frontend only) | vitest 119 (+13) / cargo 97 (no change) |
 
 ## Accumulated Context
 
 ### Decisions
 
-Полный лог решений в PROJECT.md → Key Decisions. Архив решений v1.0 milestone — в `.planning/milestones/v1.0-phases/*/SUMMARY.md`. Текущие решения v1.1 (заполняется по мере исполнения фаз):
-
-- Roadmap-init (v1.1): Phase numbering продолжен с 4 (v1.0 закончилась на Phase 3), не сброс.
-- Roadmap-init (v1.1): 6 требований разбиты на 2 phase — PERSIST-* в Phase 4 (общий root cause `App.tsx:271` unmount), VIS-* + UI-01 в Phase 5 (общие файлы `StatusBar.tsx` + `ChatPanel.tsx`). Granularity `coarse` поддерживает консолидацию.
-- Roadmap-init (v1.1): Phase 5 зависит от Phase 4 — показывать постоянные метаданные в StatusBar бессмысленно, если он размонтируется при навигации.
-- [Phase ?]: Типы и i18n-фундамент для Phase 5 добавлены
+Полный лог в PROJECT.md → Key Decisions. Архив v1.0 решений — `.planning/milestones/v1.0-phases/*/SUMMARY.md`; архив v1.1 решений — `.planning/milestones/v1.1-phases/*/SUMMARY.md`.
 
 ### Pending Todos
 
-- `/gsd:plan-phase 4` — декомпозировать Phase 4 (Chat Persistence) в исполняемые планы.
+- **WR-02: terminal refit на view-switch** (deferred warning из Phase 4) — трекается в `.planning/todos/pending/wr-02-terminal-refit-view-switch.md`; severity: warning; кандидат на подбор в одной из будущих UI-милестоунов.
 
 ### Blockers/Concerns
 
 Нет.
 
 ## Deferred Items
+
+### Features deferred at v1.1 planning (2026-05-18)
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
@@ -88,6 +72,17 @@ Last activity: 2026-05-18
 | UI/UX | Подтверждение при закрытии running-таба (UI-CLOSE-01) | Deferred to future milestone | v1.1 planning (2026-05-18) |
 | UI/UX | Кликабельный mode-badge в шапке ChatPanel (UI-MODE-01) | Deferred to future milestone | v1.1 planning (2026-05-18) |
 
+### Acknowledged at v1.1 close (2026-05-18)
+
+Open artifact audit items, acknowledged and deferred при закрытии milestone:
+
+| Category | Item | Status |
+|----------|------|--------|
+| todo | wr-02-terminal-refit-view-switch | deferred — терминальный refit на view-switch (xterm/FitAddon регрессия после Phase 4 keep-mounted); решение пользователя «старый баг пока править не будем»; severity: warning |
+| uat_gap | 04-HUMAN-UAT.md (status: deferred) | 0 pending scenarios — единственный сценарий (WR-02 ресайз окна) deferred вместе с todo выше |
+| uat_gap | 05-HUMAN-UAT.md (status: resolved) | 0 pending scenarios — все 5 human-тестов passed пользователем (resolved 2026-05-18T06:57:42Z); flagged audit-логикой как формальный gap |
+| verification_gap | 04-VERIFICATION.md (status: human_needed) | Все 4 SC верифицированы; единственная human_verification-запись соответствует deferred WR-02 — статус не повышен до verified намеренно, поскольку WR-02 не закрыт |
+
 ## Session Continuity
 
 Last session: 2026-05-18T05:19:56.455Z
@@ -96,4 +91,4 @@ Resume file: None
 
 ## Operator Next Steps
 
-- Начать исполнение milestone v1.1: `/gsd:plan-phase 4`
+- Start the next milestone with /gsd-new-milestone

@@ -4,27 +4,16 @@
 
 Десктоп-приложение на Tauri 2 (React 19 + TypeScript + Rust) — IDE-ассистент на базе Claude Code CLI с многосессионным чатом, встроенным терминалом, SSH-туннелированием, управлением MCP-серверами и пайплайном задач. Используется автором как личный инструмент разработки.
 
-Текущая milestone-цель — починить потерю переписки чата при навигации между view/проектами и добавить базовую видимость метаданных сессии (модель, session id, token usage) + UI-кнопку очистки чата.
+После milestones v1.0 (Vendoring) и v1.1 (Chat UX): репозиторий собирается из чистого клона без приватной сети; переписка чата переживает навигацию между view и проектами; в StatusBar постоянно видны модель, session_id и накопленные токены; есть UI-кнопка Clear.
 
 ## Core Value
 
 Чистый клон репозитория без доступа к сети полностью собирается: `npm ci` и `cargo build` проходят, тесты `uni-claude-code` зелёные.
 
-## Current Milestone: v1.1 Chat UX
+## Current State
 
-**Goal:** Чат не теряется при навигации; в каждом моменте видно, с какой моделью идёт диалог и сколько токенов потрачено; базовые операции доступны через UI, а не только через текстовые команды.
-
-**Target features:**
-- Чат сохраняется при переключении view (settings / files / diff / history / pipeline и обратно)
-- Чат сохраняется при переключении активного проекта (в пределах `maxOpenProjects`)
-- Постоянная видимая индикация модели и session_id в StatusBar
-- Индикатор накопленного token usage (input / output / cache) в StatusBar
-- UI-кнопка «Очистить чат» в шапке ChatPanel (эквивалент текстовой команды `/clear`)
-
-**Key context:**
-- Bug-fix + UX-полировка существующих экранов. Публичные API frontend/backend не меняются.
-- Persist-стратегия минимальная: in-memory сохранение при view/project switch через «не размонтировать» (`display:none`). DB-persistence и `--continue` Claude CLI явно отложены (см. Out of Scope).
-- Все изменения — во frontend (`src/components/`, `src/types/`). `claude-code-core` и backend Tauri-команды не трогаем (минимум — типизация уже существующих `Usage`-полей).
+**Shipped:** v1.1 Chat UX (2026-05-18)
+**Next:** Планируется (`/gsd-new-milestone`)
 
 ## Requirements
 
@@ -47,72 +36,80 @@
 - ✓ **End-to-end проверка чистого клона** — в свежем temp-каталоге `git clone --no-local` + 5 grep-инвариантов (0 hits) + `npm ci` + `cargo build --workspace` + `npm run test:all` + `npm run build` отрабатывают exit 0 без приватной сети — Validated in Phase 3: Build & Docs
 - ✓ **PERSIST-01: view-switch не теряет переписку** — `DualPanelLayout` для каждого `openedProject` всегда смонтирован; видимость через CSS `display: flex/none`; `ChatPanel.messages`/refs/стриминг-буферы физически переживают переключение main ↔ settings/files/diff/history/claude-md/pipeline — Validated in Phase 4: Chat Persistence
 - ✓ **PERSIST-02: project-switch не теряет переписку** — `openedProjects.map` без фильтра в `App.tsx`; до 3 параллельных `DualPanelLayout` одновременно в DOM; переписка каждого проекта сохраняется при переключении A → B → C → A в пределах `ui.maxOpenProjects` — Validated in Phase 4: Chat Persistence
+- ✓ **VIS-01: имя модели постоянно в StatusBar** — `<Text>{t("chat.model")}: {model ?? "—"}</Text>` в `StatusBar.tsx`; state `sessionModel` обновляется в `case "system"` через ref-based comparison; прокидывается через `model={sessionModel ?? projectModel ?? null}` — Validated in Phase 5: Chat Visibility & Controls
+- ✓ **VIS-02: session_id с CopyButton в StatusBar** — 8-символьный prefix + Mantine `CopyButton` render-prop с `IconCopy/IconCheck`-toggle; functional updater для `sessionId` state — Validated in Phase 5: Chat Visibility & Controls
+- ✓ **VIS-03: накопленные токены в StatusBar с Tooltip-breakdown** — accumulator `setAccumulatedUsage` в `case "assistant"` (functional updater); `Tooltip` с 4-строчным breakdown (input/output/cache_creation/cache_read); reset при смене `session_id` — Validated in Phase 5: Chat Visibility & Controls
+- ✓ **UI-01: кнопка Clear в шапке ChatPanel** — `ActionIcon` с `IconEraser`, `ml="auto"`, `disabled={isRunning}`; единый `handleClear` атомарно сбрасывает 8 полей состояния; эквивалент текстовой команды `/clear` — Validated in Phase 5: Chat Visibility & Controls
 
 ### Active
 
-<!-- Milestone v1.1 «Chat UX» — требования будут наполнены при создании REQUIREMENTS.md. -->
+<!-- Milestone v1.1 завершена и архивирована. Следующая milestone планируется через /gsd-new-milestone. -->
 
-_Активные требования milestone v1.1 живут в `.planning/REQUIREMENTS.md` (полный список с REQ-ID) и проецируются на phases в `.planning/ROADMAP.md`._
+_Активных требований нет — milestone v1.1 «Chat UX» shipped 2026-05-18. Следующая milestone будет создана через `/gsd-new-milestone`; до этого `.planning/REQUIREMENTS.md` отсутствует (удалён при архивации; история сохранена в `.planning/milestones/v1.1-REQUIREMENTS.md`)._
 
 ### Out of Scope
 
 <!-- Явные исключения. Без причины не реинтродьюсить. -->
 
-- **Сохранение пакетов uni-* и @uni-fw/* как публикуемых** — после вендоринга это копии-снапшоты внутри monorepo, не отдельные публикуемые артефакты. Если в будущем понадобится снова вынести как библиотеку — это новая milestone, а не часть этой.
-- **Поддержка обратной синхронизации с ai-chat** — uni-claude-code остаётся единственным потребителем uni-*; общая разработка фреймворка прекращается на этом этапе. Если фреймворк понадобится в другом проекте — это новая milestone.
-- **Сохранение истории git вендорированных пакетов** — берём snapshot, общая история ai-chat не нужна (см. Key Decisions).
-- **Установка CI на GitHub Actions / любой внешний CI** — в текущей кодовой базе CI отсутствует и в эту milestone не добавляется. «CI» в фазе 3 = локальные npm-скрипты и инструкции в README.
-- **Замена зависимостей на open-source аналоги** — не цель этой milestone. Берём существующий код «как есть», просто переносим внутрь репо.
-- **DB-персистентность переписки между запусками приложения (v1.1)** — текущая milestone делает только in-memory сохранение при навигации. Запись сообщений в SQLite, восстановление при старте, миграции схемы — отдельная будущая milestone. Существующий `history_save` (explicit «сохранить эту переписку») не расширяется до auto-persist.
-- **Интеграция с `--continue` Claude CLI (v1.1)** — флаг `continueSession` уже используется в `claude_start`, но сейчас управляется только через `hasSessionRef`. Подгрузка ранее завершённой сессии Claude из CLI-кэша при открытии проекта — отдельная фича вне scope этой milestone.
-- **Осмысленные лейблы табов (v1.1)** — вместо «Session 1/2/3» показывать модель или первый промпт. Обсуждали — пока не делаем.
-- **Подтверждение закрытия running-таба (v1.1)** — `handleCloseTab` сейчас моментально убивает runner без ConfirmModal. Текущее поведение оставлено без изменений.
-- **Кликабельный mode-badge в шапке ChatPanel (v1.1)** — переключение architect/developer прямо из бейджа вместо выпадающего меню таба. UI-полировка, не в scope.
-- **Точный context-window % с per-model лимитами (v1.1)** — token usage показываем как абсолютное число (input/output/cache). Расчёт «% от лимита модели» требует справочника лимитов для каждой модели Claude и обновления при их смене — отложено.
+**Из v1.0 (Vendoring) — постоянные исключения:**
+
+- **Публикация пакетов uni-* и @uni-fw/* как отдельных артефактов** — после вендоринга это копии-снапшоты внутри monorepo. Если в будущем потребуется выносить как библиотеку — отдельная milestone.
+- **Обратная синхронизация с приватным `ai-chat` репозиторием** — uni-claude-code остаётся единственным потребителем uni-*; общая разработка фреймворка прекращена. Если фреймворк понадобится в другом проекте — отдельная milestone.
+- **Сохранение git-истории вендорированных пакетов** — взят snapshot; общая история ai-chat не нужна.
+- **Установка внешнего CI (GitHub Actions / GitLab)** — кодовая база остаётся без CI; контроль качества через локальные `npm run test:all`. Введение CI = отдельная milestone.
+- **Замена зависимостей на open-source аналоги** — берём существующий код «как есть».
+
+**Из v1.1 (Chat UX) — отложено до отдельной milestone:**
+
+- **DB-персистентность переписки между запусками приложения** — текущая реализация делает только in-memory сохранение при навигации. Запись сообщений в SQLite, восстановление при старте, миграции схемы — отдельная будущая milestone (кандидат: v1.2). Существующий `history_save` (explicit «сохранить эту переписку») не расширяется до auto-persist.
+- **Интеграция с `--continue` Claude CLI** — флаг `continueSession` в `claude_start` управляется через `hasSessionRef`. Подгрузка ранее завершённой сессии Claude из CLI-кэша при открытии проекта — отдельная фича.
+- **Осмысленные лейблы табов** — вместо «Session 1/2/3» показывать модель или первый промпт. Кандидат на UI-полировку.
+- **Подтверждение закрытия running-таба** — `handleCloseTab` сейчас моментально убивает runner без ConfirmModal. Кандидат на UI-полировку.
+- **Кликабельный mode-badge в шапке ChatPanel** — переключение architect/developer прямо из бейджа вместо выпадающего меню таба. Кандидат на UI-полировку.
+- **Точный context-window % с per-model лимитами** — token usage показываем абсолютным числом (input/output/cache). Расчёт «% от лимита модели» требует справочника лимитов для каждой модели Claude и обновления при их смене.
+- **WR-02: terminal refit на view-switch** — после keep-mounted рендера `triggerTerminalRefit()` не вызывается при `display:none → display:flex`. Решение пользователя на момент закрытия v1.1: «старый баг пока править не будем». Трекается в `.planning/todos/pending/wr-02-terminal-refit-view-switch.md`; может быть подобран в любой будущей milestone.
 
 ## Context
 
-**Тип milestone:** конкретный рефакторинг, не новая фича. Поведение приложения не должно измениться — только источник кода зависимостей.
+**Состояние после v1.1:**
 
-**Проблема, которая запускает milestone:**
-- Сборка зависит от приватного npm-реестра `npm.ts-vit.com` (`.npmrc` с `@uni-fw:registry=...`).
-- Сборка зависит от Rust-крейтов с мутабельной ветки `dev` приватного git-репо `https://github.com/ts-vit/ai-chat`.
-- И то, и другое — единые точки отказа: реестр упал → `npm ci` ломается; ветку `dev` сдвинули → `cargo build` ломается с неожиданными изменениями API.
+- **Vendoring (v1.0):** 6 крейтов `uni-*` в `crates/` как path-зависимости workspace; 3 npm-пакета `@uni-fw/*` в `packages/uni-fw-*` через npm workspaces со ссылкой `workspace:*`; `.npmrc` удалён. Чистый клон собирается без приватной сети — `npm ci` + `cargo build --workspace` + `npm run test:all` + `npm run build` отрабатывают exit 0.
+- **Chat UX (v1.1):** Переписка чата keep-mounted при любой навигации; StatusBar показывает Model / Session (с CopyButton) / Σ Tokens (с Tooltip-breakdown); UI-кнопка Clear в шапке ChatPanel.
 
-**Почему вендоринг безопасен:**
-- Пакеты `@uni-fw/*` и `uni-*` — собственный экспериментальный код фреймворка автора.
-- `uni-claude-code` — его единственный реальный потребитель.
-- При инлайне нет риска форкнуть общий код, поскольку «общего» по сути нет.
+**Tech stack:** Tauri 2 (Rust 2021 + Tokio + SQLx) + React 19 (TypeScript 5.8 strict) + Mantine 8 + Vite 7 + Vitest 4. Frontend ~10 файлов компонентов чата (`src/components/chat/`); backend ~40 IPC-команд в `src-tauri/src/commands/`. 119/119 vitest passing.
 
-**Объём:**
-- 3 npm-пакета: `@uni-fw/ssh-ui ^0.1.2`, `@uni-fw/terminal-ui ^0.1.5`, `@uni-fw/ui ^0.1.0`
-- 6 Rust-крейтов: `uni-common`, `uni-settings`, `uni-ssh`, `uni-terminal`, `uni-db`, `uni-process` (последний — транзитивная зависимость `claude-code-core`)
+**Codebase карта:**
+- `.planning/codebase/` — `ARCHITECTURE.md`, `STACK.md`, `INTEGRATIONS.md`, `STRUCTURE.md`, `CONVENTIONS.md`, `TESTING.md`, `CONCERNS.md` (актуальные после v1.0).
+- `Cargo.toml` workspace: `src-tauri` + `crates/claude-code-core` + 6 `crates/uni-*`.
+- `package.json` workspaces: `packages/*` (3 `@uni-fw/*` пакета).
 
-**Brownfield-состояние:**
-- `.planning/codebase/` уже создан (`ARCHITECTURE.md`, `STACK.md`, `INTEGRATIONS.md`, `STRUCTURE.md`, `CONVENTIONS.md`, `TESTING.md`, `CONCERNS.md`) — рассматривать как актуальную карту.
-- Workspace `Cargo.toml` сейчас содержит двух членов: `src-tauri` и `crates/claude-code-core`. После фазы 1 в `members` добавятся 6 новых крейтов.
-- `package.json` сейчас не использует workspaces. После фазы 2 на корневом уровне появится `"workspaces": ["packages/*"]`.
+**Known technical debt:**
+- `WR-02: terminal refit на view-switch` — `triggerTerminalRefit()` не вызывается при `display:none → display:flex` после keep-mounted рендера; xterm/FitAddon может показывать обрезанные строки. Трекается в `.planning/todos/pending/wr-02-terminal-refit-view-switch.md`.
+- `pipeline_tasks` — пайплайн задач реализован, но реального использования в текущей сессии минимально; качество UI не валидировано в milestone.
 
 ## Constraints
 
-- **Tech stack**: Tauri 2 + React 19 + Rust 2021 — менять не разрешено. Цель — перенести зависимости, а не переписать стек.
-- **Compatibility**: публичные API вендорированных пакетов не должны измениться (импорты в `src-tauri/src/` и `src/` остаются такими же).
-- **Build determinism**: после фазы 3 сборка должна работать из чистого клона без `.npmrc`, без `cargo` git-credentials, без сетевого доступа к `npm.ts-vit.com` или `github.com/ts-vit/ai-chat`. Сетевой доступ к публичным реестрам npm/crates.io остаётся допустимым.
-- **Источник кода**: `D:\work-ai\ai-chat` (локальный клон ветки `dev`). Никакого `git clone` приватного репо во время исполнения фаз — берём из этого пути.
-- **Тесты**: Definition of Done гарантирует только зелёный набор тестов самого `uni-claude-code`. Тесты внутри вендорированных пакетов копируются «как есть»; если они зависят от инфраструктуры ai-chat и падают по unrelated причинам — помечаются `#[ignore]` (Rust) или `it.skip` (Vitest) с комментарием TODO, чтобы не блокировать сборку.
+- **Tech stack**: Tauri 2 + React 19 + Rust 2021 + Mantine 8 — стек заморожен. Любая будущая milestone работает внутри этих рамок; миграция фреймворков — отдельное стратегическое решение.
+- **Build determinism**: сборка из чистого клона без приватной сети остаётся инвариантом (валидировано в v1.0). Сетевой доступ к публичным реестрам `npm` и `crates.io` допустим; приватные реестры и git-источники запрещены.
+- **Vendored compatibility**: публичные API вендорированных пакетов (`uni-*` крейты, `@uni-fw/*` npm) не модифицируются. Если функциональность нужна — обсуждается отдельная milestone «un-vendoring» или внутренняя обёртка.
+- **Тесты**: Definition of Done гарантирует зелёный `npm run test:all` (vitest + cargo test workspace). Тесты внутри вендорированных пакетов могут быть `#[ignore]`/`it.skip` (унаследовано из v1.0); fixing внутренних тестов вендора — вне scope любой будущей milestone, если только не выводится отдельная цель.
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Snapshot, не git subtree | uni-claude-code — единственный потребитель; общая история ai-chat не нужна. Subtree раздул бы репозиторий и усложнил структуру | — Pending |
-| Источник: локальный клон `D:\work-ai\ai-chat` | У автора уже есть рабочий клон; не требует сетевого доступа во время вендоринга | — Pending |
-| Rust: path-зависимости в существующем workspace | `crates/claude-code-core` уже path-зависимость; такая же схема для `crates/uni-*` — минимум изменений и минимум магии | — Pending |
-| npm: workspaces в `packages/uni-fw-*` | Каждый пакет в своём каталоге со своим `package.json` — импорты `@uni-fw/*` не меняются, npm ставит их как локальные symlink через workspaces | — Pending |
-| Структура каталогов: `packages/uni-fw-ui`, `packages/uni-fw-ssh-ui`, `packages/uni-fw-terminal-ui` | Зеркалит структуру `crates/uni-*` — каждому пакету свой явный каталог, никаких вложенных scope-каталогов | — Pending |
-| Удалить `.npmrc` полностью | После вендоринга приватный реестр не нужен; оставлять его — оставлять реальную SPOF | — Pending |
-| Внешние тесты переносим «как есть» | Снапшот — это снапшот; переписывать чужие тесты под наш CI — отдельная работа вне scope этой milestone | — Pending |
-| CI как новый сервис не добавляется | Текущий проект не имеет CI (`.github/` отсутствует); фаза 3 — это `package.json` scripts + README | — Pending |
+| **v1.0** Snapshot, не git subtree | uni-claude-code — единственный потребитель; общая история ai-chat не нужна. Subtree раздул бы репозиторий и усложнил структуру | ✓ Good — v1.0 shipped, history clean, обратная синхронизация исключена |
+| **v1.0** Источник: локальный клон `D:\work-ai\ai-chat` | У автора уже есть рабочий клон; не требует сетевого доступа во время вендоринга | ✓ Good — фазы 1-3 прошли без приватной сети |
+| **v1.0** Rust: path-зависимости в существующем workspace | `crates/claude-code-core` уже path-зависимость; такая же схема для `crates/uni-*` — минимум изменений и минимум магии | ✓ Good — `cargo build --workspace` зелёный |
+| **v1.0** npm: workspaces в `packages/uni-fw-*` со ссылкой `workspace:*` | Каждый пакет в своём каталоге со своим `package.json` — импорты `@uni-fw/*` не меняются, npm ставит локальные symlink | ✓ Good — `npm ci` зелёный без `.npmrc` |
+| **v1.0** Удалить `.npmrc` полностью | После вендоринга приватный реестр не нужен; оставлять его — оставлять реальную SPOF | ✓ Good — реестр недоступен, сборка не страдает |
+| **v1.0** Внешние тесты переносим «как есть» | Снапшот — это снапшот; переписывать чужие тесты под наш CI — отдельная работа | ✓ Good — 97 cargo-тестов passed, 1 ignored задокументированный |
+| **v1.0** CI не добавляется как новый сервис | Текущий проект не имеет `.github/`; качество через локальные `npm run test:all` | ✓ Good — никаких внешних зависимостей; принято как постоянная политика |
+| **v1.1** Keep-mounted рендер вместо conditional unmount | `display: none/flex` на sibling-блоках — единственный способ физически сохранить React tree чата при навигации; DB-persistence отложена | ✓ Good — PERSIST-01/02 validated, переписка не теряется |
+| **v1.1** До 3 `DualPanelLayout` одновременно в DOM | Граница `ui.maxOpenProjects = 3` достаточна для рабочих сценариев; больше — рост памяти и риск перфоманса при многих xterm-инстансах | ✓ Good — UAT 8-12 одобрен; 3 проекта в DOM одновременно — приемлемо |
+| **v1.1** Token usage как абсолютное число (не % от лимита) | Расчёт «% от контекста» требует справочника per-model лимитов и поддержания его актуальности | ✓ Good — отложено в VIS-CTX-01; absolute breakdown пользователю достаточно |
+| **v1.1** Ref-based comparison для reset accumulator (CR-01 fix) | Impure `setState` в `case "system"` нарушал чистоту event-handler'а; ref-сравнение даёт ту же семантику без side-effects в render-path | ✓ Good — CR-01 закрыт коммитом `ce93e73`; unit-тест `resets accumulator when session_id changes via system event` passing |
+| **v1.1** WR-02 (terminal refit) accepted as deferred | Phase 4 закрылась с открытой регрессией; пользователь явно выбрал отложить как «старый баг» | ⚠️ Revisit — трекается в `todos/pending/`; должен быть подобран в одной из будущих UI-милестоунов |
 
 ## Evolution
 
@@ -132,4 +129,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-18 — Phase 4 «Chat Persistence» завершена: PERSIST-01 + PERSIST-02 валидированы; deferred-todo WR-02 (terminal refit на view-switch) трекается в `.planning/todos/pending/`.*
+*Last updated: 2026-05-18 after v1.1 Chat UX milestone — все 6 требований Validated (PERSIST-01/02, VIS-01/02/03, UI-01); v1.0+v1.1 решения переведены в ✓ Good outcomes; v1.1-specific out-of-scope items организованы в подразделы; Context отражает текущее состояние кода после двух milestones.*
