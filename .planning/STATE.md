@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Chat UX
-status: verifying
-stopped_at: Phase 5 context gathered
-last_updated: "2026-05-18T05:19:56.469Z"
+status: milestone_complete
+stopped_at: Milestone complete (Phase 05 was final phase)
+last_updated: 2026-05-18T06:58:08.910Z
 last_activity: 2026-05-18
 progress:
   total_phases: 2
@@ -21,20 +21,20 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-18)
 
 **Core value:** Чистый клон репозитория без сети полностью собирается — `npm ci` и `cargo build` проходят, тесты зелёные.
-**Current focus:** Phase 05 — chat-visibility-controls
+**Current focus:** Milestone complete
 
 ## Current Position
 
-Phase: 05 (chat-visibility-controls) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
+Phase: 05
+Plan: Not started
+Status: Milestone complete
 Last activity: 2026-05-18
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 12 (v1.0 milestone)
+- Total plans completed: 15 (v1.0 milestone)
 - Average duration: ~3 min
 - Total execution time: ~8 min
 
@@ -46,6 +46,7 @@ Last activity: 2026-05-18
 | 02 npm-vendoring | 3 | ~10 min | ~3.5 min |
 | 03 build-docs | 3 | ~24 min | ~8 min |
 | 04 | 3 | - | - |
+| 05 | 3 | - | - |
 
 **Recent Trend:**
 
