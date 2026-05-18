@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Stack, Group, Text, Badge } from "@mantine/core";
+import { Stack, Group, Text, Badge, ActionIcon, Tooltip } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconFolderOpen, IconMessage } from "@tabler/icons-react";
+import { IconFolderOpen, IconMessage, IconEraser } from "@tabler/icons-react";
 import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 
@@ -11,6 +11,7 @@ import type {
   ChatMessage,
   SessionResult,
   PanelEvent,
+  Usage,
 } from "../../types/claude";
 import { MessageList } from "./MessageList";
 import { PromptInput } from "./PromptInput";
@@ -44,6 +45,9 @@ export function ChatPanel({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
+  const [sessionModel, setSessionModel] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [accumulatedUsage, setAccumulatedUsage] = useState<Usage | null>(null);
 
   const hasSessionRef = useRef(false);
   const currentBlockIndexRef = useRef<number>(-1);
@@ -135,6 +139,15 @@ export function ChatPanel({
     (claudeEvent: ClaudeEvent) => {
       switch (claudeEvent.type) {
         case "system": {
+          setSessionId((prevId) => {
+            if (claudeEvent.session_id && claudeEvent.session_id !== prevId) {
+              setAccumulatedUsage(null); // D-05-06 reset при смене session_id
+            }
+            return claudeEvent.session_id ?? prevId;
+          });
+          if (claudeEvent.model) {
+            setSessionModel(claudeEvent.model);
+          }
           const wasExisting = hasSessionRef.current;
           hasSessionRef.current = true;
           const info = [
@@ -249,6 +262,20 @@ export function ChatPanel({
         }
 
         case "assistant": {
+          if (claudeEvent.message.usage) {
+            const curr = claudeEvent.message.usage;
+            setAccumulatedUsage((prev) => {
+              if (prev === null) {
+                return { ...curr }; // defensive copy от event payload
+              }
+              return {
+                input_tokens: prev.input_tokens + curr.input_tokens,
+                output_tokens: prev.output_tokens + curr.output_tokens,
+                cache_creation_input_tokens: prev.cache_creation_input_tokens + curr.cache_creation_input_tokens,
+                cache_read_input_tokens: prev.cache_read_input_tokens + curr.cache_read_input_tokens,
+              };
+            });
+          }
           const textBlocks = claudeEvent.message.content
             .filter((b): b is { type: "text"; text: string } => b.type === "text")
             .map((b) => b.text)
@@ -389,16 +416,23 @@ export function ChatPanel({
     }
   }, [messages, panelId, projectId, t]);
 
+  const handleClear = useCallback(() => {
+    setMessages([]);
+    setSessionResult(null);
+    setSessionModel(null);
+    setSessionId(null);
+    setAccumulatedUsage(null);
+    hasSessionRef.current = false;
+    archivedMessagesRef.current = [];
+    resetStreamingState();
+  }, [resetStreamingState]);
+
   const handleSend = useCallback(
     async (text: string) => {
       if (!cwd) return;
 
       if (text.trim() === "/clear") {
-        setMessages([]);
-        setSessionResult(null);
-        hasSessionRef.current = false;
-        archivedMessagesRef.current = [];
-        resetStreamingState();
+        handleClear();
         return;
       }
 
@@ -423,7 +457,7 @@ export function ChatPanel({
         ]);
       }
     },
-    [createMessageId, cwd, mode, panelId, projectModel, projectPermissionMode, resetStreamingState, updateMessages],
+    [createMessageId, cwd, handleClear, mode, panelId, projectModel, projectPermissionMode, updateMessages],
   );
 
   const handleStop = useCallback(async () => {
@@ -466,6 +500,18 @@ export function ChatPanel({
         >
           {t(mode === "code" ? "panel.modeDeveloper" : "panel.modeArchitect")}
         </Badge>
+        <Tooltip label={t("chat.clearChat")} withArrow position="bottom">
+          <ActionIcon
+            ml="auto"
+            size="xs"
+            variant="subtle"
+            onClick={handleClear}
+            disabled={isRunning}
+            aria-label={t("chat.clearChat")}
+          >
+            <IconEraser size={14} stroke={1.5} />
+          </ActionIcon>
+        </Tooltip>
       </Group>
 
       {messages.length === 0 ? (
@@ -517,7 +563,13 @@ export function ChatPanel({
         placeholder={mode === "discuss" ? t("chat.placeholderArchitect") : undefined}
       />
 
-      <StatusBar isRunning={isRunning} sessionResult={sessionResult} model={null} sessionId={null} usage={null} />
+      <StatusBar
+        isRunning={isRunning}
+        sessionResult={sessionResult}
+        model={sessionModel ?? projectModel ?? null}
+        sessionId={sessionId}
+        usage={accumulatedUsage}
+      />
     </Stack>
   );
 }
