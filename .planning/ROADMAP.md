@@ -50,7 +50,7 @@
   4. Пользователь нажимает явную кнопку в шапке `ChatPanel` (или соседнем читаемом месте) и полностью очищает переписку текущей вкладки — поведение эквивалентно текстовой команде `/clear` (сброс `messages`, `sessionResult`, `hasSessionRef`, `archivedMessagesRef`, стриминг-состояния).
   5. Метаданные StatusBar (модель / session / usage) корректно обновляются при пересоздании сессии (после Clear или start новой сессии с другой моделью) — нет «прилипших» значений от предыдущей сессии.
 **Plans**: 3 plans
-  - [ ] 05-01-PLAN.md — Типы (SessionMetadata) и i18n keys для StatusBar/Clear/CopyButton/TokensTooltip
+  - [x] 05-01-PLAN.md — Типы (SessionMetadata) и i18n keys для StatusBar/Clear/CopyButton/TokensTooltip
   - [ ] 05-02-PLAN.md — StatusBar: новые props model/sessionId/usage + рендер 3 полей с CopyButton и Tooltip + tests
   - [ ] 05-03-PLAN.md — ChatPanel: state аккумулятора, handleClear callback, UI-кнопка Clear в header, прокидывание props в StatusBar + tests
 **UI hint**: yes
@@ -63,4 +63,4 @@
 | 2. npm Vendoring | v1.0 | 3/3 | Complete | 2026-05-16 |
 | 3. Build & Docs | v1.0 | 3/3 | Complete | 2026-05-16 |
 | 4. Chat Persistence | v1.1 | 3/3 | Complete   | 2026-05-17 |
-| 5. Chat Visibility & Controls | v1.1 | 0/3 | Planned | — |
+| 5. Chat Visibility & Controls | v1.1 | 1/3 | In Progress|  |

@@ -17,13 +17,13 @@
 
 ### Visibility — метаданные сессии видны постоянно
 
-- [ ] **VIS-01**: Пользователь видит имя активной модели Claude (например `claude-sonnet-4-6`) постоянно в StatusBar для каждой запущенной сессии чата, а не только в одноразовом системном сообщении внутри переписки.
-- [ ] **VIS-02**: Пользователь видит `session_id` активной Claude-сессии постоянно в StatusBar (полный или префикс достаточной длины для корреляции с логами `~/.claude/projects/`).
-- [ ] **VIS-03**: Пользователь видит накопленное использование токенов текущей сессии Claude в StatusBar — отдельно input / output / cache (cache_creation + cache_read). Значение обновляется по мере получения `assistant`-событий с полем `usage`.
+- [x] **VIS-01**: Пользователь видит имя активной модели Claude (например `claude-sonnet-4-6`) постоянно в StatusBar для каждой запущенной сессии чата, а не только в одноразовом системном сообщении внутри переписки.
+- [x] **VIS-02**: Пользователь видит `session_id` активной Claude-сессии постоянно в StatusBar (полный или префикс достаточной длины для корреляции с логами `~/.claude/projects/`).
+- [x] **VIS-03**: Пользователь видит накопленное использование токенов текущей сессии Claude в StatusBar — отдельно input / output / cache (cache_creation + cache_read). Значение обновляется по мере получения `assistant`-событий с полем `usage`.
 
 ### UI — кнопки для базовых операций
 
-- [ ] **UI-01**: Пользователь может полностью очистить переписку текущей вкладки чата нажатием кнопки в шапке `ChatPanel` (или соседнем читаемом месте) — без необходимости вводить текстовую команду `/clear` в поле ввода. Поведение кнопки эквивалентно `/clear` (сброс `messages`, `sessionResult`, `hasSessionRef`, `archivedMessagesRef`, стриминг-состояния).
+- [x] **UI-01**: Пользователь может полностью очистить переписку текущей вкладки чата нажатием кнопки в шапке `ChatPanel` (или соседнем читаемом месте) — без необходимости вводить текстовую команду `/clear` в поле ввода. Поведение кнопки эквивалентно `/clear` (сброс `messages`, `sessionResult`, `hasSessionRef`, `archivedMessagesRef`, стриминг-состояния).
 
 ## Future Requirements
 
@@ -65,10 +65,10 @@
 |-------------|-------|--------|
 | PERSIST-01 | Phase 4 — Chat Persistence | Pending |
 | PERSIST-02 | Phase 4 — Chat Persistence | Pending |
-| VIS-01 | Phase 5 — Chat Visibility & Controls | Pending |
-| VIS-02 | Phase 5 — Chat Visibility & Controls | Pending |
-| VIS-03 | Phase 5 — Chat Visibility & Controls | Pending |
-| UI-01 | Phase 5 — Chat Visibility & Controls | Pending |
+| VIS-01 | Phase 5 — Chat Visibility & Controls | Complete |
+| VIS-02 | Phase 5 — Chat Visibility & Controls | Complete |
+| VIS-03 | Phase 5 — Chat Visibility & Controls | Complete |
+| UI-01 | Phase 5 — Chat Visibility & Controls | Complete |
 
 **Coverage:**
 - v1.1 requirements: 6 total

@@ -4,13 +4,13 @@ milestone: v1.1
 milestone_name: Chat UX
 status: executing
 stopped_at: Phase 5 context gathered
-last_updated: "2026-05-17T21:14:52.475Z"
-last_activity: 2026-05-17 -- Phase 05 planning complete
+last_updated: "2026-05-18T05:05:46.300Z"
+last_activity: 2026-05-18
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 6
-  completed_plans: 3
+  completed_plans: 4
   percent: 50
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-18)
 
 **Core value:** Чистый клон репозитория без сети полностью собирается — `npm ci` и `cargo build` проходят, тесты зелёные.
-**Current focus:** Phase 5 — chat visibility & controls
+**Current focus:** Phase 05 — chat-visibility-controls
 
 ## Current Position
 
-Phase: 5
-Plan: Not started
+Phase: 05 (chat-visibility-controls) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-05-17 -- Phase 05 planning complete
+Last activity: 2026-05-18
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Last activity: 2026-05-17 -- Phase 05 planning complete
 - Trend: для v1.1 ожидаем меньше длительности — все изменения frontend-only, без вендоринг-боли и без full cargo rebuild
 
 *Updated after each plan completion*
+| Phase 05-chat-visibility-controls P01 | 5 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -63,6 +64,7 @@ Last activity: 2026-05-17 -- Phase 05 planning complete
 - Roadmap-init (v1.1): Phase numbering продолжен с 4 (v1.0 закончилась на Phase 3), не сброс.
 - Roadmap-init (v1.1): 6 требований разбиты на 2 phase — PERSIST-* в Phase 4 (общий root cause `App.tsx:271` unmount), VIS-* + UI-01 в Phase 5 (общие файлы `StatusBar.tsx` + `ChatPanel.tsx`). Granularity `coarse` поддерживает консолидацию.
 - Roadmap-init (v1.1): Phase 5 зависит от Phase 4 — показывать постоянные метаданные в StatusBar бессмысленно, если он размонтируется при навигации.
+- [Phase ?]: Типы и i18n-фундамент для Phase 5 добавлены
 
 ### Pending Todos
 
@@ -85,9 +87,9 @@ Last activity: 2026-05-17 -- Phase 05 planning complete
 
 ## Session Continuity
 
-Last session: 2026-05-17T20:47:33.289Z
+Last session: 2026-05-18T05:05:37.029Z
 Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-chat-visibility-controls/05-CONTEXT.md
+Resume file: None
 
 ## Operator Next Steps
 
