@@ -295,6 +295,18 @@
     "selectFolderHint": "Select a project folder to start",
     "emptyState": "Send a prompt to start the conversation",
     "attach": "Attach files",
-    "loadEarlierMessages": "Load earlier messages"
+    "loadEarlierMessages": "Load earlier messages",
+    "model": "Model",
+    "session": "Session",
+    "tokens": "Tokens",
+    "copySessionId": "Copy session ID",
+    "copied": "Copied",
+    "clearChat": "Clear chat",
+    "tokensTooltip": {
+      "input": "Input",
+      "output": "Output",
+      "cacheCreation": "Cache creation",
+      "cacheRead": "Cache read"
+    }
   }
 }
