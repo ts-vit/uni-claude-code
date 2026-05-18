@@ -268,4 +268,177 @@ describe("ChatPanel", () => {
       expect(unlisten).toHaveBeenCalledTimes(1);
     });
   });
+
+  it("accumulates usage tokens from assistant events", async () => {
+    let capturedCallback: ((event: { payload: PanelEvent }) => void) | null = null;
+    mockedListen.mockImplementation((_eventName, handler) => {
+      capturedCallback = handler as (event: { payload: PanelEvent }) => void;
+      return Promise.resolve(() => {});
+    });
+
+    renderWithMantine(<ChatPanel panelId="code" cwd="D:\\test" />);
+    await vi.waitFor(() => expect(capturedCallback).not.toBeNull());
+
+    // First assistant event — init accumulator
+    act(() => {
+      capturedCallback!({
+        payload: {
+          panel_id: "code",
+          event: {
+            Claude: {
+              type: "assistant",
+              session_id: "s1",
+              message: {
+                role: "assistant",
+                content: [{ type: "text", text: "Hi" }],
+                usage: {
+                  input_tokens: 100,
+                  output_tokens: 50,
+                  cache_creation_input_tokens: 0,
+                  cache_read_input_tokens: 200,
+                },
+              },
+            },
+          },
+        },
+      });
+    });
+
+    // Second assistant event — accumulate
+    act(() => {
+      capturedCallback!({
+        payload: {
+          panel_id: "code",
+          event: {
+            Claude: {
+              type: "assistant",
+              session_id: "s1",
+              message: {
+                role: "assistant",
+                content: [{ type: "text", text: "More" }],
+                usage: {
+                  input_tokens: 200,
+                  output_tokens: 100,
+                  cache_creation_input_tokens: 0,
+                  cache_read_input_tokens: 100,
+                },
+              },
+            },
+          },
+        },
+      });
+    });
+
+    // Expected sum: 300 + 150 + 0 + 300 = 750
+    await vi.waitFor(() => {
+      expect(screen.getByText((content) => /chat\.tokens/.test(content) && /750/.test(content))).toBeInTheDocument();
+    });
+  });
+
+  it("resets accumulator when session_id changes via system event", async () => {
+    let capturedCallback: ((event: { payload: PanelEvent }) => void) | null = null;
+    mockedListen.mockImplementation((_eventName, handler) => {
+      capturedCallback = handler as (event: { payload: PanelEvent }) => void;
+      return Promise.resolve(() => {});
+    });
+
+    renderWithMantine(<ChatPanel panelId="code" cwd="D:\\test" />);
+    await vi.waitFor(() => expect(capturedCallback).not.toBeNull());
+
+    // System event with session_id=s1
+    act(() => {
+      capturedCallback!({
+        payload: { panel_id: "code", event: { Claude: { type: "system", subtype: "init", session_id: "s1", tools: [], mcp_servers: [], model: "sonnet" } } },
+      });
+    });
+
+    // Assistant event — accumulator -> 100
+    act(() => {
+      capturedCallback!({
+        payload: { panel_id: "code", event: { Claude: { type: "assistant", session_id: "s1", message: { role: "assistant", content: [{ type: "text", text: "" }], usage: { input_tokens: 100, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 } } } } },
+      });
+    });
+
+    await vi.waitFor(() => {
+      expect(screen.getByText((c) => /chat\.tokens/.test(c) && /100/.test(c))).toBeInTheDocument();
+    });
+
+    // New system event with different session_id=s2 — accumulator должен сброситься
+    act(() => {
+      capturedCallback!({
+        payload: { panel_id: "code", event: { Claude: { type: "system", subtype: "init", session_id: "s2", tools: [], mcp_servers: [], model: "opus" } } },
+      });
+    });
+
+    // Now accumulator is null → em-dash
+    await vi.waitFor(() => {
+      expect(screen.getByText((c) => /chat\.tokens/.test(c) && /—/.test(c))).toBeInTheDocument();
+    });
+  });
+
+  it("disables Clear button while isRunning", async () => {
+    mockedInvoke.mockResolvedValueOnce("running");
+    renderWithMantine(<ChatPanel panelId="code" cwd="D:\\test" />);
+    await vi.waitFor(() => {
+      const btn = screen.getByRole("button", { name: "chat.clearChat" });
+      expect(btn).toBeDisabled();
+    });
+  });
+
+  it("clicking Clear resets messages, model, sessionId and accumulator", async () => {
+    let capturedCallback: ((event: { payload: PanelEvent }) => void) | null = null;
+    mockedListen.mockImplementation((_eventName, handler) => {
+      capturedCallback = handler as (event: { payload: PanelEvent }) => void;
+      return Promise.resolve(() => {});
+    });
+    mockedInvoke.mockResolvedValue("idle");
+
+    renderWithMantine(<ChatPanel panelId="code" cwd="D:\\test" />);
+    await vi.waitFor(() => expect(capturedCallback).not.toBeNull());
+
+    // Set up state: system event + assistant event with usage
+    act(() => {
+      capturedCallback!({ payload: { panel_id: "code", event: { Claude: { type: "system", subtype: "init", session_id: "s1", tools: [], mcp_servers: [], model: "sonnet" } } } });
+      capturedCallback!({ payload: { panel_id: "code", event: { Claude: { type: "assistant", session_id: "s1", message: { role: "assistant", content: [{ type: "text", text: "Hi" }], usage: { input_tokens: 42, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 } } } } } });
+    });
+
+    await vi.waitFor(() => {
+      expect(screen.getByText((c) => /chat\.model/.test(c) && /sonnet/.test(c))).toBeInTheDocument();
+      expect(screen.getByText((c) => /chat\.tokens/.test(c) && /42/.test(c))).toBeInTheDocument();
+    });
+
+    // Click Clear
+    const clearBtn = screen.getByRole("button", { name: "chat.clearChat" });
+    expect(clearBtn).not.toBeDisabled();
+    act(() => { clearBtn.click(); });
+
+    // Verify state reset: model em-dash, tokens em-dash, session em-dash
+    await vi.waitFor(() => {
+      expect(screen.getByText((c) => /chat\.model/.test(c) && /—/.test(c))).toBeInTheDocument();
+      expect(screen.getByText((c) => /chat\.tokens/.test(c) && /—/.test(c))).toBeInTheDocument();
+      expect(screen.getByText((c) => /chat\.session/.test(c) && /—/.test(c))).toBeInTheDocument();
+    });
+  });
+
+  it("populates sessionModel and sessionId from system event", async () => {
+    let capturedCallback: ((event: { payload: PanelEvent }) => void) | null = null;
+    mockedListen.mockImplementation((_eventName, handler) => {
+      capturedCallback = handler as (event: { payload: PanelEvent }) => void;
+      return Promise.resolve(() => {});
+    });
+
+    renderWithMantine(<ChatPanel panelId="code" cwd="D:\\test" />);
+    await vi.waitFor(() => expect(capturedCallback).not.toBeNull());
+
+    act(() => {
+      capturedCallback!({
+        payload: { panel_id: "code", event: { Claude: { type: "system", subtype: "init", session_id: "abc12345-uuid-rest", tools: [], mcp_servers: [], model: "claude-sonnet-4-6" } } },
+      });
+    });
+
+    await vi.waitFor(() => {
+      expect(screen.getByText((c) => /chat\.model/.test(c) && /claude-sonnet-4-6/.test(c))).toBeInTheDocument();
+      expect(screen.getByText((c) => /chat\.session/.test(c) && /abc12345/.test(c))).toBeInTheDocument();
+    });
+  });
 });
