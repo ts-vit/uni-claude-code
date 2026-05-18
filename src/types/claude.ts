@@ -262,6 +262,13 @@ export interface SessionResult {
   permissionDenials: PermissionDenial[];
 }
 
+// === Session Metadata (live runtime state, Phase 5) ===
+export interface SessionMetadata {
+  model: string | null;
+  sessionId: string | null;
+  usage: Usage | null;
+}
+
 // === Pipeline types ===
 export interface PipelineTaskCount {
   projectId: string;
