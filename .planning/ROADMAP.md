@@ -21,7 +21,7 @@
 ### 🚧 v1.1 Chat UX (Phases 4-5) — IN PROGRESS
 
 - [x] **Phase 4: Chat Persistence** — Чат не размонтируется при переключении view и активного проекта (completed 2026-05-17)
-- [ ] **Phase 5: Chat Visibility & Controls** — StatusBar показывает модель/session/usage; кнопка Clear в шапке ChatPanel
+- [x] **Phase 5: Chat Visibility & Controls** — StatusBar показывает модель/session/usage; кнопка Clear в шапке ChatPanel (completed 2026-05-18)
 
 ## Phase Details
 
@@ -52,7 +52,7 @@
 **Plans**: 3 plans
   - [x] 05-01-PLAN.md — Типы (SessionMetadata) и i18n keys для StatusBar/Clear/CopyButton/TokensTooltip
   - [x] 05-02-PLAN.md — StatusBar: новые props model/sessionId/usage + рендер 3 полей с CopyButton и Tooltip + tests
-  - [ ] 05-03-PLAN.md — ChatPanel: state аккумулятора, handleClear callback, UI-кнопка Clear в header, прокидывание props в StatusBar + tests
+  - [x] 05-03-PLAN.md — ChatPanel: state аккумулятора, handleClear callback, UI-кнопка Clear в header, прокидывание props в StatusBar + tests
 **UI hint**: yes
 
 ## Progress
@@ -63,4 +63,4 @@
 | 2. npm Vendoring | v1.0 | 3/3 | Complete | 2026-05-16 |
 | 3. Build & Docs | v1.0 | 3/3 | Complete | 2026-05-16 |
 | 4. Chat Persistence | v1.1 | 3/3 | Complete   | 2026-05-17 |
-| 5. Chat Visibility & Controls | v1.1 | 2/3 | In Progress|  |
+| 5. Chat Visibility & Controls | v1.1 | 3/3 | Complete   | 2026-05-18 |
